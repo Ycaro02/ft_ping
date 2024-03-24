@@ -61,22 +61,20 @@ int bind_socket(int sock, t_sockaddr_in *addr)
 
 int main(int argc, char **argv)
 {
+    t_sockaddr_in   addr;
+    int             sock;
+
     if (argc < 2) {
         ft_printf_fd(2, PURPLE"%s: usage error: Destination address required\n"RESET, argv[0]);
         return (1);
     }
-
-    int sock = open_socket();
-    t_sockaddr_in addr;
-
-    ft_bzero(&addr, sizeof(addr));
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(8080);
-    addr.sin_addr.s_addr = str_to_addr(argv[1]);
-
+    sock  = open_socket();
     if (sock == -1) {
         return (1);
     }
+    ft_bzero(&addr, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = str_to_addr(argv[1]);
     ft_printf_fd(1, YELLOW"Socket opened fd %d on port %u on %s\n"RESET, sock, ntohs(addr.sin_port), inet_ntoa(addr.sin_addr));
     if (bind_socket(sock, &addr) == -1) {
         close_socket(sock);
