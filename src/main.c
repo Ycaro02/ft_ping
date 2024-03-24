@@ -75,7 +75,7 @@ int main(int argc, char **argv)
     ft_bzero(&addr, sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = str_to_addr(argv[1]);
-    ft_printf_fd(1, YELLOW"Socket opened fd %d on port %u on %s\n"RESET, sock, ntohs(addr.sin_port), inet_ntoa(addr.sin_addr));
+    ft_printf_fd(1, YELLOW"Socket opened fd %d IP address %s\n"RESET, sock, inet_ntoa(addr.sin_addr));
     if (bind_socket(sock, &addr) == -1) {
         close_socket(sock);
         return (1);
