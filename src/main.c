@@ -3,6 +3,7 @@
 #include <sys/socket.h> /* System socket, ... */
 #include <netinet/in.h> /* Internet address family, ... */
 #include <arpa/inet.h> /* Internet address family, ... */
+#include <netinet/ip.h> /* Internet Protocol family, ... */
 #include <errno.h> /* Error number, ... */
 #include "../include/basic_define.h" /* Basic define, include <sys/type>... */
 #include "../libft/libft.h" /* Libft library, ... */
@@ -10,7 +11,7 @@
 
 typedef struct sockaddr_in t_sockaddr_in;
 
-struct in_addr str_to_addr(char *str)
+in_addr_t str_to_addr(char *str)
 {
     struct in_addr addr;
 
@@ -20,17 +21,18 @@ struct in_addr str_to_addr(char *str)
         exit(1);
     }
     printf("Adresse IP binaire : %08x\n", addr.s_addr);
-    return (addr);
+    return (addr.s_addr);
 }
 
 
 /* @brief Open socker*/
 int open_socket(void)
 {
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    
+    int sock;
+
     errno = 0;
-    if (sock == -1) {
+    sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+    if (sock < 0) {
         perror("socket");
         return (-1);
     }
@@ -70,7 +72,7 @@ int main(int argc, char **argv)
     ft_bzero(&addr, sizeof(addr));
     addr.sin_family = AF_INET;
     addr.sin_port = htons(8080);
-    addr.sin_addr.s_addr = str_to_addr(argv[1]).s_addr;
+    addr.sin_addr.s_addr = str_to_addr(argv[1]);
 
     if (sock == -1) {
         return (1);
@@ -80,8 +82,6 @@ int main(int argc, char **argv)
         close_socket(sock);
         return (1);
     }
-    
-
     close_socket(sock);
     return (0);
 }

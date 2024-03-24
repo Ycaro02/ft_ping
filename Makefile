@@ -7,6 +7,7 @@ CFLAGS			=	-Wall -Wextra -Werror -O3 -g
 ASCII_ART		=	./rsc/mk/ascii.sh
 ASCII_NAME		=	${NAME}
 
+PING_ADDR		=	127.0.0.1
 
 all:		$(NAME)
 
@@ -56,7 +57,7 @@ clean_lib:
 	@$(MAKE_LIST) fclean
 
 test: $(NAME)
-	@./$(NAME)
+	@sudo ./$(NAME) $(PING_ADDR)
 
 re:			fclean all
 
