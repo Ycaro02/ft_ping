@@ -2,8 +2,9 @@
 #include <stdlib.h> /* Standard library, malloc, free, exit, ... */
 #include <sys/socket.h> /* System socket, ... */
 #include <netinet/in.h> /* Internet address family, ... */
+#include <netinet/ip.h>         /* Internet Protocol family, ... */
+#include <netinet/ip_icmp.h>    /* ICMP protocol family, ... */
 #include <arpa/inet.h> /* Internet address family, ... */
-#include <netinet/ip.h> /* Internet Protocol family, ... */
 #include <errno.h> /* Error number, ... */
 #include "../include/basic_define.h" /* Basic define, include <sys/type>... */
 #include "../libft/libft.h" /* Libft library, ... */
