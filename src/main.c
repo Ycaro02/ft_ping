@@ -1,5 +1,7 @@
 #include "../include/ft_ping.h"
 
+int g_signal_received = 0;
+
 /* Ip address string format to bin format */
 in_addr_t str_to_addr(char *str)
 {
@@ -53,6 +55,55 @@ t_icmphdr build_icmp_hdr()
 	return (hdr);
 }
 
+
+static void signal_handler(int signum)
+{
+    (void)signum;
+    ft_printf_fd(2, RED"\nSIGINT Catch: %d\n"RESET, signum);
+    g_signal_received = 1;
+}
+
+static int init_signal_handler(void)
+{
+        if (signal(SIGINT, signal_handler) == SIG_ERR) {
+                ft_printf_fd(2, "Can't catch SIGINT\n");
+                return (-1);
+        }
+        return (0);
+}
+
+
+void listen_icmp_reply(int sock)
+{
+    char            buffer[1024];
+    ssize_t         bytes_received;
+    struct iphdr    *ip_hdr;
+    struct icmphdr  *icmp_hdr;
+
+    init_signal_handler();
+
+    while (!g_signal_received) {
+        // ft_printf_fd(1, YELLOW"Waiting for ICMP Echo Reply, global: %d\n"RESET, g_signal_received);
+        errno = 0;
+        bytes_received = recvfrom(sock, buffer, 1024, MSG_DONTWAIT, NULL, NULL);
+        if (bytes_received < 0) {
+            /* No data continue wait */
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                continue;
+            } else {
+                perror("recvfrom");
+                close(sock);
+                exit(EXIT_FAILURE);
+            }
+        }
+        ip_hdr = (struct iphdr *)buffer;
+        icmp_hdr = (struct icmphdr *)(buffer + (ip_hdr->ihl * 4));
+        if (icmp_hdr->type == ICMP_ECHOREPLY) {
+            ft_printf_fd(1, GREEN"Received ICMP Echo Reply\n"RESET);
+        }
+    }
+}
+
 int main(int argc, char **argv)
 {
     t_sockaddr_in   addr;
@@ -77,7 +128,8 @@ int main(int argc, char **argv)
 
 	t_icmphdr hdr = build_icmp_hdr();
 	ft_printf_fd(1, "ICMP header type %d code %d checksum %d id %d sequence %d\n", hdr.type, hdr.code, hdr.checksum, hdr.un.echo.id, hdr.un.echo.sequence);
-
+    listen_icmp_reply(sock);
     close_socket(sock);
+    ft_printf_fd(1, YELLOW"Socket closed\n"RESET);
     return (0);
 }

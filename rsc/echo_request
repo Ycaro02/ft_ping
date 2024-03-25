@@ -1,0 +1,4 @@
+09:11:54.729051 IP (tos 0x0, ttl 64, id 46758, offset 0, flags [DF], proto ICMP (1), length 84)
+    kali.home > livebox.home: ICMP echo request, id 8647, seq 1, length 64
+09:11:54.741971 IP (tos 0x0, ttl 64, id 57529, offset 0, flags [none], proto ICMP (1), length 84)
+    livebox.home > kali.home: ICMP echo reply, id 8647, seq 1, length 64
