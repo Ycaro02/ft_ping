@@ -125,8 +125,11 @@ void listen_icmp_reply(int sock)
         display_iphdr(ip_hdr);
         icmp_hdr = (struct icmphdr *)(buffer + sizeof(struct iphdr));
         display_icmphdr(icmp_hdr);
+        ft_printf_fd(1, "   |size IP hdr   : %u\n", sizeof(struct iphdr));
+        ft_printf_fd(1, "   |size ICMP hdr : %u\n", sizeof(struct icmphdr));
+        ft_printf_fd(1, "   |size data     : %u\n", bytes_received - sizeof(struct iphdr) - sizeof(struct icmphdr));
         if (icmp_hdr->type == ICMP_ECHOREPLY) {
-            ft_printf_fd(1, GREEN"Received ICMP Echo Reply\n"RESET);
+            ft_printf_fd(1, GREEN"Received ICMP Echo Reply %u bytes received\n"RESET, bytes_received);
         }
     }
 }
