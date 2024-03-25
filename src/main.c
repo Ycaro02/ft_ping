@@ -1,21 +1,6 @@
-#include <stdio.h>  /* Standard input output, printf function family ... */
-#include <stdlib.h> /* Standard library, malloc, free, exit, ... */
-#include <sys/socket.h> /* System socket, ... */
-#include <netinet/in.h> /* Internet address family, ... */
-#include <netinet/ip.h>         /* Internet Protocol family, ... */
-#include <netinet/ip_icmp.h>    /* ICMP protocol family, ... */
-#include <arpa/inet.h> /* Internet address family, ... */
-#include <errno.h> /* Error number, ... */
-#include "../include/basic_define.h" /* Basic define, include <sys/type>... */
-#include "../libft/libft.h" /* Libft library, ... */
+#include "../include/ft_ping.h"
 
-
-/* @brief Define a type for sockaddr_in */
-typedef struct sockaddr_in t_sockaddr_in;
-
-/* @brief Define a type for icmphdr ICMP header */
-typedef struct icmphdr t_icmphdr;
-
+/* Ip address string format to bin format */
 in_addr_t str_to_addr(char *str)
 {
     struct in_addr addr;
@@ -29,42 +14,7 @@ in_addr_t str_to_addr(char *str)
     return (addr.s_addr);
 }
 
-
-/* @brief Open socker*/
-int open_socket(void)
-{
-    int sock;
-
-    errno = 0;
-    sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
-    if (sock < 0) {
-        perror("socket");
-        return (-1);
-    }
-    return (sock);
-}
-
-int close_socket(int sock)
-{
-    errno = 0;
-    if (close(sock) == -1) {
-        perror("close");
-        return (-1);
-    }
-    return (1);
-}
-
-int bind_socket(int sock, t_sockaddr_in *addr)
-{
-    errno = 0;
-    if (bind(sock, (const struct sockaddr *) addr, sizeof(*addr)) == -1) {
-        perror("bind");
-        return (-1);
-    }
-    return (1);
-}
-
-
+/* Get icmp paquets id */
 static uint16_t get_icmp_id()
 {
 	static uint16_t id = 10000;
@@ -77,6 +27,7 @@ static uint16_t get_icmp_id()
 	return (id);
 }
 
+/* Get icmp paquets sequence id */
 static uint16_t get_icmp_id_seq()
 {
 	static uint16_t id = 1;
@@ -89,7 +40,7 @@ static uint16_t get_icmp_id_seq()
 	return (id);
 }
 
-
+/* Build icmp header */
 t_icmphdr build_icmp_hdr()
 {
 	t_icmphdr hdr;
@@ -101,8 +52,6 @@ t_icmphdr build_icmp_hdr()
 	hdr.un.echo.sequence = get_icmp_id_seq();
 	return (hdr);
 }
-
-
 
 int main(int argc, char **argv)
 {

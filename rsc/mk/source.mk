@@ -2,7 +2,9 @@ OBJ_DIR			=	obj
 
 SRC_DIR 		=	src
 
-SRCS			=	main.c
+SRCS			=	main.c\
+					handle_socket.c\
+
 
 MAKE_LIBFT		=	make -s -C libft
 
