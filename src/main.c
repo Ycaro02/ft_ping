@@ -76,7 +76,8 @@ int main(int argc, char **argv)
         close_socket(sock);
         return (1);
     }
-
+    t_ping_packet packet = build_ping_packet("Hello", 5);
+    display_ping_packet(packet);
 	// t_icmphdr hdr = build_icmp_hdr();
 	// ft_printf_fd(1, "ICMP header type %d code %d checksum %d id %d sequence %d\n", hdr.type, hdr.code, hdr.checksum, hdr.un.echo.id, hdr.un.echo.sequence);
     listen_icmp_reply(sock);

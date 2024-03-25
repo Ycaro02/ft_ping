@@ -16,15 +16,15 @@ static int init_signal_handler(void)
 	return (0);
 }
 
-
-void display_iphdr(struct iphdr *header)
+void display_detail_iphdr(struct iphdr *header)
 {
     ft_printf_fd(1, FILL_YELLOW"| IP Header |\n"RESET);
-    ft_printf_fd(1, "   |-Version : %u\n", (unsigned int)header->version);
+    ft_printf_fd(1, "   |-IP Version        : %u\n", (unsigned int)header->version);
     ft_printf_fd(1, "   |-Internet Header Length : %u DWORDS or %u Bytes\n", (unsigned int)header->ihl, ((unsigned int)(header->ihl)) * 4);
     ft_printf_fd(1, "   |-Type Of Service : %u\n", (unsigned int)header->tos);
     ft_printf_fd(1, "   |-Total Length : %u Bytes\n", ntohs(header->tot_len));
     ft_printf_fd(1, "   |-Identification : %u\n", ntohs(header->id));
+    ft_printf_fd(1, "   |-Fragment Offset : %u\n", ntohs(header->frag_off));
     ft_printf_fd(1, "   |-Time To Live : %u\n", (unsigned int)header->ttl);
     ft_printf_fd(1, "   |-Protocol : %u\n", (unsigned int)header->protocol);
     ft_printf_fd(1, "   |-Header Checksum : %u\n", ntohs(header->check));
@@ -32,7 +32,7 @@ void display_iphdr(struct iphdr *header)
     ft_printf_fd(1, "   |-Destination IP : %s\n", inet_ntoa(*(struct in_addr *)&header->daddr));
 }
 
-void display_icmphdr(struct icmphdr *header)
+void display_detail_icmphdr(struct icmphdr *header)
 {
     ft_printf_fd(1, PURPLE"| ICMP Header |\n"RESET);
     ft_printf_fd(1, "   |-Type : %u\n", (unsigned int)(header->type));
@@ -76,6 +76,13 @@ void display_icmp_data(char *data, size_t size)
 	display_char_data(data, size);
 }
 
+void display_ping_packet(t_ping_packet packet)
+{
+    display_detail_iphdr(&packet.iphdr);
+    display_detail_icmphdr(&packet.icmphdr);
+    display_icmp_data(packet.data + IP_HDR_SIZE + ICMP_HDR_SIZE, ICMP_DATA_SIZE);
+}
+
 void listen_icmp_reply(int sock)
 {
     char            buffer[1024];
@@ -106,17 +113,19 @@ void listen_icmp_reply(int sock)
 		} else {
 			ft_printf_fd(1, RED"Received ICMP type %u code %u %u bytes received\n"RESET, icmp_hdr->type, icmp_hdr->code, bytes_received);
 		}
+        if (bytes_received != PACKET_SIZE) {
+            ft_printf_fd(1, RED"Wrong bytes received number: %d\n"RESET, bytes_received);
+            continue;
+        }
         ip_hdr = (struct iphdr *)buffer;
-        display_iphdr(ip_hdr);
+        display_detail_iphdr(ip_hdr);
         icmp_hdr = (struct icmphdr *)(buffer + IP_HDR_SIZE);
-        display_icmphdr(icmp_hdr);
+        display_detail_icmphdr(icmp_hdr);
         ft_printf_fd(1, "   |size IP hdr   : %u\n", IP_HDR_SIZE);
         ft_printf_fd(1, "   |size ICMP hdr : %u\n", ICMP_HDR_SIZE);
-
-        ft_printf_fd(1, "   |size data     : %u\n", ICMP_DATA_SIZE(bytes_received));
-
-		display_icmp_data(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE, ICMP_DATA_SIZE(bytes_received));
-
+        ft_printf_fd(1, "   |size data     : %u\n", ICMP_DATA_SIZE);
+		display_icmp_data(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE, ICMP_DATA_SIZE);
     }
-
 }
+
+
