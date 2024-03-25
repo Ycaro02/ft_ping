@@ -11,15 +11,16 @@
 #include "../include/basic_define.h" /* Basic define, include <sys/type*/
 #include "../libft/libft.h"     /* Libft library,*/
 
-/* @brief Define a type for sockaddr_in */
+/* Typedef sockaddr_in structure */
 typedef struct sockaddr_in t_sockaddr_in;
 
-/* @brief Define a type for icmphdr ICMP header */
+/* Typedef for icmp header structure */
 typedef struct icmphdr t_icmphdr;
 
+/* Typedef for ip header structure */
 typedef struct iphdr t_iphdr;
 
-
+/* Signal handling variable */
 extern int  g_signal_received;
 
 /* ICMP packet size */
@@ -53,5 +54,6 @@ int     open_socket(void);
 void	listen_icmp_reply(int sock);
 void	listen_icmp_reply(int sock);
 
-void display_ping_packet(t_ping_packet packet);
+/* build request */
+void          display_ping_packet(t_ping_packet packet);
 t_ping_packet build_ping_packet(char *data, size_t size);
