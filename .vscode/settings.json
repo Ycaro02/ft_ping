@@ -1,11 +1,17 @@
 {
     "files.associations": {
-        "*.def": "source.def",
-        "libft.h": "c",
-        "socket.h": "c",
-        "ip_icmp.h": "c",
-        "basic_define.h": "c",
-        "inet.h": "c",
-        "in.h": "c"
-    }
+		"*.def": "source.def",
+		"libft.h": "c",
+		"socket.h": "c",
+		"ip_icmp.h": "c",
+		"basic_define.h": "c",
+		"inet.h": "c",
+		"in.h": "c",
+		"ip.h": "c",
+		"features.h": "c",
+		"stubs.h": "c",
+		"stubs-64.h": "c",
+		"types.h": "c",
+		"endianness.h": "c"
+	}
 }

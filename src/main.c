@@ -10,7 +10,11 @@
 #include "../libft/libft.h" /* Libft library, ... */
 
 
+/* @brief Define a type for sockaddr_in */
 typedef struct sockaddr_in t_sockaddr_in;
+
+/* @brief Define a type for icmphdr ICMP header */
+typedef struct icmphdr t_icmphdr;
 
 in_addr_t str_to_addr(char *str)
 {
@@ -60,6 +64,46 @@ int bind_socket(int sock, t_sockaddr_in *addr)
     return (1);
 }
 
+
+static uint16_t get_icmp_id()
+{
+	static uint16_t id = 10000;
+
+	if (id < UINT16_MAX) {
+		id++;
+	} else {
+		id = 0;
+	}
+	return (id);
+}
+
+static uint16_t get_icmp_id_seq()
+{
+	static uint16_t id = 1;
+
+	if (id < UINT16_MAX) {
+		id++;
+	} else {
+		id = 0;
+	}
+	return (id);
+}
+
+
+t_icmphdr build_icmp_hdr()
+{
+	t_icmphdr hdr;
+
+	hdr.type = ICMP_ECHO;
+	hdr.code = 0;
+	hdr.checksum = 0;
+	hdr.un.echo.id = get_icmp_id();
+	hdr.un.echo.sequence = get_icmp_id_seq();
+	return (hdr);
+}
+
+
+
 int main(int argc, char **argv)
 {
     t_sockaddr_in   addr;
@@ -81,6 +125,10 @@ int main(int argc, char **argv)
         close_socket(sock);
         return (1);
     }
+
+	t_icmphdr hdr = build_icmp_hdr();
+	ft_printf_fd(1, "ICMP header type %d code %d checksum %d id %d sequence %d\n", hdr.type, hdr.code, hdr.checksum, hdr.un.echo.id, hdr.un.echo.sequence);
+
     close_socket(sock);
     return (0);
 }
