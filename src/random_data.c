@@ -22,12 +22,11 @@ static uint32_t     gener_uint32(int max)
  *  @param buff: buffer to store random data
  *  @param size: size of the buffer
 */
-void gener_random_data(unsigned char *buff, int size)
+void gener_random_data(uint8_t *buff, int size)
 {
     for (int i = 0; i < size; i++) {
         if (i < DATA_MBIDX || i > DATA_END_PAD) {
             buff[i] = gener_uint32(255);
-            ft_printf_fd(1, "Random data %u for %d\n", buff[i], i);        
         }
     }
     /* Magic value 'f' at idx 3 */

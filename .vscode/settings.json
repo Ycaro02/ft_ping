@@ -12,6 +12,7 @@
 		"stubs.h": "c",
 		"stubs-64.h": "c",
 		"types.h": "c",
-		"endianness.h": "c"
+		"endianness.h": "c",
+		"ifaddrs.h": "c"
 	}
 }

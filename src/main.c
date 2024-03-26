@@ -25,6 +25,34 @@ void close_multi_socket(int sock1, int sock2)
     }
 }
 
+#include <ifaddrs.h>
+
+static in_addr_t get_process_ipv4_addr()
+{
+    struct ifaddrs *ifaddr, *ifa;
+    in_addr_t addr = 0;
+    in_addr_t local_host = str_to_addr(LOCAL_HOST_ADDR);
+
+    errno = 0;
+    if (getifaddrs(&ifaddr) == -1) {
+        perror("getifaddrs");
+        return (0);
+    }
+    for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
+        if (ifa->ifa_addr && ifa->ifa_addr->sa_family == AF_INET) {
+            struct sockaddr_in *sa = (struct sockaddr_in *)ifa->ifa_addr;
+            addr = sa->sin_addr.s_addr;
+            if (addr != local_host) {
+                ft_printf_fd(1, CYAN"Process addr %s\n"RESET, inet_ntoa(*(struct in_addr *)&addr));
+                break ;
+            }
+        }
+    }
+    freeifaddrs(ifaddr);
+    return (addr);
+
+}
+
 int main(int argc, char **argv)
 {
     t_sockaddr_in   addr;
@@ -32,31 +60,29 @@ int main(int argc, char **argv)
     int             send_sock = -1;
     int8_t          ret = 1;
 
+    in_addr_t       addr_from = get_process_ipv4_addr();
+
     if (argc < 2) {
         ft_printf_fd(2, PURPLE"%s: usage error: Destination address required\n"RESET, argv[0]);
         return (1);
     }
 
-	in_addr_t args_addr = str_to_addr(argv[1]);
-    in_addr_t dest_addr = str_to_addr("192.168.1.1");
+    in_addr_t dest_addr = str_to_addr(argv[1]);
+    ft_bzero(&addr, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = dest_addr;
+    ft_printf_fd(1, YELLOW"Source addr %s\n"RESET, inet_ntoa(*(struct in_addr *)&addr_from));
+	ft_printf_fd(1, YELLOW"Dest   addr %s\n"RESET, inet_ntoa(*(struct in_addr *)&dest_addr));
 
     if ((rcv_sock = open_rcv_socket()) == -1 || (send_sock = open_send_socket()) == -1) {
         goto free_socket;
     }
-    
-    ft_bzero(&addr, sizeof(addr));
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = dest_addr;
-
-    ft_printf_fd(1, YELLOW"Raw Socket open\n"RESET);
-    ft_printf_fd(1, YELLOW"Args addr %s\n"RESET, inet_ntoa(*(struct in_addr *)&args_addr));
-	ft_printf_fd(1, YELLOW"Dest addr %s\n"RESET, inet_ntoa(*(struct in_addr *)&dest_addr));
 
     uint8_t brut_data[ICMP_DATA_SIZE];
     ft_bzero(brut_data, ICMP_DATA_SIZE);
     gener_random_data(brut_data, ICMP_DATA_SIZE);
     
-    t_ping_packet packet = build_ping_packet(args_addr, dest_addr, brut_data);    
+    t_ping_packet packet = build_ping_packet(addr_from, dest_addr, brut_data);    
     // display_ping_packet(packet);
 
     errno = 0;

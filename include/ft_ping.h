@@ -39,12 +39,14 @@ extern int  g_signal_received;
 #define	SHORT_INT_BITS	16
 
 
+#define LOCAL_HOST_ADDR "127.0.0.1"
+
 #define DATA_MBVAL 102
 #define DATA_MBIDX 3
 #define DATA_PAD_ZERO 4
 #define DATA_END_PAD DATA_MBIDX + DATA_PAD_ZERO
 
-void gener_random_data(unsigned char *buff, int size);
+void gener_random_data(uint8_t *buff, int size);
 
 #define BRUT_DATA \
 { 109, 243, 2, 102, 0, 0, 0, 0, 54, 209, 12, 0, 0, 0, 0, 0, \
