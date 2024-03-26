@@ -1,29 +1,5 @@
 #include "../include/ft_ping.h"
 
-#include <fcntl.h>
-/*
-* Get random number % max
-*/
-uint16_t     gener_uint16(int max)
-{
-    uint16_t a = 0, b = 0;
-	int fd = open("/dev/urandom", O_RDONLY); 
-	if (fd != -1)
-	{
-		char buff[4] = {0};
-		int len = read(fd, &buff, 4);
-		if (len == -1) {
-			printf("Error reading from /dev/urandom\n");
-			close(fd);
-		}
-		// ft_printf_fd(1, YELLOW"RANDOM buff = |%d|%d|%d|%d|\n"RESET, buff[0], buff[1], buff[2], buff[3]);
-		a = (*(uint16_t *)buff);
-		b = (*(uint16_t *)buff);
-		close(fd);
-	}
-    return ((a + b) % max);
-}
-
 /* Get icmp paquets id */
 static uint16_t get_icmp_id()
 {
@@ -50,7 +26,7 @@ uint16_t get_icmp_id_seq()
 	return (id);
 }
 
-t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest, char *data)
+t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest,uint8_t *data)
 {
     t_ping_packet packet = {0};
 

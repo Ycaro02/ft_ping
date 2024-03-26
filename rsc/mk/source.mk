@@ -7,6 +7,7 @@ SRCS			=	main.c\
 					listen_icmp_reply.c\
 					build_request.c\
 					checksum.c\
+					random_data.c\
 
 
 MAKE_LIBFT		=	make -s -C libft

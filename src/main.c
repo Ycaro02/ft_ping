@@ -12,7 +12,6 @@ in_addr_t str_to_addr(char *str)
         ft_printf_fd(2, RED"ft_ping: %s: Name or service not known\n"RESET, str);
         exit(1);
     }
-    printf("Adresse IP binaire : %08x\n", addr.s_addr);
     return (addr.s_addr);
 }
 
@@ -53,7 +52,10 @@ int main(int argc, char **argv)
     ft_printf_fd(1, YELLOW"Args addr %s\n"RESET, inet_ntoa(*(struct in_addr *)&args_addr));
 	ft_printf_fd(1, YELLOW"Dest addr %s\n"RESET, inet_ntoa(*(struct in_addr *)&dest_addr));
 
-    char brut_data[] = BRUT_DATA;
+    uint8_t brut_data[ICMP_DATA_SIZE];
+    ft_bzero(brut_data, ICMP_DATA_SIZE);
+    gener_random_data(brut_data, ICMP_DATA_SIZE);
+    
     t_ping_packet packet = build_ping_packet(args_addr, dest_addr, brut_data);    
     // display_ping_packet(packet);
 

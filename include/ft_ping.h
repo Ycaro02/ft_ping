@@ -6,8 +6,8 @@
 #include <netinet/ip_icmp.h>    /* ICMP protocol family */
 #include <arpa/inet.h>          /* Internet address family */
 #include <errno.h>              /* Error number */
-#include <signal.h>            /* Signal handling */
-
+#include <signal.h>             /* Signal handling */
+#include <fcntl.h>              /* File control */
 #include "../include/basic_define.h" /* Basic define, include <sys/type*/
 #include "../libft/libft.h"     /* Libft library,*/
 
@@ -38,6 +38,14 @@ extern int  g_signal_received;
 /* Size of int16 in bits */
 #define	SHORT_INT_BITS	16
 
+
+#define DATA_MBVAL 102
+#define DATA_MBIDX 3
+#define DATA_PAD_ZERO 4
+#define DATA_END_PAD DATA_MBIDX + DATA_PAD_ZERO
+
+void gener_random_data(unsigned char *buff, int size);
+
 #define BRUT_DATA \
 { 109, 243, 2, 102, 0, 0, 0, 0, 54, 209, 12, 0, 0, 0, 0, 0, \
 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, \
@@ -63,8 +71,7 @@ int8_t listen_icmp_reply(int sock);
 
 /* build request */
 void          display_ping_packet(t_ping_packet packet);
-t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest, char *data);
-
+t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest,uint8_t *data);
 /* checksum */
 uint16_t    compute_checksum(uint16_t *data, size_t size);
 uint8_t     verify_checksum(char *buffer, uint16_t ip_checksum, uint16_t icmp_checksum);
