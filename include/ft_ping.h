@@ -57,3 +57,7 @@ void	listen_icmp_reply(int sock);
 /* build request */
 void          display_ping_packet(t_ping_packet packet);
 t_ping_packet build_ping_packet(char *data);
+
+/* checksum */
+uint16_t    compute_checksum(uint16_t *data, size_t size);
+uint8_t     verify_checksum(char *buffer, uint16_t ip_checksum, uint16_t icmp_checksum);

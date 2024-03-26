@@ -6,6 +6,7 @@ SRCS			=	main.c\
 					handle_socket.c\
 					listen_icmp_reply.c\
 					build_request.c\
+					checksum.c\
 
 
 MAKE_LIBFT		=	make -s -C libft
