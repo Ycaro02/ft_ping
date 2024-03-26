@@ -1,17 +1,38 @@
 #include "../include/ft_ping.h"
 
 /* @brief Open socker*/
-int open_socket(void)
+int open_send_socket(void)
 {
-    int sock;
+    int sockfd;
 
     errno = 0;
-    sock = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
-    if (sock < 0) {
+    sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_RAW);
+    if (sockfd < 0) {
         perror("socket");
         return (-1);
     }
-    return (sock);
+
+    // Désactiver l'ajout automatique de l'en-tête IP
+    int disable = 1;
+    if (setsockopt(sockfd, IPPROTO_IP, IP_HDRINCL, &disable, sizeof(disable)) < 0) {
+        perror("setsockopt failed");
+        exit(EXIT_FAILURE);
+    }
+    return (sockfd);
+}
+
+
+int open_rcv_socket(void)
+{
+    int sockfd;
+
+    errno = 0;
+    sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+    if (sockfd < 0) {
+        perror("socket");
+        return (-1);
+    }
+    return (sockfd);
 }
 
 /* @brief Close socket */

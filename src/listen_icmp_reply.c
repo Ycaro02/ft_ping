@@ -83,12 +83,13 @@ void display_ping_packet(t_ping_packet packet)
     display_icmp_data(packet.data, ICMP_DATA_SIZE);
 }
 
-void listen_icmp_reply(int sock)
+int8_t listen_icmp_reply(int sock)
 {
     char            buffer[1024];
     ssize_t         bytes_received;
     struct iphdr    *ip_hdr;
     struct icmphdr  *icmp_hdr;
+	int mult = 1;
 
     init_signal_handler();
 
@@ -102,33 +103,38 @@ void listen_icmp_reply(int sock)
                 continue;
             } else {
                 perror("recvfrom");
-                close(sock);
-                exit(EXIT_FAILURE);
+				return (1);
             }
-        }
-        if (icmp_hdr->type == ICMP_ECHOREPLY) {
-            ft_printf_fd(1, GREEN"Received ICMP Echo Reply %u bytes received\n"RESET, bytes_received);
-        } else if (icmp_hdr->type == ICMP_ECHO) {
-			ft_printf_fd(1, GREEN"Received ICMP Echo Request %u bytes received\n"RESET, bytes_received);
-		} else {
-			ft_printf_fd(1, RED"Received ICMP type %u code %u %u bytes received\n"RESET, icmp_hdr->type, icmp_hdr->code, bytes_received);
-		}
-        if (bytes_received != PACKET_SIZE) {
-            ft_printf_fd(1, RED"Wrong bytes received number: %d\n"RESET, bytes_received);
-            continue;
         }
         ip_hdr = (struct iphdr *)buffer;
         display_detail_iphdr(ip_hdr);
-        icmp_hdr = (struct icmphdr *)(buffer + IP_HDR_SIZE);
+        if (bytes_received != PACKET_SIZE) {
+            ft_printf_fd(1, RED"\nWrong bytes received number: %d\n"RESET, bytes_received);
+            // continue;
+			if (bytes_received > PACKET_SIZE) {
+        		mult = 2;
+			}
+		}
+        icmp_hdr = (struct icmphdr *)(buffer + (IP_HDR_SIZE * mult));
+		ft_printf_fd(1, "buff addr %p, new addr %p, compute %p\n", buffer, icmp_hdr, buffer + 40);
         display_detail_icmphdr(icmp_hdr);
+        if (icmp_hdr->type == ICMP_ECHOREPLY) {
+            ft_printf_fd(1, GREEN"\nEcho Reply %u bytes received\n"RESET, bytes_received);
+        } else if (icmp_hdr->type == ICMP_ECHO) {
+			ft_printf_fd(1, GREEN"\nICMP Echo Request %u bytes received\n"RESET, bytes_received);
+		} else {
+			ft_printf_fd(1, RED"Received ICMP type %u code %u %u bytes received\n"RESET, icmp_hdr->type, icmp_hdr->code, bytes_received);
+		}
         ft_printf_fd(1, "   |size IP hdr   : %u\n", IP_HDR_SIZE);
         ft_printf_fd(1, "   |size ICMP hdr : %u\n", ICMP_HDR_SIZE);
         ft_printf_fd(1, "   |size data     : %u\n", ICMP_DATA_SIZE);
 		display_icmp_data(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE, ICMP_DATA_SIZE);
-
-		verify_checksum(buffer, ip_hdr->check, icmp_hdr->checksum);
-		
+		if (verify_checksum(buffer, ip_hdr->check, icmp_hdr->checksum) == 0) {
+			return (1);
+		}
+		ft_bzero(buffer, 1024);
     }
+	return (0);
 }
 
 

@@ -38,6 +38,8 @@ extern int  g_signal_received;
 /* Size of int16 in bits */
 #define	SHORT_INT_BITS	16
 
+#define BRUT_DATA "\xAA\xDF\x2\x66\x00\x00\x00\x00...............................0123456789!\"#$%&\'"
+
 typedef struct s_ping_packet
 {
     t_iphdr    iphdr;
@@ -48,15 +50,14 @@ typedef struct s_ping_packet
 /* socket handle */
 int     bind_socket(int sock, t_sockaddr_in *addr);
 int     close_socket(int sock);
-int     open_socket(void);
-
+int     open_rcv_socket(void);
+int     open_send_socket(void);
 /* listen icmp reply */
-void	listen_icmp_reply(int sock);
-void	listen_icmp_reply(int sock);
+int8_t listen_icmp_reply(int sock);
 
 /* build request */
 void          display_ping_packet(t_ping_packet packet);
-t_ping_packet build_ping_packet(char *data);
+t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest, char *data);
 
 /* checksum */
 uint16_t    compute_checksum(uint16_t *data, size_t size);

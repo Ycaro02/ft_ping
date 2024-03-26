@@ -38,7 +38,7 @@ static uint16_t get_icmp_id()
 }
 
 /* Get icmp paquets sequence id */
-static uint16_t get_icmp_id_seq()
+uint16_t get_icmp_id_seq()
 {
 	static uint16_t id = 0;
 
@@ -50,34 +50,56 @@ static uint16_t get_icmp_id_seq()
 	return (id);
 }
 
-t_ping_packet build_ping_packet(char *data)
+t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest, char *data)
 {
     t_ping_packet packet = {0};
 
     uint16_t id = get_icmp_id();
-    uint16_t seq_id = get_icmp_id_seq();
+    // uint16_t seq_id = get_icmp_id_seq();
 
+	/* Build IP packet header */
+	/* Ip version */
     packet.iphdr.version = 4;
-    packet.iphdr.ihl = 5;
+    /* Number for dword (uint16) */
+	packet.iphdr.ihl = 5;
     packet.iphdr.tos = 0;
-    packet.iphdr.tot_len = htons(sizeof(t_ping_packet));
-    packet.iphdr.id = htons(id);
+    /* packet len */
+	packet.iphdr.tot_len = htons(sizeof(t_ping_packet));
+    /* packet id */
+	packet.iphdr.id = htons((getpid() & 0xFFFF));
     packet.iphdr.frag_off = 0;
-    packet.iphdr.ttl = 255;
+    /* packet time to live */
+	packet.iphdr.ttl = 255;
+	/* packet payload protocole */
     packet.iphdr.protocol = IPPROTO_ICMP;
+	/* packet checksum */
     packet.iphdr.check = 0;
-    packet.iphdr.saddr = inet_addr("172.31.165.139");
-    packet.iphdr.daddr = inet_addr("192.168.1.1");
+	/* Ip source address */
+    packet.iphdr.saddr = addr_from;
+    /* Ip destination address */
+	(void)addr_dest;
+	packet.iphdr.daddr = addr_from;
 
 
+	/* Build ICMP packet header */
+	/* Icmp paquet type */
     packet.icmphdr.type = ICMP_ECHO;
+	/* Icmp paquet code */
     packet.icmphdr.code = 0;
+	/* Icmp paquet checksum */
     packet.icmphdr.checksum = 0;
+	/* Icmp paquet id */
     packet.icmphdr.un.echo.id = htons(id);
-    packet.icmphdr.un.echo.sequence = htons(seq_id);
-    packet.icmphdr.checksum = 0;
+	/* Icmp paquet sequence id */
+    packet.icmphdr.un.echo.sequence = htons(0);
+	/* Icmp payload data */
     ft_memcpy(packet.data, data, ICMP_DATA_SIZE);
     ft_printf_fd(1, "Size of packet struct %u\n", sizeof(t_ping_packet));
+
+	/* Compute ICMP checksum */
+	packet.icmphdr.checksum = compute_checksum((uint16_t *)&packet.icmphdr, ICMP_HDR_SIZE + ICMP_DATA_SIZE);
+	/* Compute IP checksum */
+	packet.iphdr.check = compute_checksum((uint16_t *)&packet.iphdr, IP_HDR_SIZE);
 
     return (packet);
 }
