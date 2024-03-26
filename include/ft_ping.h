@@ -20,9 +20,6 @@ typedef struct icmphdr t_icmphdr;
 /* Typedef for ip header structure */
 typedef struct iphdr t_iphdr;
 
-/* Signal handling variable */
-extern int  g_signal_received;
-
 /* ICMP packet size */
 #define PACKET_SIZE 84
 
@@ -38,16 +35,21 @@ extern int  g_signal_received;
 /* Size of int16 in bits */
 #define	SHORT_INT_BITS	16
 
-
+/* Local host addr string */
 #define LOCAL_HOST_ADDR "127.0.0.1"
 
+/* Data magic value 'f' */
 #define DATA_MBVAL 102
+/* Magic value index */
 #define DATA_MBIDX 3
+/* Padding 0 after magic val */
 #define DATA_PAD_ZERO 4
+/* End of padding */
 #define DATA_END_PAD DATA_MBIDX + DATA_PAD_ZERO
 
 void gener_random_data(uint8_t *buff, int size);
 
+/* First used brut data can be remove */
 #define BRUT_DATA \
 { 109, 243, 2, 102, 0, 0, 0, 0, 54, 209, 12, 0, 0, 0, 0, 0, \
 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, \
@@ -55,13 +57,19 @@ void gener_random_data(uint8_t *buff, int size);
 32, 33, 34, 35, 36, 37, 38, 39\
 }
 
-
+/**
+ * Packet structure for ping
+*/
 typedef struct s_ping_packet
 {
-    t_iphdr    iphdr;
-    t_icmphdr  icmphdr;
-    char       data[ICMP_DATA_SIZE];
+    t_iphdr    iphdr;                   /* IP header */
+    t_icmphdr  icmphdr;                 /* ICMP header */
+    char       data[ICMP_DATA_SIZE];    /* Data/Payload */
 } t_ping_packet;
+
+
+/* Signal handling variable */
+extern int  g_signal_received;
 
 /* socket handle */
 int     bind_socket(int sock, t_sockaddr_in *addr);
