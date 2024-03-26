@@ -3,7 +3,7 @@
 int g_signal_received = 0;
 
 /* Ip address string format to bin format */
-in_addr_t str_to_addr(char *str)
+in_addr_t ipv4_strtoaddr(char *str)
 {
     struct in_addr addr;
 
@@ -31,7 +31,7 @@ static in_addr_t get_process_ipv4_addr()
 {
     struct ifaddrs *ifaddr, *ifa;
     in_addr_t addr = 0;
-    in_addr_t local_host = str_to_addr(LOCAL_HOST_ADDR);
+    in_addr_t local_host = ipv4_strtoaddr(LOCAL_HOST_ADDR);
 
     errno = 0;
     if (getifaddrs(&ifaddr) == -1) {
@@ -59,7 +59,7 @@ t_context init_ping_context(char *dest_addr)
     ft_bzero(&context, sizeof(context));
     context.src_addr = get_process_ipv4_addr();
     context.dst_sockaddr.sin_family = AF_INET;
-    context.dst_sockaddr.sin_addr.s_addr = str_to_addr(dest_addr);
+    context.dst_sockaddr.sin_addr.s_addr = ipv4_strtoaddr(dest_addr);
     context.send_sock = open_send_socket();
     context.rcv_sock = open_rcv_socket();
     if (context.send_sock == -1 || context.rcv_sock == -1) {
@@ -80,12 +80,11 @@ int main(int argc, char **argv)
         ft_printf_fd(2, PURPLE"%s: usage error: Destination address required\n"RESET, argv[0]);
         return (1);
     }
-    c= init_ping_context(argv[1]);
+    /* Program can exit here */
+    c = init_ping_context(argv[1]);
     dest_addr = c.dst_sockaddr.sin_addr.s_addr;
 
     t_ping_packet packet = build_ping_packet(c.src_addr, dest_addr);    
-    // display_ping_packet(packet);
-
     errno = 0;
     ssize_t send_ret = sendto(c.send_sock, &packet, sizeof(packet), 0, (struct sockaddr *)&c.dst_sockaddr, sizeof(c.dst_sockaddr));
     if (send_ret == -1) {
@@ -93,6 +92,7 @@ int main(int argc, char **argv)
         goto free_socket;
     }
     ft_printf_fd(1, GREEN"Packet sent %u bytes to %s\n"RESET, send_ret, inet_ntoa(*(struct in_addr *)&dest_addr));
+
     ret = listen_icmp_reply(c.rcv_sock);
 
     /* Free socket label */
