@@ -80,7 +80,30 @@ void display_ping_packet(t_ping_packet packet)
 {
     display_detail_iphdr(&packet.iphdr);
     display_detail_icmphdr(&packet.icmphdr);
-    display_icmp_data(packet.data + IP_HDR_SIZE + ICMP_HDR_SIZE, ICMP_DATA_SIZE);
+    display_icmp_data(packet.data, ICMP_DATA_SIZE);
+}
+
+
+uint16_t compute_checksum(uint16_t *data, size_t size)
+{
+	uint32_t    sum = 0;
+	uint16_t    *ptr = data;
+
+	while (size > 1) {
+		sum += ntohs(*ptr);
+		size -= 2;
+		ptr++;
+	}
+	/* No need to convert simple bytes */
+	if (size > 0) {
+		sum += *(uint8_t *)ptr;
+	}
+	/*  Fold 32-bit sum to 16 bits */
+	while (sum >> SHORT_INT_BITS) {
+		sum = ((sum & 0xffff) + (sum >> SHORT_INT_BITS));
+	}
+	/* One complement return */
+	return (htons(~sum));
 }
 
 void listen_icmp_reply(int sock)
@@ -125,6 +148,22 @@ void listen_icmp_reply(int sock)
         ft_printf_fd(1, "   |size ICMP hdr : %u\n", ICMP_HDR_SIZE);
         ft_printf_fd(1, "   |size data     : %u\n", ICMP_DATA_SIZE);
 		display_icmp_data(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE, ICMP_DATA_SIZE);
+
+		t_ping_packet packet;
+
+		packet.iphdr = *ip_hdr;
+		packet.icmphdr = *icmp_hdr;
+		ft_memcpy(packet.data, buffer + IP_HDR_SIZE + ICMP_HDR_SIZE, ICMP_DATA_SIZE);
+		packet.iphdr.check = 0;
+		packet.icmphdr.checksum = 0;
+		ft_printf_fd(1, YELLOW"\nDisplay packet after reset checksum\n"RESET);
+		display_ping_packet(packet);
+		uint16_t icmp_checksum = compute_checksum((uint16_t *)&packet.icmphdr, ICMP_HDR_SIZE + ICMP_DATA_SIZE);
+		ft_printf_fd(1, YELLOW"\nCompute ICMP checksum: %u\n"RESET, ntohs(icmp_checksum));
+		packet.icmphdr.checksum = icmp_checksum;
+
+		uint16_t ip_checksum = compute_checksum((uint16_t *)&packet.iphdr, PACKET_SIZE);
+		ft_printf_fd(1, YELLOW"\nCompute IP checksum: %u\n"RESET, ntohs(ip_checksum));
     }
 }
 

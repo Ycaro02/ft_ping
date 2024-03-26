@@ -50,7 +50,7 @@ static uint16_t get_icmp_id_seq()
 	return (id);
 }
 
-t_ping_packet build_ping_packet(char *data, size_t size)
+t_ping_packet build_ping_packet(char *data)
 {
     t_ping_packet packet = {0};
 
@@ -66,8 +66,8 @@ t_ping_packet build_ping_packet(char *data, size_t size)
     packet.iphdr.ttl = 255;
     packet.iphdr.protocol = IPPROTO_ICMP;
     packet.iphdr.check = 0;
-    packet.iphdr.saddr = inet_addr("127.0.0.1");
-    packet.iphdr.daddr = inet_addr("192.160.200.10");
+    packet.iphdr.saddr = inet_addr("172.31.165.139");
+    packet.iphdr.daddr = inet_addr("192.168.1.1");
 
 
     packet.icmphdr.type = ICMP_ECHO;
@@ -76,7 +76,7 @@ t_ping_packet build_ping_packet(char *data, size_t size)
     packet.icmphdr.un.echo.id = htons(id);
     packet.icmphdr.un.echo.sequence = htons(seq_id);
     packet.icmphdr.checksum = 0;
-    ft_memcpy(packet.data, data, size);
+    ft_memcpy(packet.data, data, ICMP_DATA_SIZE);
     ft_printf_fd(1, "Size of packet struct %u\n", sizeof(t_ping_packet));
 
     return (packet);

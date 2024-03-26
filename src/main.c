@@ -37,8 +37,8 @@ int main(int argc, char **argv)
         close_socket(sock);
         return (1);
     }
-    t_ping_packet packet = build_ping_packet("Hello", 5);
-    display_ping_packet(packet);
+    // t_ping_packet packet = build_ping_packet("Hello", 5);
+    // display_ping_packet(packet);
     listen_icmp_reply(sock);
     close_socket(sock);
     ft_printf_fd(1, YELLOW"Socket closed\n"RESET);

@@ -7,7 +7,7 @@ CFLAGS			=	-Wall -Wextra -Werror -O3 -g
 ASCII_ART		=	./rsc/mk/ascii.sh
 ASCII_NAME		=	${NAME}
 
-PING_ADDR		=	192.168.200.10
+PING_ADDR		=	172.31.165.139
 
 all:		$(NAME)
 
@@ -58,6 +58,9 @@ clean_lib:
 
 test: $(NAME)
 	@sudo ./$(NAME) $(PING_ADDR)
+
+vtest: $(NAME)
+	@sudo valgrind --leak-check=full ./$(NAME) $(PING_ADDR)
 
 re:			fclean all
 

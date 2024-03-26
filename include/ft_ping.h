@@ -33,7 +33,7 @@ extern int  g_signal_received;
 #define ICMP_HDR_SIZE sizeof(t_icmphdr)
 
 /* ICMP Payload/data size */
-#define ICMP_DATA_SIZE (PACKET_SIZE - IP_HDR_SIZE - ICMP_HDR_SIZE)
+#define ICMP_DATA_SIZE 56
 
 /* Size of int16 in bits */
 #define	SHORT_INT_BITS	16
@@ -56,4 +56,4 @@ void	listen_icmp_reply(int sock);
 
 /* build request */
 void          display_ping_packet(t_ping_packet packet);
-t_ping_packet build_ping_packet(char *data, size_t size);
+t_ping_packet build_ping_packet(char *data);

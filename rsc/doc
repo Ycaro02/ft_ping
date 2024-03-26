@@ -1,0 +1,10 @@
+RFC 791, Internet Protocole (IP)
+https://datatracker.ietf.org/doc/html/rfc791
+Ip header, ID field: 
+https://www.codeproject.com/Tips/1246427/How-Windows-Generates-IP-Headers-ID-Field : How windows handle it
+https://crnetpackets.com/2015/08/29/a-short-story-about-the-ip-id-field/ : A short story about the IP ID Field
+
+RFC 792, Internet Controle Message Protocole (ICMP)
+https://datatracker.ietf.org/doc/html/rfc792
+
+
