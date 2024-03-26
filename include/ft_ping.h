@@ -57,6 +57,16 @@ void gener_random_data(uint8_t *buff, int size);
 32, 33, 34, 35, 36, 37, 38, 39\
 }
 
+typedef struct s_context
+{
+    t_sockaddr_in   dst_sockaddr;  /* Destination socket address */
+    in_addr_t       src_addr;    /* Source address */
+    int             send_sock;      /* socket for sending */
+    int             rcv_sock;       /* socket for receiving */
+    uint16_t        flag;           /* ping flag */
+
+} t_context;
+
 /**
  * Packet structure for ping
 */
@@ -64,7 +74,7 @@ typedef struct s_ping_packet
 {
     t_iphdr    iphdr;                   /* IP header */
     t_icmphdr  icmphdr;                 /* ICMP header */
-    char       data[ICMP_DATA_SIZE];    /* Data/Payload */
+    uint8_t    data[ICMP_DATA_SIZE];    /* Data/Payload */
 } t_ping_packet;
 
 
@@ -81,7 +91,7 @@ int8_t listen_icmp_reply(int sock);
 
 /* build request */
 void          display_ping_packet(t_ping_packet packet);
-t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest,uint8_t *data);
+t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest);
 /* checksum */
 uint16_t    compute_checksum(uint16_t *data, size_t size);
-uint8_t     verify_checksum(char *buffer, uint16_t ip_checksum, uint16_t icmp_checksum);
+uint8_t     verify_checksum(void *buffer, uint16_t ip_checksum, uint16_t icmp_checksum);

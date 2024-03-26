@@ -35,7 +35,7 @@ uint16_t compute_checksum(uint16_t *data, size_t size)
  *	@param icmp_checksum ICMP checksum to verify
  *	@return TRUE if checksum is correct, FALSE otherwise
 */
-uint8_t verify_checksum(char *buffer, uint16_t ip_checksum, uint16_t icmp_checksum)
+uint8_t verify_checksum(void *buffer, uint16_t ip_checksum, uint16_t icmp_checksum)
 {
 	t_ping_packet	packet;
 	uint16_t		checksum;

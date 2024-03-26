@@ -50,53 +50,54 @@ static in_addr_t get_process_ipv4_addr()
     }
     freeifaddrs(ifaddr);
     return (addr);
+}
 
+t_context init_ping_context(char *dest_addr)
+{
+    t_context context;
+
+    ft_bzero(&context, sizeof(context));
+    context.src_addr = get_process_ipv4_addr();
+    context.dst_sockaddr.sin_family = AF_INET;
+    context.dst_sockaddr.sin_addr.s_addr = str_to_addr(dest_addr);
+    context.send_sock = open_send_socket();
+    context.rcv_sock = open_rcv_socket();
+    if (context.send_sock == -1 || context.rcv_sock == -1) {
+        close_multi_socket(context.send_sock, context.rcv_sock);
+        exit(1);
+    }
+    return (context);    
 }
 
 int main(int argc, char **argv)
 {
-    t_sockaddr_in   addr;
-    int             rcv_sock = -1;
-    int             send_sock = -1;
+    t_context       c;
+    in_addr_t       dest_addr;
     int8_t          ret = 1;
-
-    in_addr_t       addr_from = get_process_ipv4_addr();
+    
 
     if (argc < 2) {
         ft_printf_fd(2, PURPLE"%s: usage error: Destination address required\n"RESET, argv[0]);
         return (1);
     }
+    c= init_ping_context(argv[1]);
+    dest_addr = c.dst_sockaddr.sin_addr.s_addr;
 
-    in_addr_t dest_addr = str_to_addr(argv[1]);
-    ft_bzero(&addr, sizeof(addr));
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = dest_addr;
-    ft_printf_fd(1, YELLOW"Source addr %s\n"RESET, inet_ntoa(*(struct in_addr *)&addr_from));
-	ft_printf_fd(1, YELLOW"Dest   addr %s\n"RESET, inet_ntoa(*(struct in_addr *)&dest_addr));
-
-    if ((rcv_sock = open_rcv_socket()) == -1 || (send_sock = open_send_socket()) == -1) {
-        goto free_socket;
-    }
-
-    uint8_t brut_data[ICMP_DATA_SIZE];
-    ft_bzero(brut_data, ICMP_DATA_SIZE);
-    gener_random_data(brut_data, ICMP_DATA_SIZE);
-    
-    t_ping_packet packet = build_ping_packet(addr_from, dest_addr, brut_data);    
+    t_ping_packet packet = build_ping_packet(c.src_addr, dest_addr);    
     // display_ping_packet(packet);
 
     errno = 0;
-    ssize_t send_ret = sendto(send_sock, &packet, sizeof(packet), 0, (struct sockaddr *)&addr, sizeof(addr));
+    ssize_t send_ret = sendto(c.send_sock, &packet, sizeof(packet), 0, (struct sockaddr *)&c.dst_sockaddr, sizeof(c.dst_sockaddr));
     if (send_ret == -1) {
         perror("sendto");
         goto free_socket;
     }
     ft_printf_fd(1, GREEN"Packet sent %u bytes to %s\n"RESET, send_ret, inet_ntoa(*(struct in_addr *)&dest_addr));
-    ret = listen_icmp_reply(rcv_sock);
+    ret = listen_icmp_reply(c.rcv_sock);
 
     /* Free socket label */
     free_socket:
-    close_multi_socket(rcv_sock, send_sock);
+    close_multi_socket(c.rcv_sock, c.send_sock);
     ft_printf_fd(1, CYAN"Socket closed return in main\n"RESET);
     
     return (ret);

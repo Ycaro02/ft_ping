@@ -50,7 +50,7 @@ void display_detail_icmphdr(struct icmphdr *header)
     ft_printf_fd(1, "   |-Sequence : %u\n", ntohs(header->un.echo.sequence));
 }
 
-void display_char_data(char *data, size_t size)
+void display_char_data(uint8_t *data, size_t size)
 {
 	ft_printf_fd(1, CYAN"| ICMP char Data |\n"RESET);
 	for (size_t i = 0; i < size; i++) {
@@ -71,7 +71,7 @@ void display_char_data(char *data, size_t size)
 	ft_printf_fd(1, "\t\t|\n-------------------------\n");
 }
 
-void display_icmp_data(char *data, size_t size)
+void display_icmp_data(uint8_t *data, size_t size)
 {
 	ft_printf_fd(1, CYAN"| ICMP Brut Data |\n"RESET);
 	for (size_t i = 0; i < size; i++) {
@@ -93,7 +93,7 @@ void display_ping_packet(t_ping_packet packet)
 
 int8_t listen_icmp_reply(int sock)
 {
-    char            buffer[1024];
+    uint8_t         buffer[1024];
     ssize_t         bytes_received;
     struct iphdr    *ip_hdr;
     struct icmphdr  *icmp_hdr;

@@ -26,51 +26,35 @@ uint16_t get_icmp_id_seq()
 	return (id);
 }
 
-t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest,uint8_t *data)
+t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest)
 {
-    t_ping_packet packet = {0};
-
+    t_ping_packet packet;
     uint16_t id = get_icmp_id();
-    // uint16_t seq_id = get_icmp_id_seq();
+    uint16_t seq_id = get_icmp_id_seq();
 
+	ft_bzero(&packet, sizeof(packet));
 	/* Build IP packet header */
-	/* Ip version */
+	/* version and ihl are uint8 val no need to apply host to newwork function */
     packet.iphdr.version = 4;
-    /* Number for dword (uint16) */
 	packet.iphdr.ihl = 5;
     packet.iphdr.tos = 0;
-    /* packet len */
 	packet.iphdr.tot_len = htons(sizeof(t_ping_packet));
-    /* packet id */
 	packet.iphdr.id = htons((getpid() & 0xFFFF));
     packet.iphdr.frag_off = 0;
-    /* packet time to live */
 	packet.iphdr.ttl = 64;
-	/* packet payload protocole */
     packet.iphdr.protocol = IPPROTO_ICMP;
-	/* packet checksum */
     packet.iphdr.check = 0;
-	/* Ip source address */
     packet.iphdr.saddr = addr_from;
-    /* Ip destination address */
-	(void)addr_dest;
-	/* Define the data as a char array */
 	packet.iphdr.daddr = addr_dest;
 
-
 	/* Build ICMP packet header */
-	/* Icmp paquet type */
     packet.icmphdr.type = ICMP_ECHO;
-	/* Icmp paquet code */
     packet.icmphdr.code = 0;
-	/* Icmp paquet checksum */
     packet.icmphdr.checksum = 0;
-	/* Icmp paquet id */
     packet.icmphdr.un.echo.id = htons(id);
-	/* Icmp paquet sequence id */
-    packet.icmphdr.un.echo.sequence = htons(0);
-	/* Icmp payload data */
-    ft_memcpy(packet.data, data, ICMP_DATA_SIZE);
+    packet.icmphdr.un.echo.sequence = htons(seq_id);
+
+    gener_random_data(packet.data, ICMP_DATA_SIZE);
     ft_printf_fd(1, "Size of packet struct %u\n", sizeof(t_ping_packet));
 
 	/* Compute ICMP checksum */
