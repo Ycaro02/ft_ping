@@ -89,6 +89,7 @@ uint16_t compute_checksum(uint16_t *data, size_t size)
 	uint32_t    sum = 0;
 	uint16_t    *ptr = data;
 
+	/* Sum all 16-bit words */
 	while (size > 1) {
 		sum += ntohs(*ptr);
 		size -= 2;
