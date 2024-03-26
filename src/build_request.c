@@ -69,7 +69,7 @@ t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest, char *
 	packet.iphdr.id = htons((getpid() & 0xFFFF));
     packet.iphdr.frag_off = 0;
     /* packet time to live */
-	packet.iphdr.ttl = 255;
+	packet.iphdr.ttl = 64;
 	/* packet payload protocole */
     packet.iphdr.protocol = IPPROTO_ICMP;
 	/* packet checksum */
@@ -78,7 +78,8 @@ t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest, char *
     packet.iphdr.saddr = addr_from;
     /* Ip destination address */
 	(void)addr_dest;
-	packet.iphdr.daddr = addr_from;
+	/* Define the data as a char array */
+	packet.iphdr.daddr = addr_dest;
 
 
 	/* Build ICMP packet header */
