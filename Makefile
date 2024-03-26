@@ -7,7 +7,7 @@ CFLAGS			=	-Wall -Wextra -Werror -O3 -g
 ASCII_ART		=	./rsc/mk/ascii.sh
 ASCII_NAME		=	${NAME}
 
-PING_ADDR		=	172.31.162.45
+PING_ADDR		=	$(shell ./rsc/sh/get_myip.sh; cat .myip.txt)
 
 all:		$(NAME)
 
@@ -57,10 +57,11 @@ clean_lib:
 	@$(MAKE_LIST) fclean
 
 test: $(NAME)
+	@printf "$(CYAN)Test $(NAME) ${PING_ADDR} $(RESET)\n"
 	@sudo ./$(NAME) $(PING_ADDR)
 
 vtest: $(NAME)
-	@sudo valgrind --leak-check=full ./$(NAME) $(PING_ADDR)
+	@sudo valgrind --leak-check=full --track-fds=yes ./$(NAME) $(PING_ADDR)
 
 re:			fclean all
 
