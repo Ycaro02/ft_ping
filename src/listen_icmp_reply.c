@@ -110,13 +110,10 @@ int8_t listen_icmp_reply(int sock)
         display_detail_iphdr(ip_hdr);
         if (bytes_received != PACKET_SIZE) {
             ft_printf_fd(1, RED"\nWrong bytes received number: %d\n"RESET, bytes_received);
-            // continue;
-			if (bytes_received > PACKET_SIZE) {
-        		mult = 2;
-			}
+            continue;
 		}
         icmp_hdr = (struct icmphdr *)(buffer + (IP_HDR_SIZE * mult));
-		ft_printf_fd(1, "buff addr %p, new addr %p, compute %p\n", buffer, icmp_hdr, buffer + 40);
+		// ft_printf_fd(1, "buff addr %p, new addr %p, compute %p\n", buffer, icmp_hdr);
         display_detail_icmphdr(icmp_hdr);
         if (icmp_hdr->type == ICMP_ECHOREPLY) {
             ft_printf_fd(1, GREEN"\nEcho Reply %u bytes received\n"RESET, bytes_received);

@@ -32,8 +32,8 @@ uint8_t verify_checksum(char *buffer, uint16_t ip_checksum, uint16_t icmp_checks
 	ft_memcpy(packet.data, buffer + IP_HDR_SIZE + ICMP_HDR_SIZE, ICMP_DATA_SIZE);
 	packet.iphdr.check = 0;
 	packet.icmphdr.checksum = 0;
-	ft_printf_fd(1, YELLOW"\nDisplay packet after reset checksum\n"RESET);
-	display_ping_packet(packet);
+	// ft_printf_fd(1, YELLOW"\nDisplay packet after reset checksum\n"RESET);
+	// display_ping_packet(packet);
 	uint16_t checksum = compute_checksum((uint16_t *)&packet.icmphdr, ICMP_HDR_SIZE + ICMP_DATA_SIZE);
 	ft_printf_fd(1, YELLOW"\nCompute ICMP checksum: %u real: %u\n"RESET, ntohs(checksum), ntohs(icmp_checksum));
 	if (icmp_checksum != checksum) {
