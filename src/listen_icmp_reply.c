@@ -34,8 +34,16 @@ void display_detail_iphdr(struct iphdr *header)
 
 void display_detail_icmphdr(struct icmphdr *header)
 {
+	char *icmp_type;
+	if (header->type == ICMP_ECHOREPLY) {
+		icmp_type = YELLOW"ECHO REPLY"RESET;
+	} else if (header->type == ICMP_ECHO) {
+		icmp_type = CYAN"ECHO REQUEST"RESET;
+	} else {
+		icmp_type = RED"UNKNOWN"RESET;
+	}
     ft_printf_fd(1, PURPLE"| ICMP Header |\n"RESET);
-    ft_printf_fd(1, "   |-Type : %u\n", (unsigned int)(header->type));
+    ft_printf_fd(1, "   |-Type : %u %s\n", (unsigned int)(header->type), icmp_type);
     ft_printf_fd(1, "   |-Code : %u\n", (unsigned int)(header->code));
     ft_printf_fd(1, "   |-Checksum : %u\n", ntohs(header->checksum));
     ft_printf_fd(1, "   |-ID : %u\n", ntohs(header->un.echo.id));
@@ -115,16 +123,7 @@ int8_t listen_icmp_reply(int sock)
         icmp_hdr = (struct icmphdr *)(buffer + (IP_HDR_SIZE * mult));
 		// ft_printf_fd(1, "buff addr %p, new addr %p, compute %p\n", buffer, icmp_hdr);
         display_detail_icmphdr(icmp_hdr);
-        if (icmp_hdr->type == ICMP_ECHOREPLY) {
-            ft_printf_fd(1, GREEN"\nEcho Reply %u bytes received\n"RESET, bytes_received);
-        } else if (icmp_hdr->type == ICMP_ECHO) {
-			ft_printf_fd(1, GREEN"\nICMP Echo Request %u bytes received\n"RESET, bytes_received);
-		} else {
-			ft_printf_fd(1, RED"Received ICMP type %u code %u %u bytes received\n"RESET, icmp_hdr->type, icmp_hdr->code, bytes_received);
-		}
-        ft_printf_fd(1, "   |size IP hdr   : %u\n", IP_HDR_SIZE);
-        ft_printf_fd(1, "   |size ICMP hdr : %u\n", ICMP_HDR_SIZE);
-        ft_printf_fd(1, "   |size data     : %u\n", ICMP_DATA_SIZE);
+      
 		display_icmp_data(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE, ICMP_DATA_SIZE);
 		if (verify_checksum(buffer, ip_hdr->check, icmp_hdr->checksum) == 0) {
 			return (1);
@@ -135,3 +134,6 @@ int8_t listen_icmp_reply(int sock)
 }
 
 
+//   ft_printf_fd(1, "   |size IP hdr   : %u\n", IP_HDR_SIZE);
+// ft_printf_fd(1, "   |size ICMP hdr : %u\n", ICMP_HDR_SIZE);
+// ft_printf_fd(1, "   |size data     : %u\n", ICMP_DATA_SIZE);

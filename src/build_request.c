@@ -79,7 +79,7 @@ t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest, char *
     /* Ip destination address */
 	(void)addr_dest;
 	/* Define the data as a char array */
-	packet.iphdr.daddr = addr_dest;
+	packet.iphdr.daddr = addr_from;
 
 
 	/* Build ICMP packet header */
