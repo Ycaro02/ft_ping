@@ -125,7 +125,7 @@ int8_t listen_icmp_reply(int sock)
         display_detail_icmphdr(icmp_hdr);
       
 		display_icmp_data(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE, ICMP_DATA_SIZE);
-		if (verify_checksum(buffer, ip_hdr->check, icmp_hdr->checksum) == 0) {
+		if (verify_checksum(buffer, ip_hdr->check, icmp_hdr->checksum) == FALSE) {
 			return (1);
 		}
 		ft_bzero(buffer, 1024);
