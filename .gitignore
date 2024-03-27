@@ -1,3 +1,4 @@
 *.o
 *.a
 ft_ping
+.myip.txt
