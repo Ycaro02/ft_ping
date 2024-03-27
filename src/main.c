@@ -36,26 +36,24 @@ void close_multi_socket(int sock1, int sock2)
 */
 static in_addr_t get_process_ipv4_addr()
 {
-    struct ifaddrs *ifaddr, *ifa;
-    in_addr_t addr = 0;
-    in_addr_t local_host = ipv4_strtoaddr(LOCAL_HOST_ADDR);
+    struct ifaddrs *ifa_head, *current;
+    in_addr_t addr = 0, local_host = ipv4_strtoaddr(LOCAL_HOST_ADDR);
 
     errno = 0;
-    if (getifaddrs(&ifaddr) == -1) {
+    if (getifaddrs(&ifa_head) == -1) {
         perror("getifaddrs");
         return (0);
     }
-    for (ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next) {
-        if (ifa->ifa_addr && ifa->ifa_addr->sa_family == AF_INET) {
-            struct sockaddr_in *sa = (struct sockaddr_in *)ifa->ifa_addr;
-            addr = sa->sin_addr.s_addr;
+    for (current = ifa_head; current != NULL; current = current->ifa_next) {
+        if (current->ifa_addr && current->ifa_addr->sa_family == AF_INET) {
+            addr = ((struct sockaddr_in *)current->ifa_addr)->sin_addr.s_addr;
             if (addr != local_host) {
-                ft_printf_fd(1, CYAN"Process addr %s\n"RESET, inet_ntoa(*(struct in_addr *)&addr));
+                ft_printf_fd(1, PURPLE"Process addr %s\n"RESET, inet_ntoa(*(struct in_addr *)&addr));
                 break ;
             }
         }
     }
-    freeifaddrs(ifaddr);
+    freeifaddrs(ifa_head);
     return (addr);
 }
 
