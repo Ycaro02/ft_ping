@@ -15,6 +15,11 @@ in_addr_t ipv4_strtoaddr(char *str)
     return (addr.s_addr);
 }
 
+/**
+ *	@brief Close multiple socket check if socket fd is valid before 
+ *	@param sock1 first socket to close
+ *	@param sock2 second socket to close
+*/
 void close_multi_socket(int sock1, int sock2)
 {
     if (sock1 != -1) {
@@ -25,7 +30,10 @@ void close_multi_socket(int sock1, int sock2)
     }
 }
 
-
+/**
+ *	@brief Get process ipv4 address
+ *	@return in_addr_t ipv4 address of the process
+*/
 static in_addr_t get_process_ipv4_addr()
 {
     struct ifaddrs *ifaddr, *ifa;
@@ -51,6 +59,10 @@ static in_addr_t get_process_ipv4_addr()
     return (addr);
 }
 
+/**
+ *	@brief Initialize ping context
+ *	@param dest_addr destination address to send ping
+*/
 t_context init_ping_context(char *dest_addr)
 {
     t_context context;
@@ -68,6 +80,11 @@ t_context init_ping_context(char *dest_addr)
     return (context);    
 }
 
+/**
+ *	@brief Main function
+ *	@param argc number of arguments
+ *	@param argv arguments
+*/
 int main(int argc, char **argv)
 {
     t_context       c;

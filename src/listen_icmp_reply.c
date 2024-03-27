@@ -1,5 +1,8 @@
 #include "../include/ft_ping.h"
 
+/**
+ * @brief signal handler function for SIGNINT
+*/
 static void signal_handler(int signum)
 {
     (void)signum;
@@ -7,6 +10,9 @@ static void signal_handler(int signum)
     g_signal_received = 1;
 }
 
+/**
+ * @brief Initialize signal handler for SIGINT
+*/
 static int init_signal_handler(void)
 {
 	if (signal(SIGINT, signal_handler) == SIG_ERR) {
@@ -16,6 +22,10 @@ static int init_signal_handler(void)
 	return (0);
 }
 
+/**
+ * @brief Display IP header details
+ * @param header IP header structure
+*/
 void display_detail_iphdr(struct iphdr *header)
 {
     ft_printf_fd(1, FILL_YELLOW"| IP Header |\n"RESET);
@@ -32,6 +42,10 @@ void display_detail_iphdr(struct iphdr *header)
     ft_printf_fd(1, "   |-Destination IP : %s\n", inet_ntoa(*(struct in_addr *)&header->daddr));
 }
 
+/**
+ * @brief Display ICMP header details
+ * @param header ICMP header structure
+*/
 void display_detail_icmphdr(struct icmphdr *header)
 {
 	char *icmp_type;
@@ -50,6 +64,11 @@ void display_detail_icmphdr(struct icmphdr *header)
     ft_printf_fd(1, "   |-Sequence : %u\n", ntohs(header->un.echo.sequence));
 }
 
+/**
+ *	@brief Display formated char data from ICMP packet
+ *	@param data Pointer to data
+ *	@param size Size of data
+*/
 void display_char_data(uint8_t *data, size_t size)
 {
 	ft_printf_fd(1, CYAN"| ICMP char Data |\n"RESET);
@@ -71,7 +90,12 @@ void display_char_data(uint8_t *data, size_t size)
 	ft_printf_fd(1, "\t\t|\n-------------------------\n");
 }
 
-void display_icmp_data(uint8_t *data, size_t size)
+/**
+ *	@brief Display brut data from ICMP packet
+ *	@param data Pointer to data
+ *	@param size Size of data
+*/
+void display_brut_icmp_data(uint8_t *data, size_t size)
 {
 	ft_printf_fd(1, CYAN"| ICMP Brut Data |\n"RESET);
 	for (size_t i = 0; i < size; i++) {
@@ -84,11 +108,12 @@ void display_icmp_data(uint8_t *data, size_t size)
 	display_char_data(data, size);
 }
 
+/* @brief Detail display paquet take separate args to be easiest call when receive data buffer*/
 static void display_detail_packet(t_iphdr *ip_hdr, t_icmphdr *icmp_hdr, uint8_t *data)
 {
 	display_detail_iphdr(ip_hdr);
 	display_detail_icmphdr(icmp_hdr);
-	display_icmp_data(data, ICMP_DATA_SIZE);
+	display_brut_icmp_data(data, ICMP_DATA_SIZE);
 }
 
 int8_t listen_icmp_reply(int sock)

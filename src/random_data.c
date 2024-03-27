@@ -1,7 +1,8 @@
 #include "../include/ft_ping.h"
 
-/*
-* Get random number % max
+/**
+ *	@brief Get random number % max
+ *	@param max max value
 */
 static uint32_t     gener_uint32(int max)
 {
@@ -18,9 +19,10 @@ static uint32_t     gener_uint32(int max)
     return (res % max);
 }
 
-/*  @brief Generate random data for icmp packet
- *  @param buff: buffer to store random data
- *  @param size: size of the buffer
+/**
+ *	@brief Generate random data for icmp packet
+ *	@param buff: buffer to store random data
+ *	@param size: size of the buffer
 */
 void gener_random_data(uint8_t *buff, int size)
 {

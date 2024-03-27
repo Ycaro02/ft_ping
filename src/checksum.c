@@ -1,7 +1,7 @@
 #include "../include/ft_ping.h"
 
 /**
- *	@briefCompute checksum of a buffer
+ *	@brief Compute checksum of a buffer
  *	@param data buffer to compute checksum
  *	@param size size of buffer
  *	@return checksum
@@ -29,7 +29,7 @@ uint16_t compute_checksum(uint16_t *data, size_t size)
 }
 
 /**
- *	@briefVerify checksum of a buffer
+ *	@brief Verify checksum of a buffer
  *	@param buffer buffer to verify checksum
  *	@param ip_checksum IP checksum to verify
  *	@param icmp_checksum ICMP checksum to verify
