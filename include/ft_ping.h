@@ -21,6 +21,9 @@ typedef struct icmphdr t_icmphdr;
 /* Typedef for ip header structure */
 typedef struct iphdr t_iphdr;
 
+/* Buffer size */
+#define BUFFER_SIZE 1024
+
 /* ICMP packet size */
 #define PACKET_SIZE 84
 
@@ -83,7 +86,6 @@ typedef struct s_ping_packet
 extern int  g_signal_received;
 
 /* socket handle */
-int     bind_socket(int sock, t_sockaddr_in *addr);
 int     close_socket(int sock);
 int     open_rcv_socket(void);
 int     open_send_socket(void);
@@ -91,8 +93,8 @@ int     open_send_socket(void);
 int8_t listen_icmp_reply(int sock);
 
 /* build request */
-void          display_ping_packet(t_ping_packet packet);
 t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest);
+
 /* checksum */
 uint16_t    compute_checksum(uint16_t *data, size_t size);
 uint8_t     verify_checksum(void *buffer, uint16_t ip_checksum, uint16_t icmp_checksum);

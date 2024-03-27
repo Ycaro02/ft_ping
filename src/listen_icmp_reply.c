@@ -84,51 +84,43 @@ void display_icmp_data(uint8_t *data, size_t size)
 	display_char_data(data, size);
 }
 
-void display_ping_packet(t_ping_packet packet)
+static void display_detail_packet(t_iphdr *ip_hdr, t_icmphdr *icmp_hdr, uint8_t *data)
 {
-    display_detail_iphdr(&packet.iphdr);
-    display_detail_icmphdr(&packet.icmphdr);
-    display_icmp_data(packet.data, ICMP_DATA_SIZE);
+	display_detail_iphdr(ip_hdr);
+	display_detail_icmphdr(icmp_hdr);
+	display_icmp_data(data, ICMP_DATA_SIZE);
 }
 
 int8_t listen_icmp_reply(int sock)
 {
-    uint8_t         buffer[1024];
-    ssize_t         bytes_received;
+    uint8_t         buffer[BUFFER_SIZE];
     struct iphdr    *ip_hdr;
     struct icmphdr  *icmp_hdr;
-	int mult = 1;
+    ssize_t         bytes_received;
 
     init_signal_handler();
 
     while (!g_signal_received) {
         // ft_printf_fd(1, YELLOW"Waiting for ICMP Echo Reply, global: %d\n"RESET, g_signal_received);
         errno = 0;
-        bytes_received = recvfrom(sock, buffer, 1024, MSG_DONTWAIT, NULL, NULL);
-        if (bytes_received < 0) {
-            /* No data continue wait */
-            if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                continue;
-            } else {
-                perror("recvfrom");
-				return (1);
-            }
-        }
-        ip_hdr = (struct iphdr *)buffer;
-        display_detail_iphdr(ip_hdr);
-        if (bytes_received != PACKET_SIZE) {
-            ft_printf_fd(1, RED"\nWrong bytes received number: %d\n"RESET, bytes_received);
-            continue;
+        bytes_received = recvfrom(sock, buffer, BUFFER_SIZE, 0, NULL, NULL);
+		if (g_signal_received) {
+			break ;
+		} else if (errno == EAGAIN || errno == EWOULDBLOCK) {
+			ft_printf_fd(2, RED"Timeout Reached\n"RESET);
+			continue ;
+		} else if (bytes_received != PACKET_SIZE) {
+			ft_printf_fd(1, RED"\nWrong bytes received number: %d\n"RESET, bytes_received);
+            continue ;
 		}
-        icmp_hdr = (struct icmphdr *)(buffer + (IP_HDR_SIZE * mult));
+        ip_hdr = (struct iphdr *)buffer;
+        icmp_hdr = (struct icmphdr *)(buffer + IP_HDR_SIZE);
 		// ft_printf_fd(1, "buff addr %p, new addr %p, compute %p\n", buffer, icmp_hdr);
-        display_detail_icmphdr(icmp_hdr);
-      
-		display_icmp_data(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE, ICMP_DATA_SIZE);
+     	display_detail_packet(ip_hdr, icmp_hdr, buffer + IP_HDR_SIZE + ICMP_HDR_SIZE);
 		if (verify_checksum(buffer, ip_hdr->check, icmp_hdr->checksum) == FALSE) {
 			return (1);
 		}
-		ft_bzero(buffer, 1024);
+		ft_bzero(buffer, BUFFER_SIZE);
     }
 	return (0);
 }
