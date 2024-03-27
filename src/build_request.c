@@ -29,8 +29,7 @@ uint16_t get_icmp_id_seq()
 t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest)
 {
     t_ping_packet packet;
-    uint16_t id = get_icmp_id();
-    uint16_t seq_id = get_icmp_id_seq();
+    uint16_t id = get_icmp_id(), seq_id = get_icmp_id_seq();
 
 	ft_bzero(&packet, sizeof(packet));
 	/* Build IP packet header */

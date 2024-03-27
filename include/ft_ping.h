@@ -3,8 +3,9 @@
 #include <sys/socket.h>         /* System socket */
 #include <netinet/in.h>         /* Internet address family */
 #include <netinet/ip.h>         /* Internet Protocol family */
-#include <netinet/ip_icmp.h>    /* ICMP protocol family */
-#include <arpa/inet.h>          /* Internet address family */
+#include <netinet/ip_icmp.h>	/* ICMP protocol family */
+#include <arpa/inet.h>			/* Internet address family */
+#include <ifaddrs.h>			/* Interface address */
 #include <errno.h>              /* Error number */
 #include <signal.h>             /* Signal handling */
 #include <fcntl.h>              /* File control */

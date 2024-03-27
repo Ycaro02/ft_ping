@@ -25,7 +25,6 @@ void close_multi_socket(int sock1, int sock2)
     }
 }
 
-#include <ifaddrs.h>
 
 static in_addr_t get_process_ipv4_addr()
 {
