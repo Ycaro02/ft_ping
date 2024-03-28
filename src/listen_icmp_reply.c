@@ -147,8 +147,6 @@ static void display_clean_data(t_context *c, t_iphdr *iphdr ,t_icmphdr *icmphdr)
 	ft_printf_fd(1, "PING %s (%s): %d data bytes\n", dest_str, dest_str, ICMP_DATA_SIZE);
 	ft_printf_fd(1, "64 bytes from %s: icmp_seq=%u ttl=%d ", dest_str, ntohs(icmphdr->un.echo.sequence), iphdr->ttl);
 	display_formated_time(c->summary.average);
-	// 64 bytes from 192.168.1.1: icmp_seq=1 ttl=63 time=2.10 ms
-	// PING 192.168.1.1 (192.168.1.1): 56 data bytes
 }
 
 
@@ -181,20 +179,13 @@ int8_t listen_icmp_reply(t_context *c)
 		if (verify_checksum(buffer, ip_hdr->check, icmp_hdr->checksum) == FALSE) {
 			return (1);
 		}
-		suseconds_t rcv_time = get_ms_time();
-		update_ping_state(&c->summary, c->state.send_time, rcv_time);
+		c->state.rcv_time = get_ms_time();
+		update_ping_state(&c->summary, c->state.send_time, c->state.rcv_time);
 		display_ping_summary(&c->summary);
 		display_ping_state(&c->state);
-		display_formated_time(rcv_time - c->state.send_time);
-		
+		display_formated_time(c->state.rcv_time - c->state.send_time);
 		display_clean_data(c, ip_hdr, icmp_hdr);
-		
 		ft_bzero(buffer, BUFFER_SIZE);
     }
 	return (0);
 }
-
-
-//   ft_printf_fd(1, "   |size IP hdr   : %u\n", IP_HDR_SIZE);
-// ft_printf_fd(1, "   |size ICMP hdr : %u\n", ICMP_HDR_SIZE);
-// ft_printf_fd(1, "   |size data     : %u\n", ICMP_DATA_SIZE);

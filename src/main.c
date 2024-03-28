@@ -104,7 +104,6 @@ int main(int argc, char **argv)
     in_addr_t       dest_addr;
     int8_t          ret = 1;
     
-
     if (argc < 2) {
         ft_printf_fd(2, PURPLE"%s: usage error: Destination address required\n"RESET, argv[0]);
         return (1);
@@ -124,7 +123,6 @@ int main(int argc, char **argv)
 	c.state.send_time = get_ms_time();
 	c.summary.nb_send++;
     ft_printf_fd(1, GREEN"Packet sent %u bytes to %s\n"RESET, send_ret, inet_ntoa(*(struct in_addr *)&dest_addr));
-
     ret = listen_icmp_reply(&c);
 
     /* Free socket label */
