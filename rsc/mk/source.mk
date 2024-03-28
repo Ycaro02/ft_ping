@@ -8,6 +8,7 @@ SRCS			=	main.c\
 					build_request.c\
 					checksum.c\
 					random_data.c\
+					handle_time.c\
 
 
 MAKE_LIBFT		=	make -s -C libft

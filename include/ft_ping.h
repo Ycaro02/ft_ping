@@ -9,7 +9,7 @@
 #include <errno.h>              /* Error number */
 #include <signal.h>             /* Signal handling */
 #include <fcntl.h>              /* File control */
-#include <time.h>				/* Time */
+#include <sys/time.h>			/* Time */
 
 #include "../include/basic_define.h" /* Basic define, include <sys/type*/
 #include "../libft/libft.h"     /* Libft library,*/
@@ -22,6 +22,9 @@ typedef struct icmphdr t_icmphdr;
 
 /* Typedef for ip header structure */
 typedef struct iphdr t_iphdr;
+
+/* Typedef for timeval structure */
+typedef struct timeval t_timeval;
 
 /* Buffer size */
 #define BUFFER_SIZE 1024
@@ -55,6 +58,21 @@ typedef struct iphdr t_iphdr;
 
 
 /**
+ * Ping state structure
+*/
+typedef struct s_ping_state
+{
+	suseconds_t		start;			/* Start time in context ? */
+	suseconds_t		send_time;		/* Last ping send time */
+	suseconds_t		min;			/* Minimum time */
+	suseconds_t		max;			/* Maximum time */
+	suseconds_t		average;		/* Average time, really needed, recompute between each ping sent ? */
+	uint32_t		nb_send;		/* Number of ping send */
+	uint32_t		nb_rcv;			/* Number of ping received */
+	uint32_t		nb_err;			/* Number of ping error */
+}	t_ping_state;
+
+/**
  * Context structure for ping
 */
 typedef struct s_context
@@ -64,12 +82,8 @@ typedef struct s_context
     int             send_sock;      /* socket for sending */
     int             rcv_sock;       /* socket for receiving */
     uint16_t        flag;           /* ping flag */
+	t_ping_state    state;          /* ping state */
 } t_context;
-
-// typedef struct s_ping_state
-// {
-
-// }	t_ping_state;
 
 /**
  * Packet structure for ping
@@ -83,22 +97,25 @@ typedef struct s_ping_packet
 
 
 /* Signal handling global variable */
-extern int  g_signal_received;
+extern int		g_signal_received;
 
 /* socket handle */
-int     close_socket(int sock);
-int     open_rcv_socket(void);
-int     open_send_socket(void);
+int				close_socket(int sock);
+int				open_rcv_socket(void);
+int				open_send_socket(void);
 
 /* listen icmp reply */
-int8_t listen_icmp_reply(int sock);
+int8_t			listen_icmp_reply(int sock);
 
 /* build request */
-t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest);
+t_ping_packet	build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest);
 
 /* checksum */
-uint16_t    compute_checksum(uint16_t *data, size_t size);
-uint8_t     verify_checksum(void *buffer, uint16_t ip_checksum, uint16_t icmp_checksum);
+uint16_t		compute_checksum(uint16_t *data, size_t size);
+uint8_t			verify_checksum(void *buffer, uint16_t ip_checksum, uint16_t icmp_checksum);
 
 /* random data */
-void gener_random_data(uint8_t *buff, int size);
+void			gener_random_data(uint8_t *buff, int size);
+
+/* time */
+suseconds_t		get_ms_time(void);

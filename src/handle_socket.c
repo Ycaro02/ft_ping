@@ -13,7 +13,7 @@ int open_send_socket(void)
 
     if (setsockopt(sockfd, IPPROTO_IP, IP_HDRINCL, &disable, sizeof(disable)) < 0) {
         perror("setsockopt disable auto ip header failed");
-        exit(EXIT_FAILURE);
+        return (-1);
     }
     return (sockfd);
 }

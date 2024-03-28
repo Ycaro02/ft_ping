@@ -63,19 +63,38 @@ static in_addr_t get_process_ipv4_addr()
 */
 t_context init_ping_context(char *dest_addr)
 {
-    t_context context;
+    t_context c;
 
-    ft_bzero(&context, sizeof(context));
-    context.src_addr = get_process_ipv4_addr();
-    context.dst_sockaddr.sin_family = AF_INET;
-    context.dst_sockaddr.sin_addr.s_addr = ipv4_strtoaddr(dest_addr);
-    context.send_sock = open_send_socket();
-    context.rcv_sock = open_rcv_socket();
-    if (context.send_sock == -1 || context.rcv_sock == -1) {
-        close_multi_socket(context.send_sock, context.rcv_sock);
+    ft_bzero(&c, sizeof(c));
+    c.src_addr = get_process_ipv4_addr();
+    c.dst_sockaddr.sin_family = AF_INET;
+    c.dst_sockaddr.sin_addr.s_addr = ipv4_strtoaddr(dest_addr);
+    c.send_sock = open_send_socket();
+    c.rcv_sock = open_rcv_socket();
+    if (c.send_sock == -1 || c.rcv_sock == -1) {
+        close_multi_socket(c.send_sock, c.rcv_sock);
         exit(1);
     }
-    return (context);    
+	c.state.start = get_ms_time();
+	usleep(500);
+	printf(CYAN"Start time: %ld, diff %ld\n"RESET, c.state.start, get_ms_time() - c.state.start);
+    return (c);    
+}
+
+
+void update_ping_state(t_ping_state *state, suseconds_t start, suseconds_t end)
+{
+	suseconds_t diff = end - start;
+
+	if (state->min == 0 || diff < state->min) {
+		state->min = diff;
+	}
+	if (diff > state->max) {
+		state->max = diff;
+	}
+	state->nb_rcv++;
+	state->average = (state->average * state->nb_rcv + diff) / state->nb_rcv;
+	return (state);
 }
 
 /**

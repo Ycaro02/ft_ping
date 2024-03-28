@@ -13,6 +13,14 @@
 		"stubs-64.h": "c",
 		"types.h": "c",
 		"endianness.h": "c",
-		"ifaddrs.h": "c"
+		"ifaddrs.h": "c",
+		"fcntl.h": "c",
+		"time.h": "c",
+		"clock_t.h": "c",
+		"time_t.h": "c",
+		"struct_tm.h": "c",
+		"struct_timespec.h": "c",
+		"endian.h": "c",
+		"ft_ping.h": "c"
 	}
 }
