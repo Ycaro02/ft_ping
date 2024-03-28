@@ -114,14 +114,23 @@ void display_ping_summary(t_ping_sum *sum)
 }
 
 static void display_formated_time(suseconds_t time) {
-	ft_printf_fd(1, YELLOW"time=%i.%i ms\n"RESET, (time / 1000), (time % 1000));
+	ft_printf_fd(1, "time="YELLOW"%i.%i ms\n"RESET, (time / 1000), (time % 1000));
 }
 
 static void display_clean_data(t_context *c, t_iphdr *iphdr ,t_icmphdr *icmphdr)
 {
 	char *dest_str = inet_ntoa(*(struct in_addr *)&(c->dst_sockaddr.sin_addr.s_addr));
-	ft_printf_fd(1, "PING %s (%s): %d data bytes\n", dest_str, dest_str, ICMP_DATA_SIZE);
-	ft_printf_fd(1, "64 bytes from %s: icmp_seq=%u ttl=%d ", dest_str, ntohs(icmphdr->un.echo.sequence), iphdr->ttl);
+
+	char buff[1024];
+	ft_bzero(buff, 1024);
+	sprintf(buff, "PING %s%s (%s)%s: %s%d%s data bytes\n", CYAN, dest_str, dest_str, RESET, GREEN, ICMP_DATA_SIZE, RESET);
+	ft_printf_fd(1, "%s", buff);
+
+	ft_bzero(buff, 1024);
+	sprintf(buff, GREEN"64"RESET" bytes from "PURPLE"%s"RESET": icmp_seq="BLUE"%u"RESET" ttl="RED"%d "RESET, dest_str, ntohs(icmphdr->un.echo.sequence), iphdr->ttl);
+	ft_printf_fd(1, "%s", buff);
+
+	// ft_printf_fd(1, "64 bytes from %s: icmp_seq=%u ttl=%d ", dest_str, ntohs(icmphdr->un.echo.sequence), iphdr->ttl);
 	display_formated_time(c->summary.average);
 }
 

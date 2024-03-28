@@ -1,4 +1,4 @@
-# Couleurs ANSI pour printf en Makefile
+# ANSI color codes
 RESET=\033[0m
 BLACK=\033[30m
 RED=\033[31m

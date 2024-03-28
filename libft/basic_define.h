@@ -18,6 +18,7 @@
 # define    BLUE            "\033[1;34m"
 # define    PURPLE          "\033[1;35m"
 # define    CYAN            "\033[1;36m"
+
 # define    RESET           "\033[0m"
 # define    FILL_GREEN      "\033[7;32m"
 # define    FILL_YELLOW     "\033[7;33m"

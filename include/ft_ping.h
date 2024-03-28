@@ -11,7 +11,6 @@
 #include <fcntl.h>              /* File control */
 #include <sys/time.h>			/* Time */
 
-#include "../include/basic_define.h" /* Basic define, include <sys/type*/
 #include "../libft/libft.h"     /* Libft library,*/
 
 /* Typedef sockaddr_in structure */
