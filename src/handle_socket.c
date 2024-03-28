@@ -42,8 +42,8 @@ int open_rcv_socket(void)
     return (sockfd);
 }
 
-/* @brief Close socket */
-int close_socket(int sock)
+/* @brief Close socket and check ernno */
+static int close_socket(int sock)
 {
     errno = 0;
     if (close(sock) == -1) {
@@ -51,4 +51,18 @@ int close_socket(int sock)
         return (-1);
     }
     return (1);
+}
+/**
+ *	@brief Close multiple socket check if socket fd is valid before 
+ *	@param sock1 first socket to close
+ *	@param sock2 second socket to close
+*/
+void close_multi_socket(int sock1, int sock2)
+{
+    if (sock1 != -1) {
+        close_socket(sock1);
+    }
+    if (sock2 != -1) {
+        close_socket(sock2);
+    }
 }

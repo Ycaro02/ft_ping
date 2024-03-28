@@ -149,7 +149,6 @@ static void display_clean_data(t_context *c, t_iphdr *iphdr ,t_icmphdr *icmphdr)
 	display_formated_time(c->summary.average);
 }
 
-
 int8_t listen_icmp_reply(t_context *c)
 {
     uint8_t         buffer[BUFFER_SIZE];
@@ -180,7 +179,7 @@ int8_t listen_icmp_reply(t_context *c)
 			return (1);
 		}
 		c->state.rcv_time = get_ms_time();
-		update_ping_state(&c->summary, c->state.send_time, c->state.rcv_time);
+		update_ping_summary(&c->summary, c->state.send_time, c->state.rcv_time);
 		display_ping_summary(&c->summary);
 		display_ping_state(&c->state);
 		display_formated_time(c->state.rcv_time - c->state.send_time);

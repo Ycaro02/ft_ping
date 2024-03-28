@@ -15,20 +15,6 @@ in_addr_t ipv4_strtoaddr(char *str)
     return (addr.s_addr);
 }
 
-/**
- *	@brief Close multiple socket check if socket fd is valid before 
- *	@param sock1 first socket to close
- *	@param sock2 second socket to close
-*/
-void close_multi_socket(int sock1, int sock2)
-{
-    if (sock1 != -1) {
-        close_socket(sock1);
-    }
-    if (sock2 != -1) {
-        close_socket(sock2);
-    }
-}
 
 /**
  *	@brief Get process ipv4 address
@@ -78,8 +64,13 @@ t_context init_ping_context(char *dest_addr)
     return (c);    
 }
 
-
-void update_ping_state(t_ping_sum *sum, suseconds_t start, suseconds_t end)
+/**
+ *  @brief Update ping summary with new ping time (min, max and average)
+ *  @param sum ping summary structure
+ *  @param start packet sent time
+ *  @param end packet receive time
+*/
+void update_ping_summary(t_ping_sum *sum, suseconds_t start, suseconds_t end)
 {
 	suseconds_t diff = end - start;
 

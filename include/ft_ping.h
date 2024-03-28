@@ -108,10 +108,11 @@ typedef struct s_ping_packet
 extern int		g_signal_received;
 
 /* main */
-void update_ping_state(t_ping_sum *sum, suseconds_t start, suseconds_t end);
+void			update_ping_summary(t_ping_sum *sum, suseconds_t start, suseconds_t end);
 
 /* socket handle */
-int				close_socket(int sock);
+// int				close_socket(int sock);
+void			close_multi_socket(int sock1, int sock2);
 int				open_rcv_socket(void);
 int				open_send_socket(void);
 
