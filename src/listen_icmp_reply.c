@@ -109,7 +109,7 @@ void display_brut_icmp_data(uint8_t *data, size_t size)
 }
 
 /* @brief Detail display paquet take separate args to be easiest call when receive data buffer*/
-static void display_detail_packet(t_iphdr *ip_hdr, t_icmphdr *icmp_hdr, uint8_t *data)
+void display_detail_packet(t_iphdr *ip_hdr, t_icmphdr *icmp_hdr, uint8_t *data)
 {
 	display_detail_iphdr(ip_hdr);
 	display_detail_icmphdr(icmp_hdr);
@@ -118,18 +118,22 @@ static void display_detail_packet(t_iphdr *ip_hdr, t_icmphdr *icmp_hdr, uint8_t 
 
 
 
-
 static void display_ping_state(t_ping_state *state)
 {
 	ft_printf_fd(1, YELLOW"| Ping State |\n"RESET);
-	ft_printf_fd(1, "   |-Start time : %i\n", state->start);
 	ft_printf_fd(1, "   |-Send time : %i\n", state->send_time);
-	ft_printf_fd(1, "   |-Min time : %i\n", state->min);
-	ft_printf_fd(1, "   |-Max time : %i\n", state->max);
-	ft_printf_fd(1, "   |-Average time : %i\n", state->average);
-	ft_printf_fd(1, "   |-Number of send : %u\n", state->nb_send);
-	ft_printf_fd(1, "   |-Number of received : %u\n", state->nb_rcv);
-	ft_printf_fd(1, "   |-Number of error : %u\n", state->nb_err);
+	ft_printf_fd(1, "   |-Receive time : %i\n", state->rcv_time);
+}
+
+static void display_ping_summary(t_ping_sum *sum)
+{
+	ft_printf_fd(1, YELLOW"| Ping Summary |\n"RESET);
+	ft_printf_fd(1, "   |-Min time : %i\n", sum->min);
+	ft_printf_fd(1, "   |-Max time : %i\n", sum->max);
+	ft_printf_fd(1, "   |-Average time : %i\n", sum->average);
+	ft_printf_fd(1, "   |-Number of send : %u\n", sum->nb_send);
+	ft_printf_fd(1, "   |-Number of received : %u\n", sum->nb_rcv);
+	ft_printf_fd(1, "   |-Number of error : %u\n", sum->nb_err);
 }
 
 
@@ -142,7 +146,7 @@ static void display_clean_data(t_context *c, t_iphdr *iphdr ,t_icmphdr *icmphdr)
 	char *dest_str = inet_ntoa(*(struct in_addr *)&(c->dst_sockaddr.sin_addr.s_addr));
 	ft_printf_fd(1, "PING %s (%s): %d data bytes\n", dest_str, dest_str, ICMP_DATA_SIZE);
 	ft_printf_fd(1, "64 bytes from %s: icmp_seq=%u ttl=%d ", dest_str, ntohs(icmphdr->un.echo.sequence), iphdr->ttl);
-	display_formated_time(c->state.average);
+	display_formated_time(c->summary.average);
 	// 64 bytes from 192.168.1.1: icmp_seq=1 ttl=63 time=2.10 ms
 	// PING 192.168.1.1 (192.168.1.1): 56 data bytes
 }
@@ -173,12 +177,13 @@ int8_t listen_icmp_reply(t_context *c)
         ip_hdr = (struct iphdr *)buffer;
         icmp_hdr = (struct icmphdr *)(buffer + IP_HDR_SIZE);
 		// ft_printf_fd(1, "buff addr %p, new addr %p, compute %p\n", buffer, icmp_hdr);
-     	display_detail_packet(ip_hdr, icmp_hdr, buffer + IP_HDR_SIZE + ICMP_HDR_SIZE);
+     	// display_detail_packet(ip_hdr, icmp_hdr, buffer + IP_HDR_SIZE + ICMP_HDR_SIZE);
 		if (verify_checksum(buffer, ip_hdr->check, icmp_hdr->checksum) == FALSE) {
 			return (1);
 		}
 		suseconds_t rcv_time = get_ms_time();
-		update_ping_state(&c->state, c->state.send_time, rcv_time);
+		update_ping_state(&c->summary, c->state.send_time, rcv_time);
+		display_ping_summary(&c->summary);
 		display_ping_state(&c->state);
 		display_formated_time(rcv_time - c->state.send_time);
 		

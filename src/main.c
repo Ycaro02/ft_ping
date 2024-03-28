@@ -75,27 +75,22 @@ t_context init_ping_context(char *dest_addr)
         close_multi_socket(c.send_sock, c.rcv_sock);
         exit(1);
     }
-	c.state.start = get_ms_time();
-	usleep(500);
-	suseconds_t diff = (get_ms_time() - c.state.start);
-	printf(CYAN"Start time: %ld, diff %ld\n"RESET, c.state.start, diff);
-	ft_printf_fd(2, PURPLE"Start time: %i, diff %i\n"RESET, c.state.start, diff);
     return (c);    
 }
 
 
-void update_ping_state(t_ping_state *state, suseconds_t start, suseconds_t end)
+void update_ping_state(t_ping_sum *sum, suseconds_t start, suseconds_t end)
 {
 	suseconds_t diff = end - start;
 
-	if (state->min == 0 || diff < state->min) {
-		state->min = diff;
+	if (sum->min == 0 || diff < sum->min) {
+		sum->min = diff;
 	}
-	if (diff > state->max) {
-		state->max = diff;
+	if (diff > sum->max) {
+		sum->max = diff;
 	}
-	state->nb_rcv++;
-	state->average = ((state->average * state->nb_rcv) + diff) / state->nb_rcv;
+	sum->nb_rcv++;
+	sum->average = ((sum->average * sum->nb_rcv) + diff) / sum->nb_rcv;
 }
 
 /**
@@ -127,7 +122,7 @@ int main(int argc, char **argv)
     }
 	
 	c.state.send_time = get_ms_time();
-	c.state.nb_send++;
+	c.summary.nb_send++;
     ft_printf_fd(1, GREEN"Packet sent %u bytes to %s\n"RESET, send_ret, inet_ntoa(*(struct in_addr *)&dest_addr));
 
     ret = listen_icmp_reply(&c);

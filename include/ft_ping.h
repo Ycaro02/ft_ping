@@ -58,18 +58,25 @@ typedef struct timeval t_timeval;
 
 
 /**
- * Ping state structure
+ * Ping summary structure one for program
 */
-typedef struct s_ping_state
+typedef struct s_ping_summary 
 {
-	suseconds_t		start;			/* Start time in context ? */
-	suseconds_t		send_time;		/* Last ping send time */
 	suseconds_t		min;			/* Minimum time */
 	suseconds_t		max;			/* Maximum time */
 	suseconds_t		average;		/* Average time, really needed, recompute between each ping sent ? */
 	uint32_t		nb_send;		/* Number of ping send */
 	uint32_t		nb_rcv;			/* Number of ping received */
 	uint32_t		nb_err;			/* Number of ping error/lost */
+}	t_ping_sum;
+
+/**
+ * Ping state structure for each ping
+*/
+typedef struct s_ping_state
+{
+	suseconds_t		send_time;		/* Last ping send time */
+	suseconds_t		rcv_time;		/* Last ping receive time */
 }	t_ping_state;
 
 /**
@@ -78,11 +85,12 @@ typedef struct s_ping_state
 typedef struct s_context
 {
     t_sockaddr_in   dst_sockaddr;	/* Destination socket address */
+	t_ping_state    state;          /* ping state */
+	t_ping_sum		summary;		/* ping summary*/
     in_addr_t       src_addr;		/* Source address */
     int             send_sock;      /* socket for sending */
     int             rcv_sock;       /* socket for receiving */
     uint16_t        flag;           /* ping flag */
-	t_ping_state    state;          /* ping state */
 } t_context;
 
 /**
@@ -100,7 +108,7 @@ typedef struct s_ping_packet
 extern int		g_signal_received;
 
 /* main */
-void			update_ping_state(t_ping_state *state, suseconds_t start, suseconds_t end);
+void update_ping_state(t_ping_sum *sum, suseconds_t start, suseconds_t end);
 
 /* socket handle */
 int				close_socket(int sock);
