@@ -1,28 +1,6 @@
 #include "../include/ft_ping.h"
 
 /**
- * @brief signal handler function for SIGNINT
-*/
-static void signal_handler(int signum)
-{
-    (void)signum;
-    ft_printf_fd(2, RED"\nSIGINT Catch\n"RESET);
-    g_signal_received = 1;
-}
-
-/**
- * @brief Initialize signal handler for SIGINT
-*/
-static int init_signal_handler(void)
-{
-	if (signal(SIGINT, signal_handler) == SIG_ERR) {
-			ft_printf_fd(2, "Can't catch SIGINT\n");
-			return (-1);
-	}
-	return (0);
-}
-
-/**
  * @brief Display IP header details
  * @param header IP header structure
 */
@@ -174,35 +152,29 @@ int8_t listen_icmp_reply(t_context *c)
     struct icmphdr  *icmp_hdr;
     ssize_t         bytes_received;
 
-    init_signal_handler();
 
-    while (!g_signal_received) {
         // ft_printf_fd(1, YELLOW"Waiting for ICMP Echo Reply, global: %d\n"RESET, g_signal_received);
-        errno = 0;
-        bytes_received = recvfrom(c->rcv_sock, buffer, BUFFER_SIZE, 0, NULL, NULL);
-		if (g_signal_received) {
-			break ;
-		} else if (errno == EAGAIN || errno == EWOULDBLOCK) {
-			ft_printf_fd(2, RED"Timeout Reached\n"RESET);
-			continue ;
-		} else if (bytes_received != PACKET_SIZE) {
-			ft_printf_fd(1, RED"\nWrong bytes received number: %d\n"RESET, bytes_received);
-            continue ;
-		}
-        ip_hdr = (struct iphdr *)buffer;
-        icmp_hdr = (struct icmphdr *)(buffer + IP_HDR_SIZE);
-		// ft_printf_fd(1, "buff addr %p, new addr %p, compute %p\n", buffer, icmp_hdr);
-     	// display_detail_packet(ip_hdr, icmp_hdr, buffer + IP_HDR_SIZE + ICMP_HDR_SIZE);
-		if (verify_checksum(buffer, ip_hdr->check, icmp_hdr->checksum) == FALSE) {
-			return (1);
-		}
-		c->state.rcv_time = get_ms_time();
-		update_ping_summary(&c->summary, c->state.send_time, c->state.rcv_time);
-		// display_ping_summary(&c->summary);
-		// display_ping_state(&c->state);
-		// display_formated_time(c->state.rcv_time - c->state.send_time);
-		display_clean_data(c, ip_hdr, icmp_hdr);
-		ft_bzero(buffer, BUFFER_SIZE);
-    }
-	return (0);
+	errno = 0;
+	bytes_received = recvfrom(c->rcv_sock, buffer, BUFFER_SIZE, 0, NULL, NULL);
+	if (errno == EAGAIN || errno == EWOULDBLOCK) {
+		ft_printf_fd(2, RED"Timeout Reached\n"RESET);
+	} else if (bytes_received != PACKET_SIZE) {
+		ft_printf_fd(1, RED"\nWrong bytes received number: %d\n"RESET, bytes_received);
+		return (FALSE);
+	}
+	ip_hdr = (struct iphdr *)buffer;
+	icmp_hdr = (struct icmphdr *)(buffer + IP_HDR_SIZE);
+	// ft_printf_fd(1, "buff addr %p, new addr %p, compute %p\n", buffer, icmp_hdr);
+	// display_detail_packet(ip_hdr, icmp_hdr, buffer + IP_HDR_SIZE + ICMP_HDR_SIZE);
+	if (verify_checksum(buffer, ip_hdr->check, icmp_hdr->checksum) == FALSE) {
+		return (FALSE);
+	}
+	c->state.rcv_time = get_ms_time();
+	update_ping_summary(&c->summary, c->state.send_time, c->state.rcv_time);
+	// display_ping_summary(&c->summary);
+	// display_ping_state(&c->state);
+	// display_formated_time(c->state.rcv_time - c->state.send_time);
+	display_clean_data(c, ip_hdr, icmp_hdr);
+	ft_bzero(buffer, BUFFER_SIZE);
+	return (TRUE);
 }

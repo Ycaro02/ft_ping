@@ -5,31 +5,27 @@ static uint16_t get_icmp_id()
 {
 	static uint16_t id = 0;
 
-	if (id < UINT16_MAX) {
-		++id;
-	} else {
+	if (id == UINT16_MAX) {
 		id = 0;
 	}
-	return (id);
+	return (id++);
 }
 
 /* Get icmp paquets sequence id */
-uint16_t get_icmp_id_seq()
-{
-	static uint16_t id = 0;
+// uint16_t get_icmp_id_seq()
+// {
+// 	static uint16_t seqid = 0;
 
-	if (id < UINT16_MAX && id != 0) {
-		++id;
-	} else {
-		id = 0;
-	}
-	return (id);
-}
+// 	if (seqid == UINT16_MAX) {
+// 		seqid = 0;
+// 	}
+// 	return (seqid++);
+// }
 
 t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest)
 {
     t_ping_packet packet;
-    uint16_t id = get_icmp_id(), seq_id = get_icmp_id_seq();
+    uint16_t id = get_icmp_id();
 
 	ft_bzero(&packet, sizeof(packet));
 	/* Build IP packet header */
@@ -51,7 +47,7 @@ t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest)
     packet.icmphdr.code = 0;
     packet.icmphdr.checksum = 0;
     packet.icmphdr.un.echo.id = htons(id);
-    packet.icmphdr.un.echo.sequence = htons(seq_id);
+    packet.icmphdr.un.echo.sequence = 0;
 
     gener_random_data(packet.data, ICMP_DATA_SIZE);
     // ft_printf_fd(1, "Size of packet struct %u\n", sizeof(t_ping_packet));

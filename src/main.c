@@ -20,22 +20,6 @@ t_context init_ping_context(char *dest_addr)
     return (c);    
 }
 
-uint8_t send_echo_request(t_context *c)
-{
-    t_ping_packet   packet = build_ping_packet(c->src_addr, c->dst_sockaddr.sin_addr.s_addr);
-    ssize_t         send_ret = sendto(c->send_sock, &packet, sizeof(packet), 0, (struct sockaddr *)&c->dst_sockaddr, sizeof(c->dst_sockaddr));
-    
-    errno = 0;
-    if (send_ret == -1) {
-        perror("sendto");
-        return (0);
-    }
-    c->state.send_time = get_ms_time();
-    c->summary.nb_send++;
-    ft_printf_fd(1, GREEN"Packet sent %u bytes to %s\n"RESET, send_ret, inet_ntoa(*(struct in_addr *)&c->dst_sockaddr.sin_addr.s_addr));
-    return (1);
-}
-
 /**
  *	@brief Main function
  *	@param argc number of arguments
@@ -55,12 +39,10 @@ int main(int argc, char **argv)
         goto free_socket;
     }
     /* Send first packet */
-    if (!send_echo_request(&c)) {
+    if (!send_ping(&c)) {
         goto free_socket;
     }
-
-    ret = listen_icmp_reply(&c);
-
+    ret = 0;
     /* Free socket label */
     free_socket:
     close_multi_socket(c.rcv_sock, c.send_sock);

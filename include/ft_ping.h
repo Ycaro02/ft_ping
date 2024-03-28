@@ -107,6 +107,10 @@ typedef struct s_ping_packet
 /* Signal handling global variable */
 extern int		g_signal_received;
 
+void display_detail_packet(t_iphdr *ip_hdr, t_icmphdr *icmp_hdr, uint8_t *data);
+
+/* send ping */
+int				send_ping(t_context *c);
 
 /* socket handle */
 // int				close_socket(int sock);
