@@ -77,7 +77,9 @@ t_context init_ping_context(char *dest_addr)
     }
 	c.state.start = get_ms_time();
 	usleep(500);
-	printf(CYAN"Start time: %ld, diff %ld\n"RESET, c.state.start, get_ms_time() - c.state.start);
+	suseconds_t diff = (get_ms_time() - c.state.start);
+	printf(CYAN"Start time: %ld, diff %ld\n"RESET, c.state.start, diff);
+	ft_printf_fd(2, PURPLE"Start time: %i, diff %i\n"RESET, c.state.start, diff);
     return (c);    
 }
 

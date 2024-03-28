@@ -117,18 +117,33 @@ static void display_detail_packet(t_iphdr *ip_hdr, t_icmphdr *icmp_hdr, uint8_t 
 }
 
 
+
+static void display_formated_time(suseconds_t time)
+{
+	ft_printf_fd(1, CYAN"time=%i.%i ms\n"RESET, (time / 1000), (time % 1000));
+}
+
 static void display_ping_state(t_ping_state *state)
 {
-	printf(YELLOW"| Ping State |\n"RESET);
-	printf("   |-Start time : %ld\n", state->start);
-	printf("   |-Send time : %ld\n", state->send_time);
-	printf("   |-Min time : %ld\n", state->min);
-	printf("   |-Max time : %ld\n", state->max);
-	printf("   |-Average time : %ld\n", state->average);
-	printf("   |-Number of send : %u\n", state->nb_send);
-	printf("   |-Number of received : %u\n", state->nb_rcv);
-	printf("   |-Number of error : %u\n", state->nb_err);
+	ft_printf_fd(1, YELLOW"| Ping State |\n"RESET);
+	ft_printf_fd(1, "   |-Start time : %i\n", state->start);
+	ft_printf_fd(1, "   |-Send time : %i\n", state->send_time);
+	ft_printf_fd(1, "   |-Min time : %i\n", state->min);
+	ft_printf_fd(1, "   |-Max time : %i\n", state->max);
+	ft_printf_fd(1, "   |-Average time : %i\n", state->average);
+	ft_printf_fd(1, "   |-Number of send : %u\n", state->nb_send);
+	ft_printf_fd(1, "   |-Number of received : %u\n", state->nb_rcv);
+	ft_printf_fd(1, "   |-Number of error : %u\n", state->nb_err);
 }
+
+
+static void display_clean_data(t_context *c)
+{
+	char *dest_str = inet_ntoa(*(struct in_addr *)&(c->dst_sockaddr.sin_addr.s_addr));
+	ft_printf_fd(1, "PING %s (%s): %d data bytes\n", dest_str, dest_str, ICMP_DATA_SIZE);
+	// PING 192.168.1.1 (192.168.1.1): 56 data bytes
+}
+
 
 int8_t listen_icmp_reply(t_context *c)
 {
@@ -162,6 +177,10 @@ int8_t listen_icmp_reply(t_context *c)
 		suseconds_t rcv_time = get_ms_time();
 		update_ping_state(&c->state, c->state.send_time, rcv_time);
 		display_ping_state(&c->state);
+		display_formated_time(rcv_time - c->state.send_time);
+		
+		display_clean_data(c);
+		
 		ft_bzero(buffer, BUFFER_SIZE);
     }
 	return (0);

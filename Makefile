@@ -7,7 +7,7 @@ CFLAGS			=	-Wall -Wextra -Werror -O3 -g
 ASCII_ART		=	./rsc/mk/ascii.sh
 ASCII_NAME		=	${NAME}
 
-PING_ADDR		=	172.217.20.164
+PING_ADDR		=	216.58.215.36
 
 all:		$(NAME)
 
