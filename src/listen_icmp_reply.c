@@ -116,7 +116,21 @@ static void display_detail_packet(t_iphdr *ip_hdr, t_icmphdr *icmp_hdr, uint8_t 
 	display_brut_icmp_data(data, ICMP_DATA_SIZE);
 }
 
-int8_t listen_icmp_reply(int sock)
+
+static void display_ping_state(t_ping_state *state)
+{
+	printf(YELLOW"| Ping State |\n"RESET);
+	printf("   |-Start time : %ld\n", state->start);
+	printf("   |-Send time : %ld\n", state->send_time);
+	printf("   |-Min time : %ld\n", state->min);
+	printf("   |-Max time : %ld\n", state->max);
+	printf("   |-Average time : %ld\n", state->average);
+	printf("   |-Number of send : %u\n", state->nb_send);
+	printf("   |-Number of received : %u\n", state->nb_rcv);
+	printf("   |-Number of error : %u\n", state->nb_err);
+}
+
+int8_t listen_icmp_reply(t_context *c)
 {
     uint8_t         buffer[BUFFER_SIZE];
     struct iphdr    *ip_hdr;
@@ -128,7 +142,7 @@ int8_t listen_icmp_reply(int sock)
     while (!g_signal_received) {
         // ft_printf_fd(1, YELLOW"Waiting for ICMP Echo Reply, global: %d\n"RESET, g_signal_received);
         errno = 0;
-        bytes_received = recvfrom(sock, buffer, BUFFER_SIZE, 0, NULL, NULL);
+        bytes_received = recvfrom(c->rcv_sock, buffer, BUFFER_SIZE, 0, NULL, NULL);
 		if (g_signal_received) {
 			break ;
 		} else if (errno == EAGAIN || errno == EWOULDBLOCK) {
@@ -145,6 +159,9 @@ int8_t listen_icmp_reply(int sock)
 		if (verify_checksum(buffer, ip_hdr->check, icmp_hdr->checksum) == FALSE) {
 			return (1);
 		}
+		suseconds_t rcv_time = get_ms_time();
+		update_ping_state(&c->state, c->state.send_time, rcv_time);
+		display_ping_state(&c->state);
 		ft_bzero(buffer, BUFFER_SIZE);
     }
 	return (0);

@@ -93,8 +93,7 @@ void update_ping_state(t_ping_state *state, suseconds_t start, suseconds_t end)
 		state->max = diff;
 	}
 	state->nb_rcv++;
-	state->average = (state->average * state->nb_rcv + diff) / state->nb_rcv;
-	return (state);
+	state->average = ((state->average * state->nb_rcv) + diff) / state->nb_rcv;
 }
 
 /**
@@ -124,9 +123,12 @@ int main(int argc, char **argv)
         perror("sendto");
         goto free_socket;
     }
+	
+	c.state.send_time = get_ms_time();
+	c.state.nb_send++;
     ft_printf_fd(1, GREEN"Packet sent %u bytes to %s\n"RESET, send_ret, inet_ntoa(*(struct in_addr *)&dest_addr));
 
-    ret = listen_icmp_reply(c.rcv_sock);
+    ret = listen_icmp_reply(&c);
 
     /* Free socket label */
     free_socket:

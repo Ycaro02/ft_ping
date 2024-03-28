@@ -69,7 +69,7 @@ typedef struct s_ping_state
 	suseconds_t		average;		/* Average time, really needed, recompute between each ping sent ? */
 	uint32_t		nb_send;		/* Number of ping send */
 	uint32_t		nb_rcv;			/* Number of ping received */
-	uint32_t		nb_err;			/* Number of ping error */
+	uint32_t		nb_err;			/* Number of ping error/lost */
 }	t_ping_state;
 
 /**
@@ -99,13 +99,16 @@ typedef struct s_ping_packet
 /* Signal handling global variable */
 extern int		g_signal_received;
 
+/* main */
+void			update_ping_state(t_ping_state *state, suseconds_t start, suseconds_t end);
+
 /* socket handle */
 int				close_socket(int sock);
 int				open_rcv_socket(void);
 int				open_send_socket(void);
 
 /* listen icmp reply */
-int8_t			listen_icmp_reply(int sock);
+int8_t			listen_icmp_reply(t_context *c);
 
 /* build request */
 t_ping_packet	build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest);

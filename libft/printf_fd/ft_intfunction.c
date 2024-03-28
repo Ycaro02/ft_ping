@@ -76,7 +76,7 @@ int	ft_putlstr(char *str, int fd)
 	return (i);
 }
 
-int	ft_put_i_nbr(int nbr, int fd)
+int	ft_put_i_nbr(long long int nbr, int fd)
 {
 	int				count;
 	long long int	nb;
