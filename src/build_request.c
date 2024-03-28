@@ -18,7 +18,7 @@ uint16_t get_icmp_id_seq()
 {
 	static uint16_t id = 0;
 
-	if (id < UINT16_MAX) {
+	if (id < UINT16_MAX && id != 0) {
 		++id;
 	} else {
 		id = 0;

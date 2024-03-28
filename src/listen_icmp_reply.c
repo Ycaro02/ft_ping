@@ -118,10 +118,6 @@ static void display_detail_packet(t_iphdr *ip_hdr, t_icmphdr *icmp_hdr, uint8_t 
 
 
 
-static void display_formated_time(suseconds_t time)
-{
-	ft_printf_fd(1, CYAN"time=%i.%i ms\n"RESET, (time / 1000), (time % 1000));
-}
 
 static void display_ping_state(t_ping_state *state)
 {
@@ -137,11 +133,16 @@ static void display_ping_state(t_ping_state *state)
 }
 
 
-static void display_clean_data(t_context *c)
+static void display_formated_time(suseconds_t time) {
+	ft_printf_fd(1, YELLOW"time=%i.%i ms\n"RESET, (time / 1000), (time % 1000));
+}
+
+static void display_clean_data(t_context *c, t_iphdr *iphdr ,t_icmphdr *icmphdr)
 {
 	char *dest_str = inet_ntoa(*(struct in_addr *)&(c->dst_sockaddr.sin_addr.s_addr));
 	ft_printf_fd(1, "PING %s (%s): %d data bytes\n", dest_str, dest_str, ICMP_DATA_SIZE);
-	ft_printf_fd(1, "64 bytes from %s: icmp_seq=%d ttl=%d time=%i ms\n", dest_str, c->state.nb_send, 63, c->state.average);
+	ft_printf_fd(1, "64 bytes from %s: icmp_seq=%u ttl=%d ", dest_str, ntohs(icmphdr->un.echo.sequence), iphdr->ttl);
+	display_formated_time(c->state.average);
 	// 64 bytes from 192.168.1.1: icmp_seq=1 ttl=63 time=2.10 ms
 	// PING 192.168.1.1 (192.168.1.1): 56 data bytes
 }
@@ -181,7 +182,7 @@ int8_t listen_icmp_reply(t_context *c)
 		display_ping_state(&c->state);
 		display_formated_time(rcv_time - c->state.send_time);
 		
-		display_clean_data(c);
+		display_clean_data(c, ip_hdr, icmp_hdr);
 		
 		ft_bzero(buffer, BUFFER_SIZE);
     }
