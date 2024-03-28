@@ -141,6 +141,8 @@ static void display_clean_data(t_context *c)
 {
 	char *dest_str = inet_ntoa(*(struct in_addr *)&(c->dst_sockaddr.sin_addr.s_addr));
 	ft_printf_fd(1, "PING %s (%s): %d data bytes\n", dest_str, dest_str, ICMP_DATA_SIZE);
+	ft_printf_fd(1, "64 bytes from %s: icmp_seq=%d ttl=%d time=%i ms\n", dest_str, c->state.nb_send, 63, c->state.average);
+	// 64 bytes from 192.168.1.1: icmp_seq=1 ttl=63 time=2.10 ms
 	// PING 192.168.1.1 (192.168.1.1): 56 data bytes
 }
 
