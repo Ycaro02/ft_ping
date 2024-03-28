@@ -54,7 +54,7 @@ t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest)
     packet.icmphdr.un.echo.sequence = htons(seq_id);
 
     gener_random_data(packet.data, ICMP_DATA_SIZE);
-    ft_printf_fd(1, "Size of packet struct %u\n", sizeof(t_ping_packet));
+    // ft_printf_fd(1, "Size of packet struct %u\n", sizeof(t_ping_packet));
 
 	/* Compute ICMP checksum */
 	packet.icmphdr.checksum = compute_checksum((uint16_t *)&packet.icmphdr, ICMP_HDR_SIZE + ICMP_DATA_SIZE);

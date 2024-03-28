@@ -107,8 +107,6 @@ typedef struct s_ping_packet
 /* Signal handling global variable */
 extern int		g_signal_received;
 
-/* main */
-void			update_ping_summary(t_ping_sum *sum, suseconds_t start, suseconds_t end);
 
 /* socket handle */
 // int				close_socket(int sock);
@@ -117,6 +115,7 @@ int				open_rcv_socket(void);
 int				open_send_socket(void);
 
 /* listen icmp reply */
+void			update_ping_summary(t_ping_sum *sum, suseconds_t start, suseconds_t end);
 int8_t			listen_icmp_reply(t_context *c);
 
 /* build request */
@@ -131,3 +130,7 @@ void			gener_random_data(uint8_t *buff, int size);
 
 /* time */
 suseconds_t		get_ms_time(void);
+
+/* network utils */
+in_addr_t		ipv4_str_toaddr(char *str);
+in_addr_t		get_process_ipv4_addr();

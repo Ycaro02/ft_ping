@@ -117,15 +117,14 @@ void display_detail_packet(t_iphdr *ip_hdr, t_icmphdr *icmp_hdr, uint8_t *data)
 }
 
 
-
-static void display_ping_state(t_ping_state *state)
+void display_ping_state(t_ping_state *state)
 {
 	ft_printf_fd(1, YELLOW"| Ping State |\n"RESET);
 	ft_printf_fd(1, "   |-Send time : %i\n", state->send_time);
 	ft_printf_fd(1, "   |-Receive time : %i\n", state->rcv_time);
 }
 
-static void display_ping_summary(t_ping_sum *sum)
+void display_ping_summary(t_ping_sum *sum)
 {
 	ft_printf_fd(1, YELLOW"| Ping Summary |\n"RESET);
 	ft_printf_fd(1, "   |-Min time : %i\n", sum->min);
@@ -135,7 +134,6 @@ static void display_ping_summary(t_ping_sum *sum)
 	ft_printf_fd(1, "   |-Number of received : %u\n", sum->nb_rcv);
 	ft_printf_fd(1, "   |-Number of error : %u\n", sum->nb_err);
 }
-
 
 static void display_formated_time(suseconds_t time) {
 	ft_printf_fd(1, YELLOW"time=%i.%i ms\n"RESET, (time / 1000), (time % 1000));
@@ -147,6 +145,26 @@ static void display_clean_data(t_context *c, t_iphdr *iphdr ,t_icmphdr *icmphdr)
 	ft_printf_fd(1, "PING %s (%s): %d data bytes\n", dest_str, dest_str, ICMP_DATA_SIZE);
 	ft_printf_fd(1, "64 bytes from %s: icmp_seq=%u ttl=%d ", dest_str, ntohs(icmphdr->un.echo.sequence), iphdr->ttl);
 	display_formated_time(c->summary.average);
+}
+
+/**
+ *  @brief Update ping summary with new ping time (min, max and average)
+ *  @param sum ping summary structure
+ *  @param start packet sent time
+ *  @param end packet receive time
+*/
+void update_ping_summary(t_ping_sum *sum, suseconds_t start, suseconds_t end)
+{
+	suseconds_t diff = end - start;
+
+	if (sum->min == 0 || diff < sum->min) {
+		sum->min = diff;
+	}
+	if (diff > sum->max) {
+		sum->max = diff;
+	}
+	sum->nb_rcv++;
+	sum->average = ((sum->average * sum->nb_rcv) + diff) / sum->nb_rcv;
 }
 
 int8_t listen_icmp_reply(t_context *c)
@@ -180,9 +198,9 @@ int8_t listen_icmp_reply(t_context *c)
 		}
 		c->state.rcv_time = get_ms_time();
 		update_ping_summary(&c->summary, c->state.send_time, c->state.rcv_time);
-		display_ping_summary(&c->summary);
-		display_ping_state(&c->state);
-		display_formated_time(c->state.rcv_time - c->state.send_time);
+		// display_ping_summary(&c->summary);
+		// display_ping_state(&c->state);
+		// display_formated_time(c->state.rcv_time - c->state.send_time);
 		display_clean_data(c, ip_hdr, icmp_hdr);
 		ft_bzero(buffer, BUFFER_SIZE);
     }
