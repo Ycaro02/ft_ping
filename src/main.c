@@ -109,17 +109,16 @@ static void compute_standard_deviation(t_ping_sum *summary, t_list *time_lst)
 
 void display_clear_summary(t_context *c)
 {
-	// display_receive_lst(c->summary.rcv_time_lst);
-
+	char *name = c->name ? c->name : inet_ntoa(*(struct in_addr *)&c->dst_sockaddr.sin_addr.s_addr);
+	uint32_t packet_loss = 0;
+	
+	if (c->summary.nb_send == 0) {
+		return;
+	}
+	packet_loss = 100 - ((c->summary.nb_rcv * 100) / c->summary.nb_send);
 	compute_average_time(&c->summary, c->summary.rcv_time_lst);
 	compute_standard_deviation(&c->summary, c->summary.rcv_time_lst);
-
-	char *name = c->name ? c->name : inet_ntoa(*(struct in_addr *)&c->dst_sockaddr.sin_addr.s_addr);
-
-
 	ft_printf_fd(1, CYAN"--- %s ping statistics ---\n"RESET, name);
-
-	uint32_t packet_loss = 100 - ((c->summary.nb_rcv * 100) / c->summary.nb_send);
 	ft_printf_fd(1, "%u packets transmitted, %u packets received, %u%% packet loss\n", c->summary.nb_send, c->summary.nb_rcv, packet_loss);
 	ft_printf_fd(1, "round-trip "GREEN"min"RESET"/"YELLOW"avg"RESET"/"RED"max"RESET"/"CYAN"stddev"RESET" = ", c->summary.min, c->summary.average, c->summary.max, c->summary.stddev);
 	display_ms_time(GREEN, c->summary.min, 0);
