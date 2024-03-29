@@ -14,8 +14,6 @@ t_context init_ping_context(int argc, char **argv)
 	char *dest_addr = "";
 
     ft_bzero(&c, sizeof(t_context));
-
-
 	c.flag = parse_flag(argc, argv, &flag_error);
 	if (flag_error == -1) {
 		c.rcv_sock = -1;
@@ -27,7 +25,6 @@ t_context init_ping_context(int argc, char **argv)
 	if (args) {
 		dest_addr = args->content;
 	}
-
 
     c.src_addr = get_process_ipv4_addr();
     c.dst_sockaddr.sin_family = AF_INET;
@@ -125,6 +122,18 @@ void display_clear_summary(t_context *c)
 	// round-trip min/avg/max/stddev = 0.849/1.249/2.561/0.661 ms
 }
 
+static void free_context(t_context *c)
+{
+	if (c->summary.rcv_time_lst) {
+		ft_lstclear(&c->summary.rcv_time_lst, free);
+	}
+	if (c->name) {
+		free(c->name);
+	}
+    close_multi_socket(c->rcv_sock, c->send_sock);
+    ft_printf_fd(1, ORANGE"All ressources free\n"RESET);
+}
+
 /**
  *	@brief Main function
  *	@param argc number of arguments
@@ -141,26 +150,19 @@ int main(int argc, char **argv)
     }
     c = init_ping_context(argc, argv);
     if (c.send_sock == -1 || c.rcv_sock == -1) {
-        goto free_socket_label;
+        goto free_context_label;
     } else if (!send_ping(&c)) {
-        goto free_socket_label;
+        goto free_context_label;
     }
     /* If no error occur return code is 0*/
 	ret = 0;
 
     /* Free socket label */
-    free_socket_label:
+    free_context_label:
 	if (c.summary.nb_send > 0) {
 		display_clear_summary(&c);
 	}
-	if (c.summary.rcv_time_lst) {
-		ft_lstclear(&c.summary.rcv_time_lst, free);
-	}
-	if (c.name) {
-		free(c.name);
-	}
-    close_multi_socket(c.rcv_sock, c.send_sock);
-    ft_printf_fd(1, CYAN"Socket closed return in main\n"RESET);
+	free_context(&c);
     
     return (ret);
 }
