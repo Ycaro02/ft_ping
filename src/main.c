@@ -31,11 +31,12 @@ t_context init_ping_context(int argc, char **argv)
     c.dst_sockaddr.sin_addr.s_addr = ipv4_str_toaddr(dest_addr);
 	if (c.dst_sockaddr.sin_addr.s_addr == 0) {
 		 c.dst_sockaddr.sin_addr.s_addr = hostname_to_ipv4_addr(dest_addr);
-		 c.name = ft_strdup(dest_addr);
 		 if (c.dst_sockaddr.sin_addr.s_addr == 0) {
+        	ft_printf_fd(2, RED"ft_ping: %s: Name or service not known\n"RESET, dest_addr);
 			c.rcv_sock = -1;
 			return (c);
 		 }
+		 c.name = ft_strdup(dest_addr);
 	}
 	if ( c.dst_sockaddr.sin_addr.s_addr == 0) 
 		ft_printf_fd(2, CYAN"ft_ping: %s: No addr found\n"RESET, dest_addr);
