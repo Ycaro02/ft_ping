@@ -11,9 +11,15 @@ t_context init_ping_context(int argc, char **argv)
     t_context c;
 	int8_t flag_error = 0;
 	t_list *args = NULL; 
-	char *dest_addr = "";
+	char *dest_str = "";
+
+	in_addr_t *dest_addr = NULL;
 
     ft_bzero(&c, sizeof(t_context));
+    c.src_addr = get_process_ipv4_addr();
+    c.dst_sockaddr.sin_family = AF_INET;
+
+	/* get flag */
 	c.flag = parse_flag(argc, argv, &flag_error);
 	if (flag_error == -1) {
 		c.rcv_sock = -1;
@@ -23,23 +29,23 @@ t_context init_ping_context(int argc, char **argv)
 	/* need to iter on all args */
 	args = extract_args(argc, argv); 
 	if (args) {
-		dest_addr = args->content;
+		dest_str = args->content;
 	}
 
-    c.src_addr = get_process_ipv4_addr();
-    c.dst_sockaddr.sin_family = AF_INET;
-    c.dst_sockaddr.sin_addr.s_addr = ipv4_str_toaddr(dest_addr);
-	if (c.dst_sockaddr.sin_addr.s_addr == 0) {
-		 c.dst_sockaddr.sin_addr.s_addr = hostname_to_ipv4_addr(dest_addr);
-		 if (c.dst_sockaddr.sin_addr.s_addr == 0) {
-        	ft_printf_fd(2, RED"ft_ping: %s: Name or service not known\n"RESET, dest_addr);
+	/* create pointer to avoid repeat this structure access 4 time */
+	dest_addr = (in_addr_t *)&c.dst_sockaddr.sin_addr;
+    *dest_addr = ipv4_str_toaddr(dest_str);
+	if (*dest_addr == 0) {
+		 *dest_addr = hostname_to_ipv4_addr(dest_str);
+		 if (*dest_addr == 0) {
+        	ft_printf_fd(2, RED"ft_ping: %s: Name or service not known\n"RESET, dest_str);
 			c.rcv_sock = -1;
 			return (c);
 		 }
-		 c.name = ft_strdup(dest_addr);
+		 c.name = ft_strdup(dest_str);
 	}
 	if ( c.dst_sockaddr.sin_addr.s_addr == 0) 
-		ft_printf_fd(2, CYAN"ft_ping: %s: No addr found\n"RESET, dest_addr);
+		ft_printf_fd(2, CYAN"ft_ping: %s: No addr found\n"RESET, dest_str);
     c.send_sock = open_send_socket();
     c.rcv_sock = open_rcv_socket();
 
