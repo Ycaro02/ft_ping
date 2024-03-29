@@ -7,7 +7,7 @@
 static void signal_handler(int signum)
 {
     (void)signum;
-    ft_printf_fd(2, RED"\nSIGINT Catch\n"RESET);
+    ft_printf_fd(2, YELLOW"\nTimeout SIGINT\n"RESET);
     g_signal_received = 1;
 }
 
@@ -76,7 +76,7 @@ int send_ping(t_context *c)
 	ft_printf_fd(1, "%s", buff);
     
     
-    while (!g_signal_received && c->summary.nb_send < 1) {
+    while (!g_signal_received && c->summary.nb_send < 5) {
         init_signal_handler();
         if (!send_echo_request(c, packet)) {
             return (0);

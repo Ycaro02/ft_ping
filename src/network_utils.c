@@ -51,14 +51,14 @@ static void display_hostent(struct hostent *host)
 
     ft_printf_fd(1, "h_name: %s\n", host->h_name);
     ft_printf_fd(1, "h_aliases: ");
-    for (i = 0; host->h_aliases[i] != NULL; i++) {
+    for (i = 0; host->h_aliases[i]; i++) {
         ft_printf_fd(1, "%s ", host->h_aliases[i]);
     }
     ft_printf_fd(1, "\n");
     ft_printf_fd(1, "h_addrtype: %d\n", host->h_addrtype);
     ft_printf_fd(1, "h_length: %d\n", host->h_length);
     ft_printf_fd(1, "h_addr_list: ");
-    for (i = 0; host->h_addr_list[i] != NULL; i++) {
+    for (i = 0; host->h_addr_list[i]; i++) {
         ft_printf_fd(1, "%s ", inet_ntoa(*(struct in_addr *)host->h_addr_list[i]));
     }
     ft_printf_fd(1, "\n");

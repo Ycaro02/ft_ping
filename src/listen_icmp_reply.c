@@ -197,7 +197,10 @@ int8_t listen_icmp_reply(t_context *c)
         // ft_printf_fd(1, YELLOW"Waiting for ICMP Echo Reply, global: %d\n"RESET, g_signal_received);
 	errno = 0;
 	bytes_received = recvfrom(c->rcv_sock, buffer, BUFFER_SIZE, 0, NULL, NULL);
-	if (errno == EAGAIN || errno == EWOULDBLOCK) {
+
+	if (g_signal_received) {
+		return (TRUE);
+	} else if (errno == EAGAIN || errno == EWOULDBLOCK) {
 		ft_printf_fd(2, RED"Timeout Reached\n"RESET);
 	} else if (bytes_received != PACKET_SIZE) {
 		ft_printf_fd(1, RED"\nWrong bytes received number: %d\n"RESET, bytes_received);

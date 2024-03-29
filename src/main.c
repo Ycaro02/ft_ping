@@ -57,7 +57,7 @@ static void compute_average_time(t_ping_sum *summary, t_list *time_lst)
 	suseconds_t sum = 0;
 	uint32_t nb_elem = 0;
 	if (!time_lst) {
-		ft_printf_fd(1, "No time list\n");
+		// ft_printf_fd(1, "No time list\n");
 		return;
 	}
 	for (t_list *current = time_lst; current; current = current->next) {
@@ -88,7 +88,7 @@ static void compute_standard_deviation(t_ping_sum *summary, t_list *time_lst)
 
 void display_clear_summary(t_context *c)
 {
-	display_receive_lst(c->summary.rcv_time_lst);
+	// display_receive_lst(c->summary.rcv_time_lst);
 
 	compute_average_time(&c->summary, c->summary.rcv_time_lst);
 	compute_standard_deviation(&c->summary, c->summary.rcv_time_lst);
@@ -97,7 +97,9 @@ void display_clear_summary(t_context *c)
 
 
 	ft_printf_fd(1, FILL_YELLOW"--- %s ping statistics ---\n"RESET, name);
-	ft_printf_fd(1, "%u packets transmitted, %u packets received, %u%% packet loss\n", c->summary.nb_send, c->summary.nb_rcv, (c->summary.nb_err * 100) / c->summary.nb_send);
+
+	uint32_t packet_loss = 100 - ((c->summary.nb_rcv * 100) / c->summary.nb_send);
+	ft_printf_fd(1, "%u packets transmitted, %u packets received, %u%% packet loss\n", c->summary.nb_send, c->summary.nb_rcv, packet_loss);
 	ft_printf_fd(1, "round-trip "GREEN"min"RESET"/"YELLOW"avg"RESET"/"RED"max"RESET"/"CYAN"stddev"RESET" = ", c->summary.min, c->summary.average, c->summary.max, c->summary.stddev);
 	display_ms_time(GREEN, c->summary.min, 0);
 	display_ms_time(YELLOW ,c->summary.average, 0);
