@@ -69,15 +69,12 @@ in_addr_t hostname_to_ipv4_addr(char *hostname)
     struct hostent *host = NULL;
     in_addr_t addr = 0;
 
-    sethostent(1); 
     host = gethostbyname(hostname);
     if (host == NULL) {
         ft_printf_fd(2, PURPLE"ft_ping: %s: Name or service not known\n"RESET, hostname);
-        endhostent();
         return (0);
     }
     display_hostent(host);
     addr = *(in_addr_t *)host->h_addr_list[0];
-    endhostent();
     return (addr);
 }
