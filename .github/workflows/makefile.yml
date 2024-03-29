@@ -1,0 +1,26 @@
+name: Makefile CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install valgrind
+      run: sudo apt update && sudo apt install valgrind -y
+    
+    - name: Run make
+      run: make
+
+    - name: Run All test
+      run: make test vtest
+
+    - name: clean
+      run: make fclean
