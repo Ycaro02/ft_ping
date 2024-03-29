@@ -16,6 +16,8 @@
 
 #include "../libft/libft.h"     /* Libft library,*/
 
+#include "../libft/parse_flag/parse_flag.h" /* Parse flag library */
+
 /* Typedef sockaddr_in structure */
 typedef struct sockaddr_in t_sockaddr_in;
 
