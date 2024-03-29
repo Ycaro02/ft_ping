@@ -152,10 +152,10 @@ void update_ping_summary(t_ping_sum *sum, suseconds_t start, suseconds_t end)
 	if (diff > sum->max) {
 		sum->max = diff;
 	}
-	ft_printf_fd(1, "BEFORE sum->average %i, sum->nb_rcv %i, diff %i\n", sum->average, sum->nb_rcv, diff);
+	// ft_printf_fd(1, "BEFORE sum->average %i, sum->nb_rcv %i, diff %i\n", sum->average, sum->nb_rcv, diff);
 	sum->average = ((sum->average * sum->nb_rcv) + diff) / (sum->nb_rcv + 1);
 	sum->nb_rcv++;
-	ft_printf_fd(1, RED"AFTER sum->average %i, sum->nb_rcv %i, diff %i\n"RESET, sum->average, sum->nb_rcv, diff);
+	// ft_printf_fd(1, RED"AFTER sum->average %i, sum->nb_rcv %i, diff %i\n"RESET, sum->average, sum->nb_rcv, diff);
 
 }
 

@@ -59,15 +59,15 @@ int main(int argc, char **argv)
     }
     c = init_ping_context(argv[1]);
     if (c.send_sock == -1 || c.rcv_sock == -1) {
-        goto free_socket;
+        goto free_socket_label;
+    } else if (!send_ping(&c)) {
+        goto free_socket_label;
     }
-    /* Send first packet */
-    if (!send_ping(&c)) {
-        goto free_socket;
-    }
-    ret = 0;
+    /* If no error occur return code is 0*/
+	ret = 0;
+
     /* Free socket label */
-    free_socket:
+    free_socket_label:
     close_multi_socket(c.rcv_sock, c.send_sock);
 	if (c.summary.nb_send > 0) {
 		display_clear_summary(&c);
