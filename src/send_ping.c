@@ -64,7 +64,7 @@ int send_ping(t_context *c)
     t_ping_packet   packet;
 	char *dest_str = inet_ntoa(*(struct in_addr *)&(c->dst_sockaddr.sin_addr.s_addr));
 	char *name = c->name ? c->name : dest_str;
-
+    int ret = 1;
 
     init_signal_handler();
 
@@ -80,9 +80,9 @@ int send_ping(t_context *c)
         if (!send_echo_request(c, packet)) {
             return (0);
         }
-        listen_icmp_reply(c);
+        ret = listen_icmp_reply(c);
         update_packet(&packet);
         usleep(1000000);
     }
-    return (1);
+    return (ret);
 }

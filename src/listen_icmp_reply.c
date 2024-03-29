@@ -20,20 +20,47 @@ void display_detail_iphdr(struct iphdr *header)
     ft_printf_fd(1, "   |-Destination IP : %s\n", inet_ntoa(*(struct in_addr *)&header->daddr));
 }
 
+
+char *get_str_msg_type(uint8_t type)
+{
+	if (type == ICMP_ECHOREPLY) {
+		return (YELLOW"ECHO REPLY"RESET);
+	} else if (type == ICMP_ECHO) {
+		return (YELLOW"ECHO REQUEST"RESET);
+	} else if (type == ICMP_DEST_UNREACH) {
+		return (RED"DESTINATION UNREACHABLE"RESET);
+	} else if (type == ICMP_SOURCE_QUENCH) {
+		return (RED"SOURCE QUENCH"RESET);
+	} else if (type == ICMP_REDIRECT) {
+		return (RED"REDIRECT"RESET);
+	} else if (type == ICMP_TIME_EXCEEDED) {
+		return (RED"TIME EXCEEDED"RESET);
+	} else if (type == ICMP_PARAMETERPROB) {
+		return (RED"PARAMETER PROBLEM"RESET);
+	} else if (type == ICMP_TIMESTAMP) {
+		return (RED"TIMESTAMP"RESET);
+	} else if (type == ICMP_TIMESTAMPREPLY) {
+		return (RED"TIMESTAMP REPLY"RESET);
+	} else if (type == ICMP_INFO_REQUEST) {
+		return (RED"INFORMATION REQUEST"RESET);
+	} else if (type == ICMP_INFO_REPLY) {
+		return (RED"INFORMATION REPLY"RESET);
+	} else if (type == ICMP_ADDRESS) {
+		return (RED"ADDRESS MASK REQUEST"RESET);
+	} else if (type == ICMP_ADDRESSREPLY) {
+		return (RED"ADDRESS MASK REPLY"RESET);
+	} else {
+		return ("UNKNOWN");
+	}
+}
+
 /**
  * @brief Display ICMP header details
  * @param header ICMP header structure
 */
 void display_detail_icmphdr(struct icmphdr *header)
 {
-	char *icmp_type;
-	if (header->type == ICMP_ECHOREPLY) {
-		icmp_type = YELLOW"ECHO REPLY"RESET;
-	} else if (header->type == ICMP_ECHO) {
-		icmp_type = CYAN"ECHO REQUEST"RESET;
-	} else {
-		icmp_type = RED"UNKNOWN"RESET;
-	}
+	char *icmp_type = get_str_msg_type(header->type);
     ft_printf_fd(1, PURPLE"| ICMP Header |\n"RESET);
     ft_printf_fd(1, "   |-Type : %u %s\n", (unsigned int)(header->type), icmp_type);
     ft_printf_fd(1, "   |-Code : %u\n", (unsigned int)(header->code));
@@ -186,6 +213,19 @@ void update_ping_summary(t_context *c, suseconds_t start, suseconds_t end)
 	}
 }
 
+static void display_clean_error(t_context *c, ssize_t bytes_rcv, uint8_t error)
+{
+	char buff[1024];
+	char *error_str = get_str_msg_type(error);
+	char *dest_str = inet_ntoa(*(struct in_addr *)&(c->dst_sockaddr.sin_addr.s_addr));
+
+	ft_bzero(buff, 1024);
+	sprintf(buff, "from "CYAN"%s (%s)"RESET" %s\n", dest_str, dest_str, error_str);
+
+	ft_printf_fd(1, ""RED"%u"RESET" bytes %s", bytes_rcv, buff);
+	// 92 bytes from livebox.home (192.168.1.1):
+}
+
 int8_t listen_icmp_reply(t_context *c)
 {
     uint8_t         buffer[BUFFER_SIZE];
@@ -202,8 +242,15 @@ int8_t listen_icmp_reply(t_context *c)
 		return (TRUE);
 	} else if (errno == EAGAIN || errno == EWOULDBLOCK) {
 		ft_printf_fd(2, RED"Timeout Reached\n"RESET);
-	} else if (bytes_received != PACKET_SIZE) {
-		ft_printf_fd(1, RED"\nWrong bytes received number: %d\n"RESET, bytes_received);
+	} else if (bytes_received > PACKET_SIZE) { /* care here need to check all case before read data*/
+		ip_hdr = (struct iphdr *)buffer;
+		icmp_hdr = (struct icmphdr *)(buffer + IP_HDR_SIZE);
+		display_clean_error(c, bytes_received - IP_HDR_SIZE, icmp_hdr->type);
+		// display_clean_data(c, ip_hdr, icmp_hdr);
+		// display_detail_packet(ip_hdr, icmp_hdr, buffer + IP_HDR_SIZE + ICMP_HDR_SIZE);
+		return (FALSE);
+	} else if (bytes_received < PACKET_SIZE) {
+		ft_printf_fd(1, RED"\nNot enought bytes received number: %d\n"RESET, bytes_received);
 		return (FALSE);
 	}
 	ip_hdr = (struct iphdr *)buffer;

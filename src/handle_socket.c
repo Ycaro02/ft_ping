@@ -21,9 +21,9 @@ int open_send_socket(void)
 
 int open_rcv_socket(void)
 {
-    int 	sockfd;
+    int 	sockfd = -1;
 	struct	timeval tv;
-	
+
 	tv.tv_sec = 10;
 	tv.tv_usec = 0;
 
