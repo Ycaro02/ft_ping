@@ -10,6 +10,7 @@
 #include <signal.h>             /* Signal handling */
 #include <fcntl.h>              /* File control */
 #include <sys/time.h>			/* Time */
+#include <math.h>				/* Math functions */
 
 #include "../libft/libft.h"     /* Libft library,*/
 
@@ -120,8 +121,8 @@ int				open_rcv_socket(void);
 int				open_send_socket(void);
 
 /* listen icmp reply */
-void			update_ping_summary(t_ping_sum *sum, suseconds_t start, suseconds_t end);
 int8_t			listen_icmp_reply(t_context *c);
+void			update_ping_summary(t_context *c, suseconds_t start, suseconds_t end);
 
 /* build request */
 t_ping_packet	build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest);
@@ -143,3 +144,7 @@ in_addr_t		get_process_ipv4_addr();
 
 /* main */
 void display_ms_time(char *color, suseconds_t time, uint8_t last);
+
+
+/* debug */
+void display_receive_lst(t_list *rcv_list);

@@ -139,7 +139,7 @@ static void display_clean_data(t_context *c, t_iphdr *iphdr ,t_icmphdr *icmphdr)
 }
 
 
-static void display_receive_lst(t_list *rcv_list)
+void display_receive_lst(t_list *rcv_list)
 {
 	t_list *tmp = rcv_list;
 	suseconds_t *rcv_time = NULL;
@@ -148,10 +148,11 @@ static void display_receive_lst(t_list *rcv_list)
 	ft_printf_fd(1, YELLOW"| Receive Time List |\n"RESET);
 	while (tmp) {
 		rcv_time = (suseconds_t *)tmp->content;
-		ft_printf_fd(1, "   |-[%d] %i\n", i, *rcv_time);
+		ft_printf_fd(1, "%i, ", *rcv_time);
 		tmp = tmp->next;
 		i++;
 	}
+	ft_printf_fd(1, "\n");
 }
 
 /**
@@ -160,28 +161,27 @@ static void display_receive_lst(t_list *rcv_list)
  *  @param start packet sent time
  *  @param end packet receive time
 */
-void update_ping_summary(t_ping_sum *sum, suseconds_t start, suseconds_t end)
+void update_ping_summary(t_context *c, suseconds_t start, suseconds_t end)
 {
 	suseconds_t diff = end - start;
 	suseconds_t *rcv_node = NULL;
 
-	if (sum->min == 0 || diff < sum->min) {
-		sum->min = diff;
+	if (c->summary.min == 0 || diff < c->summary.min) {
+		c->summary.min = diff;
 	}
-	if (diff > sum->max) {
-		sum->max = diff;
+	if (diff > c->summary.max) {
+		c->summary.max = diff;
 	}
-	// ft_printf_fd(1, "BEFORE sum->average %i, sum->nb_rcv %i, diff %i\n", sum->average, sum->nb_rcv, diff);
-	// ft_printf_fd(1, RED"AFTER sum->average %i, sum->nb_rcv %i, diff %i\n"RESET, sum->average, sum->nb_rcv, diff);
-	sum->nb_rcv++;
-	sum->average = ((sum->average * sum->nb_rcv) + diff) / (sum->nb_rcv + 1);
+	// ft_printf_fd(1, "BEFORE c->summary.average %i, c->summary.nb_rcv %i, diff %i\n", c->summary.average, c->summary.nb_rcv, diff);
+	// ft_printf_fd(1, RED"AFTER c->summary.average %i, c->summary.nb_rcv %i, diff %i\n"RESET, c->summary.average, c->summary.nb_rcv, diff);
+	c->summary.nb_rcv++;
+	// c->summary.average = ((c->summary.average * c->summary.nb_rcv) + diff) / (c->summary.nb_rcv + 1);
 
 	rcv_node = ft_calloc(1, sizeof(suseconds_t));
 	if (rcv_node) {
 		*rcv_node = diff;
-		ft_lstadd_back(&sum->rcv_time_lst, ft_lstnew(rcv_node));		
+		ft_lstadd_back(&c->summary.rcv_time_lst, ft_lstnew(rcv_node));		
 	}
-	display_receive_lst(sum->rcv_time_lst);
 }
 
 int8_t listen_icmp_reply(t_context *c)
@@ -209,7 +209,7 @@ int8_t listen_icmp_reply(t_context *c)
 		return (FALSE);
 	}
 	c->state.rcv_time = get_ms_time();
-	update_ping_summary(&c->summary, c->state.send_time, c->state.rcv_time);
+	update_ping_summary(c, c->state.send_time, c->state.rcv_time);
 	// display_ping_summary(&c->summary);
 	// display_ping_state(&c->state);
 	// display_formated_time(c->state.rcv_time - c->state.send_time);

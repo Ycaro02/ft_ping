@@ -3,7 +3,7 @@ include rsc/mk/source.mk
 
 NAME			=	ft_ping
 CC				=	gcc
-CFLAGS			=	-Wall -Wextra -Werror -O3 -g
+CFLAGS			=	-Wall -Wextra -Werror -O3 -g 
 ASCII_ART		=	./rsc/mk/ascii.sh
 ASCII_NAME		=	${NAME}
 
@@ -16,7 +16,7 @@ all:		$(NAME)
 
 $(NAME):	$(OBJ_DIR) $(OBJS) $(DISPLAY_NAME) $(LIST) $(LIBFT)
 	@printf "$(CYAN)Compiling ${NAME} ...$(RESET)\n"
-	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LIBFT) $(LIST)
+	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LIBFT) $(LIST) -lm
 	@printf "$(GREEN)Compiling $(NAME) done$(RESET)\n"
 
 $(LIST):

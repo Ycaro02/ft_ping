@@ -40,8 +40,47 @@ void display_ms_time(char *color, suseconds_t time, uint8_t last)
 	}
 }
 
+static void compute_average_time(t_ping_sum *summary, t_list *time_lst)
+{
+	suseconds_t sum = 0;
+	uint32_t nb_elem = 0;
+	if (!time_lst) {
+		ft_printf_fd(1, "No time list\n");
+		return;
+	}
+	for (t_list *current = time_lst; current; current = current->next) {
+		sum += *(suseconds_t *)current->content;
+		++nb_elem;
+	}
+	summary->average = sum / nb_elem;
+}
+
+static void compute_standard_deviation(t_ping_sum *summary, t_list *time_lst)
+{
+	suseconds_t diff = 0;
+	suseconds_t sum = 0;
+	uint32_t nb_elem = 0;
+	
+	if (!time_lst) {
+		return;
+	}
+	for (t_list *current = time_lst; current; current = current->next) {
+		diff = (*(suseconds_t *)current->content) - summary->average;
+		sum += (diff * diff);
+		++nb_elem;
+	}
+
+	summary->stddev = sqrt(sum / nb_elem);
+}
+
+
 void display_clear_summary(t_context *c)
 {
+	display_receive_lst(c->summary.rcv_time_lst);
+
+	compute_average_time(&c->summary, c->summary.rcv_time_lst);
+	compute_standard_deviation(&c->summary, c->summary.rcv_time_lst);
+
 	ft_printf_fd(1, FILL_YELLOW"--- %s ping statistics ---\n"RESET, inet_ntoa(*(struct in_addr *)&c->dst_sockaddr.sin_addr.s_addr));
 	ft_printf_fd(1, "%u packets transmitted, %u packets received, %u%% packet loss\n", c->summary.nb_send, c->summary.nb_rcv, (c->summary.nb_err * 100) / c->summary.nb_send);
 	ft_printf_fd(1, "round-trip "GREEN"min"RESET"/"YELLOW"avg"RESET"/"RED"max"RESET"/"CYAN"stddev"RESET" = ", c->summary.min, c->summary.average, c->summary.max, c->summary.stddev);
@@ -77,13 +116,13 @@ int main(int argc, char **argv)
 
     /* Free socket label */
     free_socket_label:
-    close_multi_socket(c.rcv_sock, c.send_sock);
-	if (c.summary.rcv_time_lst) {
-		ft_lstclear(&c.summary.rcv_time_lst, free);
-	}
 	if (c.summary.nb_send > 0) {
 		display_clear_summary(&c);
 	}
+	if (c.summary.rcv_time_lst) {
+		ft_lstclear(&c.summary.rcv_time_lst, free);
+	}
+    close_multi_socket(c.rcv_sock, c.send_sock);
     ft_printf_fd(1, CYAN"Socket closed return in main\n"RESET);
     
     return (ret);
