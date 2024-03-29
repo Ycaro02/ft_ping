@@ -20,6 +20,29 @@ t_context init_ping_context(char *dest_addr)
     return (c);    
 }
 
+
+static void display_ms_time(char *color, suseconds_t time, uint8_t last)
+{
+	ft_printf_fd(1, "%s%i.%i"RESET, color, (time / 1000), (time % 1000));
+	if (!last) {
+		ft_printf_fd(1, "/");
+	} else {
+		ft_printf_fd(1, " ms\n");
+	}
+}
+
+void display_clear_summary(t_context *c)
+{
+	ft_printf_fd(1, FILL_YELLOW"--- %s ping statistics ---\n"RESET, inet_ntoa(*(struct in_addr *)&c->dst_sockaddr.sin_addr.s_addr));
+	ft_printf_fd(1, "%u packets transmitted, %u packets received, %u%% packet loss\n", c->summary.nb_send, c->summary.nb_rcv, (c->summary.nb_err * 100) / c->summary.nb_send);
+	ft_printf_fd(1, "round-trip "GREEN"min"RESET"/"YELLOW"avg"RESET"/"RED"max"RESET"/"CYAN"stddev"RESET" = ", c->summary.min, c->summary.average, c->summary.max, c->summary.stddev);
+	display_ms_time(GREEN, c->summary.min, 0);
+	display_ms_time(YELLOW ,c->summary.average, 0);
+	display_ms_time(RED, c->summary.max, 0);
+	display_ms_time(CYAN, c->summary.stddev, 1);
+	// round-trip min/avg/max/stddev = 0.849/1.249/2.561/0.661 ms
+}
+
 /**
  *	@brief Main function
  *	@param argc number of arguments
@@ -46,6 +69,9 @@ int main(int argc, char **argv)
     /* Free socket label */
     free_socket:
     close_multi_socket(c.rcv_sock, c.send_sock);
+	if (c.summary.nb_send > 0) {
+		display_clear_summary(&c);
+	}
     ft_printf_fd(1, CYAN"Socket closed return in main\n"RESET);
     
     return (ret);

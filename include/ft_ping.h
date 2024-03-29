@@ -64,6 +64,7 @@ typedef struct s_ping_summary
 	suseconds_t		min;			/* Minimum time */
 	suseconds_t		max;			/* Maximum time */
 	suseconds_t		average;		/* Average time, really needed, recompute between each ping sent ? */
+	suseconds_t		stddev;			/* Standard deviation */
 	uint32_t		nb_send;		/* Number of ping send */
 	uint32_t		nb_rcv;			/* Number of ping received */
 	uint32_t		nb_err;			/* Number of ping error/lost */

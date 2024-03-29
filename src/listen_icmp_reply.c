@@ -130,8 +130,10 @@ static void display_clean_data(t_context *c, t_iphdr *iphdr ,t_icmphdr *icmphdr)
 	sprintf(buff, GREEN"64"RESET" bytes from "PURPLE"%s"RESET": icmp_seq="BLUE"%u"RESET" ttl="RED"%d "RESET, dest_str, ntohs(icmphdr->un.echo.sequence), iphdr->ttl);
 	ft_printf_fd(1, "%s", buff);
 
+
+	display_formated_time(c->state.rcv_time - c->state.send_time);
+	// display_formated_time(c->summary.average);
 	// ft_printf_fd(1, "64 bytes from %s: icmp_seq=%u ttl=%d ", dest_str, ntohs(icmphdr->un.echo.sequence), iphdr->ttl);
-	display_formated_time(c->summary.average);
 }
 
 /**
@@ -150,8 +152,11 @@ void update_ping_summary(t_ping_sum *sum, suseconds_t start, suseconds_t end)
 	if (diff > sum->max) {
 		sum->max = diff;
 	}
+	ft_printf_fd(1, "BEFORE sum->average %i, sum->nb_rcv %i, diff %i\n", sum->average, sum->nb_rcv, diff);
+	sum->average = ((sum->average * sum->nb_rcv) + diff) / (sum->nb_rcv + 1);
 	sum->nb_rcv++;
-	sum->average = ((sum->average * sum->nb_rcv) + diff) / sum->nb_rcv;
+	ft_printf_fd(1, RED"AFTER sum->average %i, sum->nb_rcv %i, diff %i\n"RESET, sum->average, sum->nb_rcv, diff);
+
 }
 
 int8_t listen_icmp_reply(t_context *c)
