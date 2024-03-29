@@ -7,7 +7,7 @@ in_addr_t ipv4_str_toaddr(char *str)
 
     /* Convert presentation format to binary network format */
     if (inet_pton(AF_INET, str, &addr) <= 0) {
-        ft_printf_fd(2, RED"ft_ping: %s: Name or service not known\n"RESET, str);
+        // ft_printf_fd(2, RED"ft_ping: %s: Name or service not known\n"RESET, str);
         return (0);
     }
     return (addr.s_addr);
