@@ -24,7 +24,7 @@ int open_rcv_socket(void)
     int 	sockfd = -1;
 	struct	timeval tv;
 
-	tv.tv_sec = 10;
+	tv.tv_sec = 10; /* potential bonus option */
 	tv.tv_usec = 0;
 
     errno = 0;

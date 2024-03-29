@@ -226,6 +226,11 @@ static void display_clean_error(t_context *c, ssize_t bytes_rcv, uint8_t error)
 	// 92 bytes from livebox.home (192.168.1.1):
 }
 
+/**
+ *  @brief Listen icmp reply
+ *  @param c ping context
+ *  @return 1 if success 0 if failed
+*/
 int8_t listen_icmp_reply(t_context *c)
 {
     uint8_t         buffer[BUFFER_SIZE];

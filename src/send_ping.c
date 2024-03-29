@@ -23,11 +23,20 @@ static int init_signal_handler(void)
 	return (0);
 }
 
+/**
+ *  @brief Send encho request call to sendto
+ *  @param c ping context
+ *  @param packet ping packet to send
+ *  @return 1 if success 0 if failed
+*/
 uint8_t send_echo_request(t_context *c, t_ping_packet packet)
 {
-    ssize_t         send_ret = sendto(c->send_sock, &packet, sizeof(packet), 0, (struct sockaddr *)&c->dst_sockaddr, sizeof(c->dst_sockaddr));
+    ssize_t         send_ret = 0;
     
     errno = 0;
+
+    send_ret = sendto(c->send_sock, &packet, sizeof(packet), 0\
+        , (struct sockaddr *)&c->dst_sockaddr, sizeof(c->dst_sockaddr));
     if (send_ret == -1) {
         perror("sendto");
         return (0);
@@ -39,6 +48,10 @@ uint8_t send_echo_request(t_context *c, t_ping_packet packet)
     return (1);
 }
 
+/**
+ *  @brief Increment icmp header sequence field
+ *  @param seq_id pointer to sequence field
+*/
 void increment_icmp_seq(uint16_t *seq_id)
 {
     uint16_t seq = ntohs(*seq_id);
@@ -46,6 +59,10 @@ void increment_icmp_seq(uint16_t *seq_id)
     *seq_id = htons(seq);
 }
 
+/**
+ *  @brief Update ping packet, increment sequence and recompute checksum
+ *  @param packet ping packet to update
+*/
 void update_packet(t_ping_packet *packet)
 {
     increment_icmp_seq(&packet->icmphdr.un.echo.sequence);
@@ -58,6 +75,11 @@ void update_packet(t_ping_packet *packet)
     packet->iphdr.check = compute_checksum((uint16_t *)&packet->iphdr, IP_HDR_SIZE);
 }
 
+/**
+ *  @brief Send ping packet and listen for reply
+ *  @param c ping context
+ *  @return 1 if success 0 if failed
+*/
 int send_ping(t_context *c)
 {
     char buff[1024];
@@ -82,7 +104,7 @@ int send_ping(t_context *c)
         }
         ret = listen_icmp_reply(c);
         update_packet(&packet);
-        usleep(1000000);
+        usleep(1000000); /* possible option -i set by user */
     }
     return (ret);
 }
