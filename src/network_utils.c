@@ -45,7 +45,7 @@ in_addr_t get_process_ipv4_addr()
 
 
 
-static void display_hostent(struct hostent *host)
+void display_hostent(struct hostent *host)
 {
     int i;
 
@@ -74,7 +74,7 @@ in_addr_t hostname_to_ipv4_addr(char *hostname)
         ft_printf_fd(2, PURPLE"ft_ping: %s: Name or service not known\n"RESET, hostname);
         return (0);
     }
-    display_hostent(host);
+    // display_hostent(host);
     addr = *(in_addr_t *)host->h_addr_list[0];
     return (addr);
 }

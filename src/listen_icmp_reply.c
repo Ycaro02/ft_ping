@@ -129,7 +129,7 @@ static void display_clean_data(t_context *c, t_iphdr *iphdr ,t_icmphdr *icmphdr)
 
 
 	ft_bzero(buff, 1024);
-	sprintf(buff, GREEN"64"RESET" bytes from "PURPLE"%s"RESET": icmp_seq="BLUE"%u"RESET" ttl="RED"%d "RESET, dest_str, ntohs(icmphdr->un.echo.sequence), iphdr->ttl);
+	sprintf(buff, GREEN"64"RESET" bytes from "PURPLE"%s"RESET": icmp_seq="ORANGE"%u"RESET" ttl="RED"%d "RESET, dest_str, ntohs(icmphdr->un.echo.sequence), iphdr->ttl);
 	ft_printf_fd(1, "%s", buff);
 
 	display_ms_time(YELLOW, c->state.rcv_time - c->state.send_time, TRUE);

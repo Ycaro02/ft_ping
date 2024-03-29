@@ -14,11 +14,10 @@ t_context init_ping_context(char *dest_addr)
     c.src_addr = get_process_ipv4_addr();
     c.dst_sockaddr.sin_family = AF_INET;
     c.dst_sockaddr.sin_addr.s_addr = ipv4_str_toaddr(dest_addr);
-	if ( c.dst_sockaddr.sin_addr.s_addr == 0) {
-		ft_printf_fd(2, CYAN"ft_ping: %s: No addr found search for local hostname\n"RESET, dest_addr);
+	if (c.dst_sockaddr.sin_addr.s_addr == 0) {
 		 c.dst_sockaddr.sin_addr.s_addr = hostname_to_ipv4_addr(dest_addr);
 		 c.name = ft_strdup(dest_addr);
-		 if ( c.dst_sockaddr.sin_addr.s_addr == 0) {
+		 if (c.dst_sockaddr.sin_addr.s_addr == 0) {
 			c.send_sock = -1;
 			c.rcv_sock = -1;
 			return (c);
@@ -96,7 +95,7 @@ void display_clear_summary(t_context *c)
 	char *name = c->name ? c->name : inet_ntoa(*(struct in_addr *)&c->dst_sockaddr.sin_addr.s_addr);
 
 
-	ft_printf_fd(1, FILL_YELLOW"--- %s ping statistics ---\n"RESET, name);
+	ft_printf_fd(1, CYAN"--- %s ping statistics ---\n"RESET, name);
 
 	uint32_t packet_loss = 100 - ((c->summary.nb_rcv * 100) / c->summary.nb_send);
 	ft_printf_fd(1, "%u packets transmitted, %u packets received, %u%% packet loss\n", c->summary.nb_send, c->summary.nb_rcv, packet_loss);
