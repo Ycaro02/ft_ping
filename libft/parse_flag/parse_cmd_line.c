@@ -16,8 +16,5 @@ t_list *extract_args(int argc, char **argv)
 			ft_lstadd_back(&lst, ft_lstnew(ft_strdup(argv[i])));
 		}
 	}
-	if (!lst) {
-		ft_lstadd_back(&lst, ft_lstnew(ft_strdup("a.out")));
-	}
 	return (lst);
 }

@@ -6,11 +6,29 @@ int g_signal_received = 0;
  *	@brief Initialize ping context
  *	@param dest_addr destination address to send ping
 */
-t_context init_ping_context(char *dest_addr)
+t_context init_ping_context(int argc, char **argv)
 {
     t_context c;
+	int8_t flag_error = 0;
+	t_list *args = NULL; 
+	char *dest_addr = "";
 
     ft_bzero(&c, sizeof(t_context));
+
+
+	c.flag = parse_flag(argc, argv, &flag_error);
+	if (flag_error == -1) {
+		c.rcv_sock = -1;
+		return (c);
+	}
+	
+	/* need to iter on all args */
+	args = extract_args(argc, argv); 
+	if (args) {
+		dest_addr = args->content;
+	}
+
+
     c.src_addr = get_process_ipv4_addr();
     c.dst_sockaddr.sin_family = AF_INET;
     c.dst_sockaddr.sin_addr.s_addr = ipv4_str_toaddr(dest_addr);
@@ -18,7 +36,6 @@ t_context init_ping_context(char *dest_addr)
 		 c.dst_sockaddr.sin_addr.s_addr = hostname_to_ipv4_addr(dest_addr);
 		 c.name = ft_strdup(dest_addr);
 		 if (c.dst_sockaddr.sin_addr.s_addr == 0) {
-			c.send_sock = -1;
 			c.rcv_sock = -1;
 			return (c);
 		 }
@@ -28,6 +45,7 @@ t_context init_ping_context(char *dest_addr)
     c.send_sock = open_send_socket();
     c.rcv_sock = open_rcv_socket();
 
+	ft_lstclear(&args, free);
     return (c);    
 }
 
@@ -117,12 +135,11 @@ int main(int argc, char **argv)
     t_context       c;
     int8_t          ret = 1;
     
-
     if (argc < 2) {
         ft_printf_fd(2, PURPLE"%s: usage error: Destination address required\n"RESET, argv[0]);
         return (1);
     }
-    c = init_ping_context(argv[1]);
+    c = init_ping_context(argc, argv);
     if (c.send_sock == -1 || c.rcv_sock == -1) {
         goto free_socket_label;
     } else if (!send_ping(&c)) {
