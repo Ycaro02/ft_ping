@@ -5,12 +5,14 @@
 #include <netinet/ip.h>         /* Internet Protocol family */
 #include <netinet/ip_icmp.h>	/* ICMP protocol family */
 #include <arpa/inet.h>			/* Internet address family */
-#include <ifaddrs.h>			/* Interface address */
+#include <ifaddrs.h>			/* Interface address (ifaddr func) */
 #include <errno.h>              /* Error number */
 #include <signal.h>             /* Signal handling */
 #include <fcntl.h>              /* File control */
 #include <sys/time.h>			/* Time */
 #include <math.h>				/* Math functions */
+
+#include <netdb.h>				/* Network database operations (hostent func) */
 
 #include "../libft/libft.h"     /* Libft library,*/
 
@@ -140,6 +142,7 @@ suseconds_t		get_ms_time(void);
 /* network utils */
 in_addr_t		ipv4_str_toaddr(char *str);
 in_addr_t		get_process_ipv4_addr();
+in_addr_t hostname_to_ipv4_addr(char *hostname);
 
 
 /* main */

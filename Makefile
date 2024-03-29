@@ -7,7 +7,7 @@ CFLAGS			=	-Wall -Wextra -Werror -O3 -g
 ASCII_ART		=	./rsc/mk/ascii.sh
 ASCII_NAME		=	${NAME}
 
-PING_ADDR		=	192.168.1.1
+PING_ADDR		=	google.com
 
 all:		$(NAME)
 
@@ -61,7 +61,7 @@ test: $(NAME)
 	@sudo ./$(NAME) $(PING_ADDR)
 
 vtest: $(NAME)
-	@sudo valgrind --leak-check=full --track-fds=yes ./$(NAME) $(PING_ADDR)
+	@sudo valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes ./$(NAME) $(PING_ADDR)
 
 re:			fclean all
 

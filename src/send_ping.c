@@ -72,7 +72,7 @@ int send_ping(t_context *c)
 	ft_printf_fd(1, "%s", buff);
     
     
-    while (!g_signal_received && c->summary.nb_send < 10) {
+    while (!g_signal_received && c->summary.nb_send < 1) {
         init_signal_handler();
         if (!send_echo_request(c, packet)) {
             return (0);

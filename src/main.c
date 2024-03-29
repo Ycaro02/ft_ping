@@ -14,6 +14,17 @@ t_context init_ping_context(char *dest_addr)
     c.src_addr = get_process_ipv4_addr();
     c.dst_sockaddr.sin_family = AF_INET;
     c.dst_sockaddr.sin_addr.s_addr = ipv4_str_toaddr(dest_addr);
+	if ( c.dst_sockaddr.sin_addr.s_addr == 0) {
+		ft_printf_fd(2, CYAN"ft_ping: %s: No addr found search for local hostname\n"RESET, dest_addr);
+		 c.dst_sockaddr.sin_addr.s_addr = hostname_to_ipv4_addr(dest_addr);
+		 if ( c.dst_sockaddr.sin_addr.s_addr == 0) {
+			c.send_sock = -1;
+			c.rcv_sock = -1;
+			return (c);
+		 }
+	}
+	if ( c.dst_sockaddr.sin_addr.s_addr == 0) 
+		ft_printf_fd(2, CYAN"ft_ping: %s: No addr found\n"RESET, dest_addr);
     c.send_sock = open_send_socket();
     c.rcv_sock = open_rcv_socket();
 
