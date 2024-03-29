@@ -113,9 +113,9 @@ void display_ping_summary(t_ping_sum *sum)
 	ft_printf_fd(1, "   |-Number of error : %u\n", sum->nb_err);
 }
 
-static void display_formated_time(suseconds_t time) {
-	ft_printf_fd(1, "time="YELLOW"%i.%i ms\n"RESET, (time / 1000), (time % 1000));
-}
+// static void display_formated_time(suseconds_t time) {
+// 	ft_printf_fd(1, "time="YELLOW"%i.%i ms\n"RESET, (time / 1000), (time % 1000));
+// }
 
 static void display_clean_data(t_context *c, t_iphdr *iphdr ,t_icmphdr *icmphdr)
 {
@@ -130,10 +130,28 @@ static void display_clean_data(t_context *c, t_iphdr *iphdr ,t_icmphdr *icmphdr)
 	sprintf(buff, GREEN"64"RESET" bytes from "PURPLE"%s"RESET": icmp_seq="BLUE"%u"RESET" ttl="RED"%d "RESET, dest_str, ntohs(icmphdr->un.echo.sequence), iphdr->ttl);
 	ft_printf_fd(1, "%s", buff);
 
+	display_ms_time(YELLOW, c->state.rcv_time - c->state.send_time, TRUE);
 
-	display_formated_time(c->state.rcv_time - c->state.send_time);
+
+	// display_formated_time(c->state.rcv_time - c->state.send_time);
 	// display_formated_time(c->summary.average);
 	// ft_printf_fd(1, "64 bytes from %s: icmp_seq=%u ttl=%d ", dest_str, ntohs(icmphdr->un.echo.sequence), iphdr->ttl);
+}
+
+
+static void display_receive_lst(t_list *rcv_list)
+{
+	t_list *tmp = rcv_list;
+	suseconds_t *rcv_time = NULL;
+	int i = 0;
+
+	ft_printf_fd(1, YELLOW"| Receive Time List |\n"RESET);
+	while (tmp) {
+		rcv_time = (suseconds_t *)tmp->content;
+		ft_printf_fd(1, "   |-[%d] %i\n", i, *rcv_time);
+		tmp = tmp->next;
+		i++;
+	}
 }
 
 /**
@@ -145,6 +163,7 @@ static void display_clean_data(t_context *c, t_iphdr *iphdr ,t_icmphdr *icmphdr)
 void update_ping_summary(t_ping_sum *sum, suseconds_t start, suseconds_t end)
 {
 	suseconds_t diff = end - start;
+	suseconds_t *rcv_node = NULL;
 
 	if (sum->min == 0 || diff < sum->min) {
 		sum->min = diff;
@@ -153,10 +172,16 @@ void update_ping_summary(t_ping_sum *sum, suseconds_t start, suseconds_t end)
 		sum->max = diff;
 	}
 	// ft_printf_fd(1, "BEFORE sum->average %i, sum->nb_rcv %i, diff %i\n", sum->average, sum->nb_rcv, diff);
-	sum->average = ((sum->average * sum->nb_rcv) + diff) / (sum->nb_rcv + 1);
-	sum->nb_rcv++;
 	// ft_printf_fd(1, RED"AFTER sum->average %i, sum->nb_rcv %i, diff %i\n"RESET, sum->average, sum->nb_rcv, diff);
+	sum->nb_rcv++;
+	sum->average = ((sum->average * sum->nb_rcv) + diff) / (sum->nb_rcv + 1);
 
+	rcv_node = ft_calloc(1, sizeof(suseconds_t));
+	if (rcv_node) {
+		*rcv_node = diff;
+		ft_lstadd_back(&sum->rcv_time_lst, ft_lstnew(rcv_node));		
+	}
+	display_receive_lst(sum->rcv_time_lst);
 }
 
 int8_t listen_icmp_reply(t_context *c)

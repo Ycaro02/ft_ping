@@ -10,7 +10,7 @@ t_context init_ping_context(char *dest_addr)
 {
     t_context c;
 
-    ft_bzero(&c, sizeof(c));
+    ft_bzero(&c, sizeof(t_context));
     c.src_addr = get_process_ipv4_addr();
     c.dst_sockaddr.sin_family = AF_INET;
     c.dst_sockaddr.sin_addr.s_addr = ipv4_str_toaddr(dest_addr);
@@ -21,9 +21,18 @@ t_context init_ping_context(char *dest_addr)
 }
 
 
-static void display_ms_time(char *color, suseconds_t time, uint8_t last)
+void display_ms_time(char *color, suseconds_t time, uint8_t last)
 {
-	ft_printf_fd(1, "%s%i.%i"RESET, color, (time / 1000), (time % 1000));
+	uint32_t mod = time % 1000;
+
+	if (mod < 100) {
+		ft_printf_fd(1, "%s%i.0%i", color, (time / 1000), mod);
+	} else if (mod < 10) {
+		ft_printf_fd(1, "%s%i.00%i", color, (time / 1000), mod);
+	} else {
+		ft_printf_fd(1, "%s%i.%i", color, (time / 1000), mod);
+	}
+
 	if (!last) {
 		ft_printf_fd(1, "/");
 	} else {
@@ -69,6 +78,9 @@ int main(int argc, char **argv)
     /* Free socket label */
     free_socket_label:
     close_multi_socket(c.rcv_sock, c.send_sock);
+	if (c.summary.rcv_time_lst) {
+		ft_lstclear(&c.summary.rcv_time_lst, free);
+	}
 	if (c.summary.nb_send > 0) {
 		display_clear_summary(&c);
 	}

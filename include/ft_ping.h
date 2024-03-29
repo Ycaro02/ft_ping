@@ -61,6 +61,7 @@ typedef struct timeval t_timeval;
 */
 typedef struct s_ping_summary 
 {
+	t_list			*rcv_time_lst;	/* List of ping time */
 	suseconds_t		min;			/* Minimum time */
 	suseconds_t		max;			/* Maximum time */
 	suseconds_t		average;		/* Average time, really needed, recompute between each ping sent ? */
@@ -138,3 +139,7 @@ suseconds_t		get_ms_time(void);
 /* network utils */
 in_addr_t		ipv4_str_toaddr(char *str);
 in_addr_t		get_process_ipv4_addr();
+
+
+/* main */
+void display_ms_time(char *color, suseconds_t time, uint8_t last);
