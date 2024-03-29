@@ -63,12 +63,16 @@ int send_ping(t_context *c)
     char buff[1024];
     t_ping_packet   packet;
 	char *dest_str = inet_ntoa(*(struct in_addr *)&(c->dst_sockaddr.sin_addr.s_addr));
+
+	char *name = c->name ? c->name : dest_str;
+
+
     init_signal_handler();
 
     packet = build_ping_packet(c->src_addr, c->dst_sockaddr.sin_addr.s_addr);
 
 	ft_bzero(buff, 1024);
-	sprintf(buff, "PING "CYAN"%s (%s)"RESET": "GREEN"%d"RESET" data bytes\n", dest_str, dest_str, ICMP_DATA_SIZE);
+	sprintf(buff, "PING "CYAN"%s (%s)"RESET": "GREEN"%d"RESET" data bytes\n", name, dest_str, ICMP_DATA_SIZE);
 	ft_printf_fd(1, "%s", buff);
     
     

@@ -95,6 +95,7 @@ typedef struct s_context
     int             send_sock;      /* socket for sending */
     int             rcv_sock;       /* socket for receiving */
     uint16_t        flag;           /* ping flag */
+	char			*name;			/* destination name */
 } t_context;
 
 /**

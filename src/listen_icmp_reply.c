@@ -122,9 +122,11 @@ static void display_clean_data(t_context *c, t_iphdr *iphdr ,t_icmphdr *icmphdr)
 	char buff[1024];
 	char *dest_str = inet_ntoa(*(struct in_addr *)&(c->dst_sockaddr.sin_addr.s_addr));
 
+
 	// ft_bzero(buff, 1024);
 	// sprintf(buff, "PING "CYAN"%s (%s)"RESET": "GREEN"%d"RESET" data bytes\n", dest_str, dest_str, ICMP_DATA_SIZE);
 	// ft_printf_fd(1, "%s", buff);
+
 
 	ft_bzero(buff, 1024);
 	sprintf(buff, GREEN"64"RESET" bytes from "PURPLE"%s"RESET": icmp_seq="BLUE"%u"RESET" ttl="RED"%d "RESET, dest_str, ntohs(icmphdr->un.echo.sequence), iphdr->ttl);

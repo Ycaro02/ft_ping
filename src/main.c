@@ -17,6 +17,7 @@ t_context init_ping_context(char *dest_addr)
 	if ( c.dst_sockaddr.sin_addr.s_addr == 0) {
 		ft_printf_fd(2, CYAN"ft_ping: %s: No addr found search for local hostname\n"RESET, dest_addr);
 		 c.dst_sockaddr.sin_addr.s_addr = hostname_to_ipv4_addr(dest_addr);
+		 c.name = ft_strdup(dest_addr);
 		 if ( c.dst_sockaddr.sin_addr.s_addr == 0) {
 			c.send_sock = -1;
 			c.rcv_sock = -1;
@@ -92,7 +93,10 @@ void display_clear_summary(t_context *c)
 	compute_average_time(&c->summary, c->summary.rcv_time_lst);
 	compute_standard_deviation(&c->summary, c->summary.rcv_time_lst);
 
-	ft_printf_fd(1, FILL_YELLOW"--- %s ping statistics ---\n"RESET, inet_ntoa(*(struct in_addr *)&c->dst_sockaddr.sin_addr.s_addr));
+	char *name = c->name ? c->name : inet_ntoa(*(struct in_addr *)&c->dst_sockaddr.sin_addr.s_addr);
+
+
+	ft_printf_fd(1, FILL_YELLOW"--- %s ping statistics ---\n"RESET, name);
 	ft_printf_fd(1, "%u packets transmitted, %u packets received, %u%% packet loss\n", c->summary.nb_send, c->summary.nb_rcv, (c->summary.nb_err * 100) / c->summary.nb_send);
 	ft_printf_fd(1, "round-trip "GREEN"min"RESET"/"YELLOW"avg"RESET"/"RED"max"RESET"/"CYAN"stddev"RESET" = ", c->summary.min, c->summary.average, c->summary.max, c->summary.stddev);
 	display_ms_time(GREEN, c->summary.min, 0);
@@ -132,6 +136,9 @@ int main(int argc, char **argv)
 	}
 	if (c.summary.rcv_time_lst) {
 		ft_lstclear(&c.summary.rcv_time_lst, free);
+	}
+	if (c.name) {
+		free(c.name);
 	}
     close_multi_socket(c.rcv_sock, c.send_sock);
     ft_printf_fd(1, CYAN"Socket closed return in main\n"RESET);
