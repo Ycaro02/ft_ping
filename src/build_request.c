@@ -3,24 +3,13 @@
 /* Get icmp paquets id */
 static uint16_t get_icmp_id()
 {
-	static uint16_t id = 0;
+	static uint16_t id = 1;
 
 	if (id == UINT16_MAX) {
-		id = 0;
+		id = 1;
 	}
 	return (id++);
 }
-
-/* Get icmp paquets sequence id */
-// uint16_t get_icmp_id_seq()
-// {
-// 	static uint16_t seqid = 0;
-
-// 	if (seqid == UINT16_MAX) {
-// 		seqid = 0;
-// 	}
-// 	return (seqid++);
-// }
 
 t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest)
 {

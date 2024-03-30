@@ -18,7 +18,6 @@ int open_send_socket(void)
     return (sockfd);
 }
 
-
 int open_rcv_socket(void)
 {
     int 	sockfd = -1;

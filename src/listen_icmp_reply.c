@@ -260,6 +260,12 @@ int8_t listen_icmp_reply(t_context *c)
 	}
 	ip_hdr = (struct iphdr *)buffer;
 	icmp_hdr = (struct icmphdr *)(buffer + IP_HDR_SIZE);
+	if (icmp_hdr->type == ICMP_ECHO) { /* need to add check icmp id to match accordate reply */
+		// ft_printf_fd(1, "ICMP Echo Request received\n");
+		return (listen_icmp_reply(c));
+	}
+
+
 	// ft_printf_fd(1, "buff addr %p, new addr %p, compute %p\n", buffer, icmp_hdr);
 	// display_detail_packet(ip_hdr, icmp_hdr, buffer + IP_HDR_SIZE + ICMP_HDR_SIZE);
 	if (verify_checksum(buffer, ip_hdr->check, icmp_hdr->checksum) == FALSE) {
@@ -267,6 +273,8 @@ int8_t listen_icmp_reply(t_context *c)
 	}
 	c->state.rcv_time = get_ms_time();
 	update_ping_summary(c, c->state.send_time, c->state.rcv_time);
+
+	// display_detail_packet(ip_hdr, icmp_hdr, buffer + IP_HDR_SIZE + ICMP_HDR_SIZE);
 	// display_ping_summary(&c->summary);
 	// display_ping_state(&c->state);
 	// display_formated_time(c->state.rcv_time - c->state.send_time);

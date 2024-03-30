@@ -78,14 +78,22 @@ void update_packet(t_ping_packet *packet)
 /**
  *  @brief Display ping first stat
 */
-static void display_first_stat(t_context *c)
+static void display_first_stat(t_context *c, t_ping_packet packet)
 {
     char *dest_str = inet_ntoa(*(struct in_addr *)&(c->dst_sockaddr.sin_addr.s_addr));
     char *name = c->name ? c->name : dest_str;
     char buff[1024];
     ft_bzero(buff, 1024);
-    sprintf(buff, "PING "CYAN"%s (%s)"RESET": "RED"%d"RESET" data bytes\n", name, dest_str, ICMP_DATA_SIZE);
+
+// , id 0x0b15 = 2837
+
+
+    sprintf(buff, "PING "CYAN"%s (%s)"RESET": "RED"%d"RESET" data bytes", name, dest_str, ICMP_DATA_SIZE);
     ft_printf_fd(1, "%s", buff);
+	if (c->flag & V_OPTION) {
+		ft_printf_fd(1, ", id %p = %d", ntohs(packet.icmphdr.un.echo.id), ntohs(packet.icmphdr.un.echo.id));
+	} 
+	ft_printf_fd(1, "\n");
 }
 
 /**
@@ -100,7 +108,7 @@ int send_ping(t_context *c)
 
     init_signal_handler();
     packet = build_ping_packet(c->src_addr, c->dst_sockaddr.sin_addr.s_addr);
-    display_first_stat(c);
+    display_first_stat(c, packet);
     while (!g_signal_received && c->summary.nb_send < 5) {
         init_signal_handler();
         if (!send_echo_request(c, packet)) {
