@@ -104,19 +104,22 @@ static void display_first_stat(t_context *c, t_ping_packet packet)
 int send_ping(t_context *c)
 {
     t_ping_packet   packet;
-    int ret = 1;
+    int             ret = 0;
+    int8_t          error = 0;
 
     init_signal_handler();
     packet = build_ping_packet(c->src_addr, c->dst_sockaddr.sin_addr.s_addr);
     display_first_stat(c, packet);
     while (!g_signal_received && c->summary.nb_send < 5) {
-        init_signal_handler();
         if (!send_echo_request(c, packet)) {
             return (0);
         }
-        ret = listen_icmp_reply(c);
+        while (!ret) {
+            ret = listen_icmp_reply(c, &error);
+        }
         update_packet(&packet);
         usleep(1000000); /* possible option -i set by user */
+        ret = 0;
     }
-    return (ret);
+    return (0);
 }

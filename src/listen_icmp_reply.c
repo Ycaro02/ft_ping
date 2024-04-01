@@ -231,53 +231,48 @@ static void display_clean_error(t_context *c, ssize_t bytes_rcv, uint8_t error)
  *  @param c ping context
  *  @return 1 if success 0 if failed
 */
-int8_t listen_icmp_reply(t_context *c)
+int8_t listen_icmp_reply(t_context *c, int8_t *error)
 {
     uint8_t         buffer[BUFFER_SIZE];
+	struct sockaddr_in src_addr;
     struct iphdr    *ip_hdr;
     struct icmphdr  *icmp_hdr;
     ssize_t         bytes_received;
+	socklen_t addr_len = sizeof(src_addr);
 
 
-        // ft_printf_fd(1, YELLOW"Waiting for ICMP Echo Reply, global: %d\n"RESET, g_signal_received);
+	// ft_printf_fd(1, "Listen on addr: %s\n", inet_ntoa(*(struct in_addr *)&c->dst_sockaddr.sin_addr.s_addr));
+	
 	errno = 0;
-	bytes_received = recvfrom(c->rcv_sock, buffer, BUFFER_SIZE, 0, NULL, NULL);
+	bytes_received = recvfrom(c->rcv_sock, buffer, BUFFER_SIZE, 0, (struct sockaddr*)&src_addr, &addr_len);
 
-	if (g_signal_received) {
+	// ft_printf_fd(1, "bytes_received %d from %s\n", bytes_received, inet_ntoa(src_addr.sin_addr));
+	if (src_addr.sin_addr.s_addr != c->dst_sockaddr.sin_addr.s_addr) {
+		return (FALSE);
+	} else if (g_signal_received) {
 		return (TRUE);
 	} else if (errno == EAGAIN || errno == EWOULDBLOCK) {
 		ft_printf_fd(2, RED"Timeout Reached\n"RESET);
-	} else if (bytes_received > PACKET_SIZE) { /* care here need to check all case before read data*/
-		ip_hdr = (struct iphdr *)buffer;
-		icmp_hdr = (struct icmphdr *)(buffer + IP_HDR_SIZE);
-		display_clean_error(c, bytes_received - IP_HDR_SIZE, icmp_hdr->type);
-		// display_clean_data(c, ip_hdr, icmp_hdr);
-		// display_detail_packet(ip_hdr, icmp_hdr, buffer + IP_HDR_SIZE + ICMP_HDR_SIZE);
-		return (FALSE);
+		return (TRUE);
 	} else if (bytes_received < PACKET_SIZE) {
 		ft_printf_fd(1, RED"\nNot enought bytes received number: %d\n"RESET, bytes_received);
-		return (FALSE);
+		perror("recvfrom");
+		*error = 0;
+		return (TRUE);
 	}
+
 	ip_hdr = (struct iphdr *)buffer;
 	icmp_hdr = (struct icmphdr *)(buffer + IP_HDR_SIZE);
-	if (icmp_hdr->type == ICMP_ECHO) { /* need to add check icmp id to match accordate reply */
-		// ft_printf_fd(1, "ICMP Echo Request received\n");
-		return (listen_icmp_reply(c));
-	}
-
-
-	// ft_printf_fd(1, "buff addr %p, new addr %p, compute %p\n", buffer, icmp_hdr);
-	// display_detail_packet(ip_hdr, icmp_hdr, buffer + IP_HDR_SIZE + ICMP_HDR_SIZE);
+	if (bytes_received > PACKET_SIZE) { /* care here need to check all case before read data*/
+		display_clean_error(c, bytes_received - IP_HDR_SIZE, icmp_hdr->type);
+		return (TRUE);
+	} 
 	if (verify_checksum(buffer, ip_hdr->check, icmp_hdr->checksum) == FALSE) {
-		return (FALSE);
+		*error = 0;
+		return (TRUE);
 	}
 	c->state.rcv_time = get_ms_time();
 	update_ping_summary(c, c->state.send_time, c->state.rcv_time);
-
-	// display_detail_packet(ip_hdr, icmp_hdr, buffer + IP_HDR_SIZE + ICMP_HDR_SIZE);
-	// display_ping_summary(&c->summary);
-	// display_ping_state(&c->state);
-	// display_formated_time(c->state.rcv_time - c->state.send_time);
 	display_clean_data(c, ip_hdr, icmp_hdr);
 	ft_bzero(buffer, BUFFER_SIZE);
 	return (TRUE);
