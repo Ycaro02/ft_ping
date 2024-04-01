@@ -38,7 +38,7 @@ uint8_t send_echo_request(t_context *c, t_ping_packet packet)
     send_ret = sendto(c->send_sock, &packet, sizeof(packet), 0\
         , (struct sockaddr *)&c->dst_sockaddr, sizeof(c->dst_sockaddr));
     if (send_ret == -1) {
-        perror("sendto");
+        perror("ft_ping: sending packet");
         return (0);
     }
     c->state.send_time = get_ms_time();

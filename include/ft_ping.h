@@ -114,7 +114,7 @@ typedef struct s_ping_packet
 /* Signal handling global variable */
 extern int		g_signal_received;
 
-void display_detail_packet(t_iphdr *ip_hdr, t_icmphdr *icmp_hdr, uint8_t *data);
+void			display_detail_packet(t_iphdr *ip_hdr, t_icmphdr *icmp_hdr, uint8_t *data);
 
 /* send ping */
 int				send_ping(t_context *c);
@@ -145,8 +145,7 @@ suseconds_t		get_ms_time(void);
 /* network utils */
 in_addr_t		ipv4_str_toaddr(char *str);
 in_addr_t		get_process_ipv4_addr();
-in_addr_t hostname_to_ipv4_addr(char *hostname);
-
+in_addr_t		hostname_to_ipv4_addr(char *hostname);
 
 /* main */
 void display_ms_time(char *color, suseconds_t time, uint8_t last);
