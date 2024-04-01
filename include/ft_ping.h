@@ -150,6 +150,18 @@ in_addr_t		hostname_to_ipv4_addr(char *hostname);
 /* main */
 void display_ms_time(char *color, suseconds_t time, uint8_t last);
 
+/* detail display */
+char *get_str_msg_type(uint8_t type);
+void display_detail_packet(t_iphdr *ip_hdr, t_icmphdr *icmp_hdr, uint8_t *data);
+void display_ping_summary(t_ping_sum *sum);
+void display_ping_state(t_ping_state *state);
+void display_brut_icmp_data(uint8_t *data, size_t size);
+void display_char_data(uint8_t *data, size_t size);
+void display_detail_iphdr(struct iphdr *header);
+void display_detail_icmphdr(struct icmphdr *header);
+void display_rcv_timelist(t_list *rcv_list);
+
+
 
 /* debug */
 void display_receive_lst(t_list *rcv_list);

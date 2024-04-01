@@ -11,6 +11,7 @@ SRCS			=	main.c\
 					handle_time.c\
 					network_utils.c\
 					send_ping.c\
+					detail_display.c\
 
 
 MAKE_LIBFT		=	make -s -C libft
