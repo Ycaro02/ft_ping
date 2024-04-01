@@ -1,6 +1,5 @@
 #include "../include/ft_ping.h"
 
-
 /**
  * @brief signal handler function for SIGNINT
 */
@@ -80,12 +79,11 @@ void update_packet(t_ping_packet *packet)
 */
 static void display_first_stat(t_context *c, t_ping_packet packet)
 {
+    char buff[1024];
     char *dest_str = inet_ntoa(*(struct in_addr *)&(c->dst_sockaddr.sin_addr.s_addr));
     char *name = c->name ? c->name : dest_str;
-    char buff[1024];
-    ft_bzero(buff, 1024);
 
-// , id 0x0b15 = 2837
+    ft_bzero(buff, 1024);
 
 
     sprintf(buff, "PING "CYAN"%s (%s)"RESET": "RED"%d"RESET" data bytes", name, dest_str, ICMP_DATA_SIZE);
@@ -104,7 +102,6 @@ static void display_first_stat(t_context *c, t_ping_packet packet)
 int send_ping(t_context *c)
 {
     t_ping_packet   packet;
-    int             ret = 0;
     int8_t          error = 0;
 
     init_signal_handler();
@@ -114,12 +111,9 @@ int send_ping(t_context *c)
         if (!send_echo_request(c, packet)) {
             return (0);
         }
-        while (!ret) {
-            ret = listen_icmp_reply(c, &error);
-        }
+        while (!g_signal_received && !listen_icmp_reply(c, &error)) ;
         update_packet(&packet);
         usleep(1000000); /* possible option -i set by user */
-        ret = 0;
     }
     return (1);
 }

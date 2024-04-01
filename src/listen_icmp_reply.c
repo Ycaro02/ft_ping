@@ -23,35 +23,37 @@ void display_detail_iphdr(struct iphdr *header)
 
 char *get_str_msg_type(uint8_t type)
 {
-	if (type == ICMP_ECHOREPLY) {
+	switch (type) {
+	case ICMP_ECHOREPLY:
 		return (YELLOW"ECHO REPLY"RESET);
-	} else if (type == ICMP_ECHO) {
+	case ICMP_ECHO:
 		return (YELLOW"ECHO REQUEST"RESET);
-	} else if (type == ICMP_DEST_UNREACH) {
+	case ICMP_DEST_UNREACH:
 		return (RED"DESTINATION UNREACHABLE"RESET);
-	} else if (type == ICMP_SOURCE_QUENCH) {
+	case ICMP_SOURCE_QUENCH:
 		return (RED"SOURCE QUENCH"RESET);
-	} else if (type == ICMP_REDIRECT) {
+	case ICMP_REDIRECT:
 		return (RED"REDIRECT"RESET);
-	} else if (type == ICMP_TIME_EXCEEDED) {
+	case ICMP_TIME_EXCEEDED:
 		return (RED"TIME EXCEEDED"RESET);
-	} else if (type == ICMP_PARAMETERPROB) {
+	case ICMP_PARAMETERPROB:
 		return (RED"PARAMETER PROBLEM"RESET);
-	} else if (type == ICMP_TIMESTAMP) {
+	case ICMP_TIMESTAMP:
 		return (RED"TIMESTAMP"RESET);
-	} else if (type == ICMP_TIMESTAMPREPLY) {
+	case ICMP_TIMESTAMPREPLY:
 		return (RED"TIMESTAMP REPLY"RESET);
-	} else if (type == ICMP_INFO_REQUEST) {
+	case ICMP_INFO_REQUEST:
 		return (RED"INFORMATION REQUEST"RESET);
-	} else if (type == ICMP_INFO_REPLY) {
+	case ICMP_INFO_REPLY:
 		return (RED"INFORMATION REPLY"RESET);
-	} else if (type == ICMP_ADDRESS) {
+	case ICMP_ADDRESS:
 		return (RED"ADDRESS MASK REQUEST"RESET);
-	} else if (type == ICMP_ADDRESSREPLY) {
+	case ICMP_ADDRESSREPLY:
 		return (RED"ADDRESS MASK REPLY"RESET);
-	} else {
+	default:
 		return ("UNKNOWN");
 	}
+	return ("UNKNOWN");
 }
 
 /**
