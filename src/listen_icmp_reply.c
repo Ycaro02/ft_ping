@@ -60,12 +60,12 @@ static void display_clean_error(t_context *c, ssize_t bytes_rcv, uint8_t error)
 */
 int8_t listen_icmp_reply(t_context *c, int8_t *error)
 {
-    uint8_t         	buffer[BUFFER_SIZE];
-	struct sockaddr_in	src_addr;
-    struct iphdr    	*ip_hdr;
-    struct icmphdr  	*icmp_hdr;
-    ssize_t         	bytes_received = -1;
-	socklen_t 			addr_len = sizeof(src_addr);
+    uint8_t         buffer[BUFFER_SIZE];
+	t_sockaddr_in	src_addr;
+    t_iphdr			*ip_hdr;
+    t_icmphdr		*icmp_hdr;
+    ssize_t			bytes_received;
+	socklen_t		addr_len = sizeof(t_sockaddr_in);
 
 	ft_bzero(buffer, BUFFER_SIZE);
 	ft_bzero(&src_addr, sizeof(src_addr));
