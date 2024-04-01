@@ -91,7 +91,7 @@ static void display_first_stat(t_context *c, t_ping_packet packet)
     sprintf(buff, "PING "CYAN"%s (%s)"RESET": "RED"%d"RESET" data bytes", name, dest_str, ICMP_DATA_SIZE);
     ft_printf_fd(1, "%s", buff);
 	if (c->flag & V_OPTION) {
-		ft_printf_fd(1, ", id %p = %d", ntohs(packet.icmphdr.un.echo.id), ntohs(packet.icmphdr.un.echo.id));
+		ft_printf_fd(1, ", "PINK"id %p = %d"RESET, ntohs(packet.icmphdr.un.echo.id), ntohs(packet.icmphdr.un.echo.id));
 	} 
 	ft_printf_fd(1, "\n");
 }
@@ -121,5 +121,5 @@ int send_ping(t_context *c)
         usleep(1000000); /* possible option -i set by user */
         ret = 0;
     }
-    return (0);
+    return (1);
 }
