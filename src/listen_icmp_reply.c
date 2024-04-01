@@ -56,7 +56,8 @@ static void display_clean_error(t_context *c, ssize_t bytes_rcv, uint8_t error)
 /**
  *  @brief Listen icmp reply
  *  @param c ping context
- *  @return 1 if success 0 if failed
+ *	@param error pointer to set at 1 if error occur (no enought bytes or invalid checksum)
+ *  @return True if message receive from source address, FALSE if we need to continue to listen
 */
 int8_t listen_icmp_reply(t_context *c, int8_t *error)
 {
@@ -84,18 +85,19 @@ int8_t listen_icmp_reply(t_context *c, int8_t *error)
 	} else if (bytes_received < PACKET_SIZE) {
 		ft_printf_fd(1, RED"\nNot enought bytes received number: %d\n"RESET, bytes_received);
 		perror("recvfrom");
-		*error = 0;
+		*error = 1;
 		return (TRUE);
 	}
 
-	ip_hdr = (struct iphdr *)buffer;
-	icmp_hdr = (struct icmphdr *)(buffer + IP_HDR_SIZE);
+	ip_hdr = (t_iphdr *)buffer;
+	icmp_hdr = (t_icmphdr *)(buffer + IP_HDR_SIZE);
 	if (bytes_received > PACKET_SIZE) { /* care here need to check all case before read data*/
 		display_clean_error(c, bytes_received - IP_HDR_SIZE, icmp_hdr->type);
+		*error = 1;
 		return (TRUE);
 	} 
 	if (verify_checksum(buffer, ip_hdr->check, icmp_hdr->checksum) == FALSE) {
-		*error = 0;
+		*error = 1;
 		return (TRUE);
 	}
 	c->state.rcv_time = get_ms_time();

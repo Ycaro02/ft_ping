@@ -12,8 +12,8 @@
 enum ping_flag  {
     UNKNOW=0, 
     V_OPTION=1,
-	C_OPTION=16,
-	T_OPTION=16,
+	C_OPTION=2,
+	T_OPTION=4,
 };
 
 /* parse cmd_line */
@@ -28,5 +28,12 @@ void    set_flag(int *flags, int flag_val);
 void    unset_flag(int *flags, int flag_val);
 int8_t  has_flag(int flags, int flag_val);
 int8_t  flag_already_present(int flags, int flag_val);
+
+/* Need to refactor flag festion to accept flag + value
+    For this create a API for create/add node to linked list
+    of accepted flag, need to take the letters to add and value (-1 for no value/classic flag) 
+
+*/
+
 
 #endif /* PARSE_FLAG_H */
