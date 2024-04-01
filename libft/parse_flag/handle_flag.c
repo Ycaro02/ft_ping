@@ -41,3 +41,37 @@ int8_t has_flag(int flags, int flag_val) {
 int8_t flag_already_present(int flags, int flag_val) {
     return (has_flag(flags, flag_val));
 }
+
+int8_t search_exist_opt(t_list *opt_lst, uint8_t c)
+{
+    for (t_list *tmp = opt_lst; tmp; tmp = tmp->next) {
+        if (((t_opt_node *)tmp->content)->flag == c) {
+            return (1);
+        }
+    }
+    return (0);
+}
+
+int8_t add_flag_option(t_flag_context *flag_c, int8_t c, uint32_t value)
+{
+    t_opt_node *opt = NULL;
+
+    if (!flag_c) {
+        ft_printf_fd(2, "Invalid list option addr\n");
+        return (0);
+    } else if (search_exist_opt(flag_c->opt_lst, c)) {
+        ft_printf_fd(2, "Opt %c already present\n", c);
+        return (0);
+    }
+    opt = ft_calloc(sizeof(t_opt_node), 1);
+    if (!opt) {
+        ft_printf_fd(2, "Failed to allocate memory for opt\n");
+        return (0);
+    }
+    ft_lstadd_back(&flag_c->opt_lst, ft_lstnew(opt));
+    
+    char *new_char = ft_strjoin("", c);
+    char to_free = flag_c->opt_str == NULL ? 's' : 'a';
+    flag_c->opt_str = ft_strjoin_free(flag_c->opt_str, new_char, to_free);
+    return (1);
+}

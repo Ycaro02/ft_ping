@@ -16,6 +16,16 @@ enum ping_flag  {
 	T_OPTION=4,
 };
 
+typedef struct opt_node {
+    uint8_t             flag;
+    uint32_t            value;
+}   t_opt_node;
+
+typedef struct flag_context {
+    char        *opt_str;
+    t_list      *opt_lst;
+}   t_flag_context;
+
 /* parse cmd_line */
 t_list  *extract_args(int argc, char **argv);
 
@@ -30,8 +40,8 @@ int8_t  has_flag(int flags, int flag_val);
 int8_t  flag_already_present(int flags, int flag_val);
 
 /* Need to refactor flag festion to accept flag + value
-    For this create a API for create/add node to linked list
-    of accepted flag, need to take the letters to add and value (-1 for no value/classic flag) 
+    For this create a API for create/add node to linked list of accepted flag
+    need to take the letters to add and value (-1 for no value/classic flag) 
 
 */
 
