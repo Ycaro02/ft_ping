@@ -17,13 +17,15 @@ enum ping_flag  {
 };
 
 typedef struct opt_node {
-    uint8_t             flag;
-    uint32_t            value;
+    uint8_t             flag_char;  /* char represent flag */
+    uint32_t            flag_val;   /* flag value, used with bitwise to create application flag */
+    uint32_t            value;      /* value if value is linked */
+    // char                *full_name; /* full name opt */
 }   t_opt_node;
 
 typedef struct flag_context {
-    char        *opt_str;
-    t_list      *opt_lst;
+    char        *opt_str;       /* full char opt */
+    t_list      *opt_lst;       /* list of opt node */
 }   t_flag_context;
 
 /* parse cmd_line */
@@ -39,11 +41,10 @@ void    unset_flag(int *flags, int flag_val);
 int8_t  has_flag(int flags, int flag_val);
 int8_t  flag_already_present(int flags, int flag_val);
 
-/* Need to refactor flag festion to accept flag + value
-    For this create a API for create/add node to linked list of accepted flag
-    need to take the letters to add and value (-1 for no value/classic flag) 
-
-*/
-
+/* handle option */
+int8_t add_flag_option(t_flag_context *flag_c, uint8_t c, uint32_t flag_val, uint32_t value);
+void free_flag_context(t_flag_context *flag_c);
+void display_option_list(t_flag_context *flag_c, t_list *opt_lst);
+void free_flag_context(t_flag_context *flag_c);
 
 #endif /* PARSE_FLAG_H */
