@@ -41,6 +41,9 @@ static t_opt_node *create_opt_node(uint8_t c, uint32_t flag_val, uint32_t value)
     opt->flag_char = c;
     opt->flag_val = flag_val;
     opt->value = value;
+    if (value != OPT_NO_VALUE) {
+        opt->has_value = 1;
+    }
     return (opt);
 }
 
@@ -99,10 +102,10 @@ void test_opt()
 
 	ft_bzero(&flag_c, sizeof(t_flag_context));
 	ft_printf_fd(1, "Test opt\n");
-	add_flag_option(&flag_c, 'v', 1, -1);
-	add_flag_option(&flag_c, 'c', 2, -1);
-	add_flag_option(&flag_c, 'v', 1, -1);
-	add_flag_option(&flag_c, '2', 1, -1);
+	add_flag_option(&flag_c, 'v', 1, OPT_NO_VALUE);
+	add_flag_option(&flag_c, 'c', 2, 0);
+	add_flag_option(&flag_c, 'v', 1, 0);
+	add_flag_option(&flag_c, '2', 1, 0);
 	display_option_list(&flag_c, flag_c.opt_lst);
 	free_flag_context(&flag_c);
 }

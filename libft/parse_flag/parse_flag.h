@@ -16,10 +16,13 @@ enum ping_flag  {
 	T_OPTION=4,
 };
 
+#define OPT_NO_VALUE UINT32_MAX
+
 typedef struct opt_node {
     uint8_t             flag_char;  /* char represent flag */
     uint32_t            flag_val;   /* flag value, used with bitwise to create application flag */
     uint32_t            value;      /* value if value is linked */
+    int8_t              has_value;  /* if value is linked */
     // char                *full_name; /* full name opt */
 }   t_opt_node;
 
