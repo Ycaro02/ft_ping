@@ -31,38 +31,42 @@ static int get_flag_value(char c)
     return (flag);
 }
 
+static void check_for_flag(char* programe_name, char *str, int *flags, int8_t *error)
+{
+    int tmp_value = 0;
+
+    if (!str[1]) {
+        ft_printf_fd(2, PARSE_FLAG_ERR_MSG,  programe_name, str[0],  programe_name);
+        *error = -1;
+    } else if (str[1] == '-' && str[2] == '\0') { /* again special case to skip '--' fix with long option handling */
+        return ;
+    } else {
+        for (int j = 1; str[j]; ++j) {
+            tmp_value =  get_flag_value(str[j]);
+            if (tmp_value == -1) {
+                ft_printf_fd(2, PARSE_FLAG_ERR_MSG,  programe_name, str[j],  programe_name);
+                *error = -1;
+            } else if (flag_already_present(*flags, tmp_value) == FALSE) {
+                set_flag(flags, tmp_value);
+            }
+        }
+    }
+}
+
 /** 
  * @brief parse_flag
  * Parse user input to get flag
 */
 int parse_flag(int argc, char **argv, int8_t *error)
 {
-    int i = 1, flags = 0, tmp_value = 0;
+    int flags = 0;
 
-    while (i < argc) {
+    for (int i = 0; i < argc; ++i) {
         if (argv[i][0] == '-') {
-            if (!argv[i][1]) {   /* special case ugly */
-                ft_printf_fd(2, "%s: cannot access %s: No such file or directoryn", argv[0], argv[i]);
-            }
-            else if (argv[i][1] == '-' && argv[i][2] == '\0') { /* again special case to skip '--' */
-                ++i;
-                continue;
-            }
-            else {
-                for (int j = 1; argv[i][j]; ++j) {
-                    tmp_value =  get_flag_value(argv[i][j]);
-                    if (tmp_value == -1) {
-                        ft_printf_fd(2, "%s: invalid option -- %c\nTry ./%s --help for more information\n",  argv[0], argv[i][j],  argv[0]);
-                        *error = -1;
-                        return (0);
-                    }
-                    if (flag_already_present(flags, tmp_value) == FALSE)
-                        set_flag(&flags, tmp_value);
-                }
-            }
+            check_for_flag(argv[0], argv[i], &flags, error);
         }
-        ++i;
     }
+
     display_flags(flags);
 	return (flags);
 }
