@@ -48,6 +48,7 @@ SRC =	ft_memset.c \
 		parse_flag/parse_flag.c \
 		parse_flag/handle_flag.c \
 		parse_flag/parse_cmd_line.c \
+		parse_flag/handle_option.c \
 
 
 OBJ = $(SRC:.c=.o)
