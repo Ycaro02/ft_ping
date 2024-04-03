@@ -8,10 +8,10 @@ int8_t init_flag_context(int argc, char**argv, uint16_t *flag, uint8_t *exit_cod
 	int8_t flag_error = 0;
 
 	ft_bzero(&flag_c, sizeof(t_flag_context));
-	add_flag_option(&flag_c, H_FLAG_CHAR, H_OPTION, OPT_NO_VALUE);
-	add_flag_option(&flag_c, V_FLAG_CHAR, V_OPTION, OPT_NO_VALUE);
-	add_flag_option(&flag_c, C_FLAG_CHAR, C_OPTION, OPT_HAS_VALUE);
-	add_flag_option(&flag_c, T_FLAG_CHAR, T_OPTION, OPT_HAS_VALUE);
+	add_flag_option(&flag_c, H_FLAG_CHAR, H_OPTION, OPT_NO_VALUE, "help");
+	add_flag_option(&flag_c, V_FLAG_CHAR, V_OPTION, OPT_NO_VALUE, "verbose");
+	add_flag_option(&flag_c, C_FLAG_CHAR, C_OPTION, OPT_HAS_VALUE, "count");
+	add_flag_option(&flag_c, T_FLAG_CHAR, T_OPTION, OPT_HAS_VALUE, "ttl");
 
 	/* get flag */
 	*flag = parse_flag(argc, argv, &flag_c, &flag_error);

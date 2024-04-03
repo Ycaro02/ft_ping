@@ -33,6 +33,21 @@ static int get_flag_value(char *all_flag, char c)
     return (flag);
 }
 
+
+int flag_value_long_format(t_flag_context *flag_c, char *full_name)
+{
+    t_opt_node *opt = NULL;
+    int flag = -1;
+
+    opt = search_exist_opt(flag_c->opt_lst, is_same_full_name, full_name);
+    if (opt) {
+        flag = (1 << opt->flag_val);
+    }
+    return (flag);
+
+}
+
+
 static void *check_for_flag(char* programe_name, char *str, t_flag_context *flag_c, int *flags, int8_t *error)
 {
     t_opt_node *opt = NULL;
@@ -56,7 +71,7 @@ static void *check_for_flag(char* programe_name, char *str, t_flag_context *flag
             if (!already_present) {
                 set_flag(flags, tmp_value);
             }
-            opt = search_exist_opt(flag_c->opt_lst, is_same_char_opt, str[j]);
+            opt = search_exist_opt(flag_c->opt_lst, is_same_char_opt, &str[j]);
             if (opt && opt->has_value) {
                 return(opt);
             }
@@ -81,14 +96,14 @@ static char find_next_no_space(char *str) {
 int8_t str_is_digit(char *str) 
 {
     if (!str || !str[0]) {
-        return (0);
+        return (FALSE);
     }
     for (int i = 0; str[i]; ++i) {
         if (!ft_isdigit(str[i])) {
-            return (0);
+            return (FALSE);
         }
     }
-    return (1);
+    return (TRUE);
 }
 
 
@@ -115,10 +130,9 @@ static int search_opt_value(char **argv, int *i, t_opt_node *opt)
         char_skip = ((j == 0) * 2);
         opt_val = find_next_no_space(&argv[*i + j][char_skip]);
         if (opt_val != '\0') {
-            /* need to parse digit get by atoi here, accept only unsigned char value without 0*/
             opt->value = parse_flag_value(&argv[*i + j][char_skip]);
             if (opt->value == 0) {
-                ft_printf_fd(2, RESET""PARSE_FLAG_ERR_MSG_WRONG_ARGS,  argv[0], opt->flag_char, &argv[*i + j][char_skip],  argv[0]);
+                ft_printf_fd(2, PARSE_FLAG_ERR_MSG_WRONG_ARGS,  argv[0], opt->flag_char, &argv[*i + j][char_skip],  argv[0]);
                 return (FALSE);
             }
             argv[*i + j] = "";
@@ -148,11 +162,14 @@ int parse_flag(int argc, char **argv, t_flag_context *flag_c, int8_t *error)
     for (int i = 1; i < argc; ++i) {
         ft_printf_fd(1, YELLOW"Check str flag:argv[%d] %s\n"RESET,i, argv[i]);
         if (argv[i][0] == '-') {
+            /* if second char is '-' check for long format instead of char */
+
             opt = check_for_flag(argv[0], argv[i], flag_c, &flags, error);
             if (*error == -1) { /* if invalid flag return */
-                return (0);
+                return (FALSE);
             } else if (opt && !search_opt_value(argv, &i, opt)) {
-                return (0);
+                *error = -1;
+                return (FALSE);
             }
         }
     }
