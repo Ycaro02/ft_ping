@@ -20,6 +20,8 @@ enum ping_flag  {
 
 # define PARSE_FLAG_ERR_MSG_ARGS_REQ RED"%s: option requires an argument -- %c\nTry ./%s -h for more information\n"RESET
 
+# define PARSE_FLAG_ERR_MSG_WRONG_ARGS RED"%s: invalid argument -- %c don't accept [%s] as argument\nTry ./%s -h for more information\n"RESET
+
 #define OPT_NO_VALUE    0U
 #define OPT_HAS_VALUE   1U
 
