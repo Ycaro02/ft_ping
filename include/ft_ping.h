@@ -60,6 +60,7 @@ typedef struct timeval t_timeval;
 /* End of padding */
 #define DATA_END_PAD DATA_MBIDX + DATA_PAD_ZERO
 
+#define MANDATORY_HElP_MSG "Usage: ft_ping [-hv] destination\n-h: help\n-v: verbose output\n"
 
 /**
  * Ping summary structure one for program
@@ -96,8 +97,9 @@ typedef struct s_context
     in_addr_t       src_addr;		/* Source address */
     int             send_sock;      /* socket for sending */
     int             rcv_sock;       /* socket for receiving */
-    uint16_t        flag;           /* ping flag */
 	char			*name;			/* destination name */
+    uint16_t        flag;           /* ping command flag */
+	uint8_t			exit_code;		/* exit code */
 } t_context;
 
 /**

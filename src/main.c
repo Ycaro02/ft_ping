@@ -2,22 +2,36 @@
 
 int g_signal_received = 0;
 
-int8_t init_flag_context(int argc, char**argv, uint16_t *flag)
+int8_t init_flag_context(int argc, char**argv, uint16_t *flag, uint8_t *exit_code)
 {
 	t_flag_context flag_c;
 	int8_t flag_error = 0;
 
 	ft_bzero(&flag_c, sizeof(t_flag_context));
+	add_flag_option(&flag_c, H_FLAG_CHAR, H_OPTION, OPT_NO_VALUE);
 	add_flag_option(&flag_c, V_FLAG_CHAR, V_OPTION, OPT_NO_VALUE);
-	add_flag_option(&flag_c, C_FLAG_CHAR, C_OPTION, OPT_HAS_VALUE);
-	add_flag_option(&flag_c, T_FLAG_CHAR, T_OPTION, OPT_HAS_VALUE);
+	// add_flag_option(&flag_c, C_FLAG_CHAR, C_OPTION, OPT_HAS_VALUE);
+	// add_flag_option(&flag_c, T_FLAG_CHAR, T_OPTION, OPT_HAS_VALUE);
 
 	/* get flag */
 	*flag = parse_flag(argc, argv, &flag_c, &flag_error);
 	if (flag_error == -1) {
+		free_flag_context(&flag_c);
 		return (FALSE);
 	}
 	free_flag_context(&flag_c);
+
+	if (has_flag(*flag, H_OPTION)) {
+		ft_printf_fd(1, "Usage: %s destination\n", argv[0]);
+		ft_printf_fd(1, "Options:\n");
+		ft_printf_fd(1, "  -h help  \t\tShow this help message and exit\n");
+		ft_printf_fd(1, "  -v verbose\t\tVerbose output\n");
+		ft_printf_fd(1, "  -c count  \t\tStop after sending count ECHO_REQUEST packets\n");
+		ft_printf_fd(1, "  -t TTL  \t\tChange time to live value only between 1 and 255\n");
+		*exit_code = 0;
+		return (FALSE);
+	}
+
 	return (TRUE);
 }
 
@@ -35,13 +49,16 @@ t_context init_ping_context(int argc, char **argv)
 	char *dest_str = "";
 	in_addr_t *dest_addr = NULL;
 
+
     ft_bzero(&c, sizeof(t_context));
+	c.exit_code = 1;
+	c.send_sock = -1;
 	c.rcv_sock = -1;
     c.src_addr = get_process_ipv4_addr();
     c.dst_sockaddr.sin_family = AF_INET;
 
 	/* init flag context and parse cmd line to get flag in c.flag */	
-	if (!init_flag_context(argc, argv, &c.flag) ){
+	if (!init_flag_context(argc, argv, &c.flag, &c.exit_code) ){
 		return (c);
 	}
 	/* need to iter on all args */
@@ -52,7 +69,8 @@ t_context init_ping_context(int argc, char **argv)
 
 	/* store in local pointer var to avoid repeat this structure access 4 time */
 	dest_addr = (in_addr_t *)&c.dst_sockaddr.sin_addr;
-    *dest_addr = ipv4_str_toaddr(dest_str);
+    /* get ipv4 address of destination addr */
+	*dest_addr = ipv4_str_toaddr(dest_str);
 	if (*dest_addr == 0) {
 		 *dest_addr = hostname_to_ipv4_addr(dest_str);
 		 if (*dest_addr == 0) {
@@ -62,11 +80,6 @@ t_context init_ping_context(int argc, char **argv)
 		 }
 		 c.name = ft_strdup(dest_str);
 	}
-	// if (*dest_addr == 0) {
-	// 	ft_printf_fd(2, CYAN"ft_ping: %s: No addr found\n"RESET, dest_str);
-	// 	ft_lstclear(&args, free);
-	// 	return (c);
-	// }
 
     c.send_sock = open_send_socket();
     c.rcv_sock = open_rcv_socket();
@@ -169,7 +182,6 @@ static void free_context(t_context *c)
 int main(int argc, char **argv)
 {
     t_context       c;
-    int8_t          ret = 1;
     
     if (argc < 2) {
         ft_printf_fd(2, PURPLE"%s: usage error: Destination address required\n"RESET, argv[0]);
@@ -182,7 +194,7 @@ int main(int argc, char **argv)
         goto free_context_label;
     }
     /* If no error occur return code is 0*/
-	ret = 0;
+	c.exit_code = 0;
 
     /* Free socket label */
     free_context_label:
@@ -191,5 +203,5 @@ int main(int argc, char **argv)
 	}
 	free_context(&c);
     
-    return (ret);
+    return (c.exit_code);
 }

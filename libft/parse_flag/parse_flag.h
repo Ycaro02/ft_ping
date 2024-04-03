@@ -3,23 +3,27 @@
 
 #include "../libft.h"
 
-#define	V_FLAG_CHAR 'v'         /* 0 */ 
-#define	C_FLAG_CHAR 'c'			/* 1 */
-#define	T_FLAG_CHAR 't'			/* 2 */
-#define NB_FLAG		3			/* max flag str index*/
-#define	ALL_FLAG	"vct"		/* all flag str */
+#define H_FLAG_CHAR 'h'         /* 0*/
+#define	V_FLAG_CHAR 'v'         /* 1 */ 
+#define	C_FLAG_CHAR 'c'			/* 2 */
+#define	T_FLAG_CHAR 't'			/* 3 */
+// #define NB_FLAG		4			/* max flag str index*/
+// #define	ALL_FLAG	"hvct"		/* all flag str */
 
 enum ping_flag  {
     UNKNOW=0, 
-    V_OPTION=1,
-	C_OPTION=2,
-	T_OPTION=4,
+    H_OPTION=1,
+    V_OPTION=2,
+	C_OPTION=4,
+	T_OPTION=8,
 };
 
-# define PARSE_FLAG_ERR_MSG "%s: invalid option -- %c\nTry ./%s --help for more information\n"
+# define PARSE_FLAG_ERR_MSG "%s: invalid option -- %c\nTry ./%s -h for more information\n"
 
-#define OPT_NO_VALUE UINT32_MAX
-#define OPT_HAS_VALUE 0
+# define PARSE_FLAG_ERR_MSG_ARGS_REQ "%s: option requires an argument -- %c\nTry ./%s -h for more information\n"
+
+#define OPT_NO_VALUE    UINT32_MAX
+#define OPT_HAS_VALUE   0U
 
 typedef struct opt_node {
     uint8_t             flag_char;  /* char represent flag */
