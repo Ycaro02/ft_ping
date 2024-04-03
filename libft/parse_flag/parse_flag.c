@@ -90,30 +90,30 @@ int parse_flag(int argc, char **argv, t_flag_context *flag_c, int8_t *error)
     char opt_val = '\0';
     int8_t in_search = 0;
 
-
     for (int i = 1; i < argc; ++i) {
         ft_printf_fd(1, YELLOW"Check str flag:argv[%d] %s\n"RESET,i, argv[i]);
         if (argv[i][0] == '-') {
             opt = check_for_flag(argv[0], argv[i], flag_c, &flags, error);
-            if (*error == -1) {
+            if (*error == -1) { /* if invalid flag return */
                 return (0);
-            }
-            if (opt) {
-                ft_printf_fd(2, CYAN"upt opt->char = %c, last val %d -> ", opt->flag_char, opt->value);
-                for (int j = 0; argv[i + j]; ++j) {
-                    in_search = 1;
-                    char_skip = ((j == 0) * 2);
-                    opt_val = find_next_no_space(&argv[i + j][char_skip]);
-                    if (opt_val != '\0') {
-                        opt->value = ft_atoi(&argv[i + j][char_skip]);
-                        argv[i + j] = "";
-                        i += j;
-                        in_search = 0;
-                        ft_printf_fd(2, "new val %u, j = %d, first off %d\n"RESET, opt->value, j, char_skip); 
-                        break;
-                    }
+            } else if (!opt) { /* if not opt node found, ne need to update just continue */
+                continue ;
+            } 
+            ft_printf_fd(2, CYAN"update opt |%c|, curr val %d -> ", opt->flag_char, opt->value);
+            for (int j = 0; argv[i + j]; ++j) {
+                in_search = 1;
+                char_skip = ((j == 0) * 2);
+                opt_val = find_next_no_space(&argv[i + j][char_skip]);
+                if (opt_val != '\0') {
+                    /* need to parse digit get by atoi here, accept only unsigned char value without 0*/
+                    opt->value = ft_atoi(&argv[i + j][char_skip]);
                     argv[i + j] = "";
+                    i += j;
+                    in_search = 0;
+                    ft_printf_fd(2, "new val %u, j = %d, first off %d\n"RESET, opt->value, j, char_skip); 
+                    break;
                 }
+                argv[i + j] = "";
             }
         }
     }
@@ -121,7 +121,6 @@ int parse_flag(int argc, char **argv, t_flag_context *flag_c, int8_t *error)
     // for (int i = 0; i < argc; ++i) {
     //     ft_printf_fd(1, YELLOW"argv[%d] %s\n"RESET,i, argv[i]);
     // }
-
 
     if (in_search){
         ft_printf_fd(2, RESET""PARSE_FLAG_ERR_MSG_ARGS_REQ,  argv[0], opt->flag_char,  argv[0]);
