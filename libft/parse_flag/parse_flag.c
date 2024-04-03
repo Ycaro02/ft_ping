@@ -91,7 +91,7 @@ int parse_flag(int argc, char **argv, t_flag_context *flag_c, int8_t *error)
     int8_t in_search = 0;
 
 
-    for (int i = 0; i < argc; ++i) {
+    for (int i = 1; i < argc; ++i) {
         ft_printf_fd(1, YELLOW"Check str flag:argv[%d] %s\n"RESET,i, argv[i]);
         if (argv[i][0] == '-') {
             opt = check_for_flag(argv[0], argv[i], flag_c, &flags, error);
@@ -106,21 +106,22 @@ int parse_flag(int argc, char **argv, t_flag_context *flag_c, int8_t *error)
                     opt_val = find_next_no_space(&argv[i + j][char_skip]);
                     if (opt_val != '\0') {
                         opt->value = ft_atoi(&argv[i + j][char_skip]);
+                        argv[i + j] = "";
                         i += j;
                         in_search = 0;
                         ft_printf_fd(2, "new val %u, j = %d, first off %d\n"RESET, opt->value, j, char_skip); 
                         break;
                     }
+                    argv[i + j] = "";
                 }
             }
         }
     }
-    ft_printf_fd(1, "hey search %d\n", in_search);
+
     if (in_search){
         ft_printf_fd(2, RESET""PARSE_FLAG_ERR_MSG_ARGS_REQ,  argv[0], opt->flag_char,  argv[0]);
         *error = -1;
     }
-
     display_flags(flag_c->opt_str, flags);
 	return (flags);
 }
