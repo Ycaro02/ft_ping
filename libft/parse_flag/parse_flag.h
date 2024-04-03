@@ -37,9 +37,9 @@ typedef struct flag_context {
 t_list  *extract_args(int argc, char **argv);
 
 /* parse flag*/
-int     parse_flag(int argc, char **argv, int8_t *reject_all);
-void    display_flags(int flags);
-
+// int     parse_flag(int argc, char **argv, int8_t *reject_all);
+int     parse_flag(int argc, char **argv,t_flag_context *flag_c, int8_t *error);
+void display_flags(char *all_flag, int flags);
 /* handle flag */
 void    set_flag(int *flags, int flag_val);
 void    unset_flag(int *flags, int flag_val);
