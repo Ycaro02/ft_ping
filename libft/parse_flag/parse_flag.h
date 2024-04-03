@@ -7,8 +7,6 @@
 #define	V_FLAG_CHAR 'v'         /* 1 */ 
 #define	C_FLAG_CHAR 'c'			/* 2 */
 #define	T_FLAG_CHAR 't'			/* 3 */
-// #define NB_FLAG		4			/* max flag str index*/
-// #define	ALL_FLAG	"hvct"		/* all flag str */
 
 enum ping_flag  {
     UNKNOW=0, 
@@ -18,18 +16,18 @@ enum ping_flag  {
 	T_OPTION=8,
 };
 
-# define PARSE_FLAG_ERR_MSG "%s: invalid option -- %c\nTry ./%s -h for more information\n"
+# define PARSE_FLAG_ERR_MSG RED"%s: invalid option -- %c\nTry ./%s -h for more information\n"RESET
 
-# define PARSE_FLAG_ERR_MSG_ARGS_REQ "%s: option requires an argument -- %c\nTry ./%s -h for more information\n"
+# define PARSE_FLAG_ERR_MSG_ARGS_REQ RED"%s: option requires an argument -- %c\nTry ./%s -h for more information\n"RESET
 
-#define OPT_NO_VALUE    UINT32_MAX
-#define OPT_HAS_VALUE   0U
+#define OPT_NO_VALUE    0U
+#define OPT_HAS_VALUE   1U
 
 typedef struct opt_node {
     uint8_t             flag_char;  /* char represent flag */
     uint32_t            flag_val;   /* flag value, used with bitwise to create application flag */
     uint32_t            value;      /* value if value is linked */
-    int8_t              has_value;  /* if value is linked */
+    uint8_t             has_value;  /* if value is linked */
     // char                *full_name; /* full name opt */
 }   t_opt_node;
 
@@ -53,6 +51,9 @@ int8_t  flag_already_present(int flags, int flag_val);
 
 /* handle option */
 int8_t add_flag_option(t_flag_context *flag_c, uint8_t c, uint32_t flag_val, uint32_t value);
+int8_t is_same_char_opt(void *content, uint32_t c);
+int8_t is_same_flag_val_opt(void *content, uint32_t value);
+void *search_exist_opt(t_list *opt_lst, int8_t (cmp(void *, uint32_t)), uint32_t test);
 void free_flag_context(t_flag_context *flag_c);
 void display_option_list(t_flag_context *flag_c, t_list *opt_lst);
 void free_flag_context(t_flag_context *flag_c);

@@ -12,22 +12,22 @@ void display_option_list(t_flag_context *flag_c, t_list *opt_lst)
 }
 
 
-static int8_t is_same_char_opt(void *content, uint32_t c) {
+int8_t is_same_char_opt(void *content, uint32_t c) {
     return ((uint8_t)((t_opt_node *)content)->flag_char == c);
 }
 
-static int8_t is_same_flag_val_opt(void *content, uint32_t value) {
+int8_t is_same_flag_val_opt(void *content, uint32_t value) {
     return (((t_opt_node *)content)->flag_val == value);
 }
 
-static int8_t search_exist_opt(t_list *opt_lst, int8_t (cmp(void *, uint32_t)), uint32_t test)
+void *search_exist_opt(t_list *opt_lst, int8_t (cmp(void *, uint32_t)), uint32_t test)
 {
     for (t_list *tmp = opt_lst; tmp; tmp = tmp->next) {
         if (cmp(tmp->content, test)) {
-            return (1);
+            return (tmp->content);
         }
     }
-    return (0);
+    return (NULL);
 }
 
 static t_opt_node *create_opt_node(uint8_t c, uint32_t flag_val, uint32_t value)
@@ -41,9 +41,7 @@ static t_opt_node *create_opt_node(uint8_t c, uint32_t flag_val, uint32_t value)
     opt->flag_char = c;
     opt->flag_val = flag_val;
     opt->value = value;
-    if (value != OPT_NO_VALUE) {
-        opt->has_value = 1;
-    }
+    opt->has_value = value;
     return (opt);
 }
 
