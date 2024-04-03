@@ -2,6 +2,26 @@
 
 int g_signal_received = 0;
 
+int8_t init_flag_context(int argc, char**argv, uint16_t *flag)
+{
+	t_flag_context flag_c;
+	int8_t flag_error = 0;
+
+	ft_bzero(&flag_c, sizeof(t_flag_context));
+	add_flag_option(&flag_c, V_FLAG_CHAR, V_OPTION, OPT_NO_VALUE);
+	add_flag_option(&flag_c, C_FLAG_CHAR, C_OPTION, OPT_HAS_VALUE);
+	add_flag_option(&flag_c, T_FLAG_CHAR, T_OPTION, OPT_HAS_VALUE);
+
+	/* get flag */
+	*flag = parse_flag(argc, argv, &flag_c, &flag_error);
+	if (flag_error == -1) {
+		return (FALSE);
+	}
+	free_flag_context(&flag_c);
+	return (TRUE);
+}
+
+
 /**
  *	@brief Initialize ping context
  *	@param dest_addr destination address to send ping
@@ -9,32 +29,21 @@ int g_signal_received = 0;
 t_context init_ping_context(int argc, char **argv)
 {
     t_context c;
-	t_flag_context flag_c;
-	int8_t flag_error = 0;
 	t_list *args = NULL; 
 	char *dest_str = "";
 
 	in_addr_t *dest_addr = NULL;
 
     ft_bzero(&c, sizeof(t_context));
-	ft_bzero(&flag_c, sizeof(t_flag_context));
-
-	add_flag_option(&flag_c, V_FLAG_CHAR, V_OPTION, OPT_NO_VALUE);
-	add_flag_option(&flag_c, C_FLAG_CHAR, C_OPTION, OPT_NO_VALUE);
-	add_flag_option(&flag_c, T_FLAG_CHAR, T_OPTION, OPT_NO_VALUE);
-
+	c.rcv_sock = -1;
 
     c.src_addr = get_process_ipv4_addr();
     c.dst_sockaddr.sin_family = AF_INET;
-
-	/* get flag */
-	c.flag = parse_flag(argc, argv, &flag_c, &flag_error);
-	if (flag_error == -1) {
-		c.rcv_sock = -1;
+	
+	if (!init_flag_context(argc, argv, &c.flag) ){
 		return (c);
 	}
-	
-	free_flag_context(&flag_c);
+
 
 	/* need to iter on all args */
 	args = extract_args(argc, argv); 
@@ -49,7 +58,7 @@ t_context init_ping_context(int argc, char **argv)
 		 *dest_addr = hostname_to_ipv4_addr(dest_str);
 		 if (*dest_addr == 0) {
         	ft_printf_fd(2, RED"ft_ping: %s: Name or service not known\n"RESET, dest_str);
-			c.rcv_sock = -1;
+			// c.rcv_sock = -1;
 			return (c);
 		 }
 		 c.name = ft_strdup(dest_str);

@@ -19,6 +19,7 @@ enum ping_flag  {
 # define PARSE_FLAG_ERR_MSG "%s: invalid option -- %c\nTry ./%s --help for more information\n"
 
 #define OPT_NO_VALUE UINT32_MAX
+#define OPT_HAS_VALUE 0
 
 typedef struct opt_node {
     uint8_t             flag_char;  /* char represent flag */
