@@ -71,13 +71,18 @@ static void *check_for_flag(char* programe_name, char *str, t_flag_context *flag
     t_opt_node	*opt = NULL;
     int			tmp_value = 0;
 	/* Function ptr to choice between char and long format function call */
-	int			(*ptr_func)() = (long_option == 1) ? flag_value_long_format : get_flag_value;
-	int8_t		(*is_same_func)() = (long_option == 1) ? is_same_full_name : is_same_char_opt;
-	int			j_start = (long_option == 1) ? 2 : 1;
+	int			(*ptr_func)() = get_flag_value;
+	int8_t		(*is_same_func)() = is_same_char_opt;
+	int			j_start = 1;
 
+	if (long_option) {
+		ptr_func = flag_value_long_format;
+		is_same_func = is_same_full_name;
+		j_start = 2;
+	}
 
     if (!str[j_start]) {
-        ft_printf_fd(2, PARSE_FLAG_ERR_MSG,  programe_name, str,  programe_name);
+        ft_printf_fd(2, "j_start %d"PARSE_FLAG_ERR_MSG,  j_start, programe_name, &str[j_start],  programe_name);
         *error = -1;
 		return (NULL);
     } 
@@ -216,6 +221,8 @@ int parse_flag(int argc, char **argv, t_flag_context *flag_c, int8_t *error)
                 return (FALSE);
             }
         }
+		/* Reset long format bool */
+		long_format_bool = CHAR_FORMAT;
     }
 
     // for (int i = 0; i < argc; ++i) {
