@@ -3,22 +3,7 @@
 
 #include "../libft.h"
 
-/* Brut define for ping need to go in ping.h */
 
-/* Ping Flag char */
-#define H_FLAG_CHAR 'h'         /* 0*/
-#define	V_FLAG_CHAR 'v'         /* 1 */ 
-#define	C_FLAG_CHAR 'c'			/* 2 */
-#define	T_FLAG_CHAR 't'			/* 3 */
-
-/* Ping flag value */
-enum ping_flag  {
-    UNKNOW=0, 
-    H_OPTION=1,
-    V_OPTION=2,
-	C_OPTION=4,
-	T_OPTION=8,
-};
 
 /* Message invalid option */
 #define PARSE_FLAG_ERR_MSG              RED"%s: invalid option -- %s\nTry ./%s -h for more information\n"RESET
@@ -51,26 +36,93 @@ typedef struct flag_context {
 /* parse cmd_line */
 t_list  *extract_args(int argc, char **argv);
 
-/* parse flag*/
-// int     parse_flag(int argc, char **argv, int8_t *reject_all);
+
+/****************************/
+/*		Parse flag			*/
+/****************************/
+
+/**
+ * @brief Parse flag
+ * @param argc number of argument
+ * @param argv pointer on argument
+ * @param flag_c pointer on flag context
+ * @param error pointer on error
+ * @return flags if valid, 0 otherwise and set error to -1
+*/
 int     parse_flag(int argc, char **argv,t_flag_context *flag_c, int8_t *error);
+
+/**
+ * @brief Display flags
+ * @param all_flag all flag char available
+ * @param flags flags to display
+*/
 void    display_flags(char *all_flag, int flags);
-/* handle flag */
+
+/**
+ *	@brief Set flag, enable target flag_val in flags
+ *	@param flags pointer on flags
+ *	@param flag_val flag value to set
+*/
 void    set_flag(int *flags, int flag_val);
+
+/**
+ *	@brief Unset flag, disable target flag_val in flags
+ *	@param flags pointer on flags
+ *	@param flag_val flag value to unset
+*/
 void    unset_flag(int *flags, int flag_val);
+
+/**
+ *	@brief Check if flag_val is enable in flags
+ *	@param flags flags to check
+ *	@param flag_val flag value to check
+ *	@return 1 if flag_val is enable in flags, 0 otherwise
+*/
 int8_t  has_flag(int flags, int flag_val);
+
+/* has flag wrapper */
 int8_t  flag_already_present(int flags, int flag_val);
 
-/* handle option */
+/****************************/
+/*		Handle Option		*/
+/****************************/
+
+/**
+ *	@brief Add flag option
+ *	@param flag_c flag context
+ *	@param c flag char
+ *	@param flag_val flag value
+ *	@param value value
+ *	@param full_name full name of the flag
+ *	@return 1 if success, 0 otherwise
+*/
 int8_t  add_flag_option(t_flag_context *flag_c, uint8_t c, uint32_t flag_val, uint32_t value, char *full_name);
-void    free_flag_context(t_flag_context *flag_c);
+
+/**
+ * @brief Display option list for debug
+ * @param flag_c flag context
+ * @param opt_lst list of opt node
+*/
 void    display_option_list(t_flag_context *flag_c, t_list *opt_lst);
+
+/**
+ *	@brief Free flag context
+ *	@param flag_c flag context
+*/
 void    free_flag_context(t_flag_context *flag_c);
 
-/* cmp function for search exist opt */
-int8_t is_same_full_name(void *node, void *data);
+/* explicit compare function for search exist opt */
+int8_t	is_same_full_name(void *node, void *data);
 int8_t  is_same_char_opt(void *content, void *c);
 int8_t  is_same_flag_val_opt(void *content, void *value);
-void *search_exist_opt(t_list *opt_lst, int8_t (cmp()), void *data);
+
+/**
+ * @brief Search for exist opt
+ * @param opt_lst list of opt node
+ * @param cmp compare function
+ * @param data data to compare
+ * @return opt_node if found, NULL otherwise
+*/
+void	*search_exist_opt(t_list *opt_lst, int8_t (cmp()), void *data);
 
 #endif /* PARSE_FLAG_H */

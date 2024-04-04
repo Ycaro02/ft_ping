@@ -22,6 +22,8 @@
 		"struct_timespec.h": "c",
 		"endian.h": "c",
 		"ft_ping.h": "c",
-		"netdb.h": "c"
+		"netdb.h": "c",
+		"stdlib.h": "c",
+		"unistd.h": "c"
 	}
 }

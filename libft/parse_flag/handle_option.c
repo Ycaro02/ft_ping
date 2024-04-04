@@ -1,7 +1,9 @@
 #include "parse_flag.h"
 
 /* Start option handle */
-
+/**
+ * @brief Display option list for debug
+*/
 void display_option_list(t_flag_context *flag_c, t_list *opt_lst)
 {
     t_opt_node *node = NULL; 
@@ -11,26 +13,46 @@ void display_option_list(t_flag_context *flag_c, t_list *opt_lst)
     }
 }
 
-
+/**
+ * @brief Check if node full name is the same as data
+ * @param node node to check
+ * @param data data to compare
+*/
 int8_t is_same_full_name(void *node, void *data) {
     if (!node || !data)
         return (0);
-    return (ft_strcmp(((t_opt_node *)node)->full_name, (char *)data) == 0);
+    return (ft_strncmp(((t_opt_node *)node)->full_name, (char *)data, ft_strlen(((t_opt_node *)node)->full_name)) == 0);
 }
 
-
+/**
+ * @brief Check if content flag char is the same as c
+ * @param content content to check
+ * @param c char to compare
+*/
 int8_t is_same_char_opt(void *content, void *c) {
     if (!content || !c)
         return (0);
-    return ((uint8_t)((t_opt_node *)content)->flag_char == *(uint32_t *)c);
+    return ((uint8_t)((t_opt_node *)content)->flag_char == *(uint8_t *)c);
 }
 
+/**
+ * @brief Check if content flag val is the same as value
+ * @param content content to check
+ * @param value value to compare
+*/
 int8_t is_same_flag_val_opt(void *content, void *value) {
     if (!content || !value)
         return (0);
     return (((t_opt_node *)content)->flag_val == *(uint32_t *)value);
 }
 
+/**
+ * @brief Search for exist opt
+ * @param opt_lst list of opt node
+ * @param cmp compare function
+ * @param data data to compare
+ * @return opt_node if found, NULL otherwise
+*/
 void *search_exist_opt(t_list *opt_lst, int8_t (cmp()), void *data)
 {
     for (t_list *tmp = opt_lst; tmp; tmp = tmp->next) {
@@ -41,6 +63,14 @@ void *search_exist_opt(t_list *opt_lst, int8_t (cmp()), void *data)
     return (NULL);
 }
 
+/**
+ *	@brief Create option node
+ *	@param c flag char
+ *	@param flag_val flag value
+ *	@param value value
+ *	@param full_name full name of the flag
+ *	@return opt_node if success, NULL otherwise
+*/
 static t_opt_node *create_opt_node(uint8_t c, uint32_t flag_val, uint32_t value, char *full_name)
 {
     t_opt_node *opt = ft_calloc(sizeof(t_opt_node), 1);
@@ -57,7 +87,12 @@ static t_opt_node *create_opt_node(uint8_t c, uint32_t flag_val, uint32_t value,
     return (opt);
 }
 
-
+/**
+ *	@brief Update opt_str
+ *	@param flag_c flag context
+ *	@param c char to add
+ *	@return 1 if success, 0 otherwise
+*/
 static int8_t update_opt_str(t_flag_context *flag_c, uint8_t c)
 {
     char new_char[2] = {c, 0};
@@ -73,6 +108,15 @@ static int8_t update_opt_str(t_flag_context *flag_c, uint8_t c)
     return (1);
 }
 
+/**
+ *	@brief Add flag option
+ *	@param flag_c flag context
+ *	@param c flag char
+ *	@param flag_val flag value
+ *	@param value value
+ *	@param full_name full name of the flag
+ *	@return 1 if success, 0 otherwise
+*/
 int8_t add_flag_option(t_flag_context *flag_c, uint8_t c, uint32_t flag_val, uint32_t value, char* full_name)
 {
     t_opt_node *opt = NULL;
@@ -93,6 +137,10 @@ int8_t add_flag_option(t_flag_context *flag_c, uint8_t c, uint32_t flag_val, uin
     return (ret);
 }
 
+/**
+ *	@brief Free opt node
+ *	@param content content to free
+*/
 void free_opt_node(void *content)
 {
     t_opt_node *opt = (t_opt_node *)content;
@@ -104,6 +152,10 @@ void free_opt_node(void *content)
     }
 }
 
+/**
+ *	@brief Free flag context
+ *	@param flag_c flag context
+*/
 void free_flag_context(t_flag_context *flag_c)
 {
     if (flag_c) {
@@ -113,20 +165,5 @@ void free_flag_context(t_flag_context *flag_c)
         if (flag_c->opt_lst) {
             ft_lstclear(&flag_c->opt_lst, free_opt_node);
         }
-        // free(flag_c);
     }
 }
-
-// void test_opt()
-// {
-// 	t_flag_context flag_c;
-
-// 	ft_bzero(&flag_c, sizeof(t_flag_context));
-// 	ft_printf_fd(1, "Test opt\n");
-// 	add_flag_option(&flag_c, 'v', 1, OPT_NO_VALUE);
-// 	add_flag_option(&flag_c, 'c', 2, 0);
-// 	add_flag_option(&flag_c, 'v', 1, 0);
-// 	add_flag_option(&flag_c, '2', 1, 0);
-// 	display_option_list(&flag_c, flag_c.opt_lst);
-// 	free_flag_context(&flag_c);
-// }

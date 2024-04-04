@@ -62,6 +62,21 @@ typedef struct timeval t_timeval;
 
 #define MANDATORY_HElP_MSG "Usage: ft_ping [-hv] destination\n-h: help\n-v: verbose output\n"
 
+/* Ping Flag char */
+#define H_FLAG_CHAR 'h'         /* 0*/
+#define	V_FLAG_CHAR 'v'         /* 1 */ 
+#define	C_FLAG_CHAR 'c'			/* 2 */
+#define	T_FLAG_CHAR 't'			/* 3 */
+
+/* Ping flag value */
+enum ping_flag  {
+    UNKNOW=0, 
+    H_OPTION=1,
+    V_OPTION=2,
+	C_OPTION=4,
+	T_OPTION=8,
+};
+
 /**
  * Ping summary structure one for program
 */

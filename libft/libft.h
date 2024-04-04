@@ -71,4 +71,6 @@ int 	ft_lower_strcmp(char *s1, char *s2);
 int 	ft_strcmp(char *s1, char *s2);
 void 	free_incomplete_array(void **array, int max);
 
+int8_t	str_is_digit(char *str);
+
 #endif
