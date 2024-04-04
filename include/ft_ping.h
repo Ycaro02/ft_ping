@@ -60,7 +60,13 @@ typedef struct timeval t_timeval;
 /* End of padding */
 #define DATA_END_PAD DATA_MBIDX + DATA_PAD_ZERO
 
-#define MANDATORY_HElP_MSG "Usage: ft_ping [-hv] destination\n-h: help\n-v: verbose output\n"
+#define MANDATORY_HELP_MESSAGE \
+"Usage: %s destination\n\
+Options:\n\
+  -h --help  \t\tShow this help message and exit\n\
+  -v --verbose\t\tVerbose output\n\
+  -c --count value\tStop after sending count ECHO_REQUEST packets\n\
+  -t --TTL value\tChange time to live value only between 1 and 255\n"
 
 /* Ping Flag char */
 #define H_FLAG_CHAR 'h'         /* 0*/
@@ -131,13 +137,11 @@ typedef struct s_ping_packet
 /* Signal handling global variable */
 extern int		g_signal_received;
 
-void			display_detail_packet(t_iphdr *ip_hdr, t_icmphdr *icmp_hdr, uint8_t *data);
 
 /* send ping */
 int				send_ping(t_context *c);
 
 /* socket handle */
-// int				close_socket(int sock);
 void			close_multi_socket(int sock1, int sock2);
 int				open_rcv_socket(void);
 int				open_send_socket(void);
@@ -165,20 +169,15 @@ in_addr_t		get_process_ipv4_addr();
 in_addr_t		hostname_to_ipv4_addr(char *hostname);
 
 /* main */
-void display_ms_time(char *color, suseconds_t time, uint8_t last);
+void			display_ms_time(char *color, suseconds_t time, uint8_t last);
 
 /* detail display */
-char *get_str_msg_type(uint8_t type);
-void display_detail_packet(t_iphdr *ip_hdr, t_icmphdr *icmp_hdr, uint8_t *data);
-void display_ping_summary(t_ping_sum *sum);
-void display_ping_state(t_ping_state *state);
-void display_brut_icmp_data(uint8_t *data, size_t size);
-void display_char_data(uint8_t *data, size_t size);
-void display_detail_iphdr(struct iphdr *header);
-void display_detail_icmphdr(struct icmphdr *header);
-void display_rcv_timelist(t_list *rcv_list);
-
-
-
-/* debug */
-void display_receive_lst(t_list *rcv_list);
+char			*get_str_msg_type(uint8_t type);
+void			display_detail_packet(t_iphdr *ip_hdr, t_icmphdr *icmp_hdr, uint8_t *data);
+void			display_ping_summary(t_ping_sum *sum);
+void			display_ping_state(t_ping_state *state);
+void			display_brut_icmp_data(uint8_t *data, size_t size);
+void			display_char_data(uint8_t *data, size_t size);
+void			display_detail_iphdr(struct iphdr *header);
+void			display_detail_icmphdr(struct icmphdr *header);
+void			display_rcv_timelist(t_list *rcv_list);

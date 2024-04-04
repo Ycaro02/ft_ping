@@ -22,12 +22,7 @@ int8_t init_flag_context(int argc, char**argv, uint16_t *flag, uint8_t *exit_cod
 	free_flag_context(&flag_c);
 
 	if (has_flag(*flag, H_OPTION)) {
-		ft_printf_fd(1, "Usage: %s destination\n", argv[0]);
-		ft_printf_fd(1, "Options:\n");
-		ft_printf_fd(1, "  -h help  \t\tShow this help message and exit\n");
-		ft_printf_fd(1, "  -v verbose\t\tVerbose output\n");
-		ft_printf_fd(1, "  -c count  \t\tStop after sending count ECHO_REQUEST packets\n");
-		ft_printf_fd(1, "  -t TTL  \t\tChange time to live value only between 1 and 255\n");
+		ft_printf_fd(1, MANDATORY_HELP_MESSAGE, argv[0]);
 		*exit_code = 0;
 		return (FALSE);
 	}

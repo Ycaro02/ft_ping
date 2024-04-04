@@ -3,8 +3,6 @@
 
 #include "../libft.h"
 
-
-
 /* Message invalid option */
 #define PARSE_FLAG_ERR_MSG              RED"%s: invalid option -- %s\nTry ./%s -h for more information\n"RESET
 
