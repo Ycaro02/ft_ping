@@ -18,13 +18,14 @@ void display_flags(char *all_flag, int flags) {
 /** get_flag_value
  * Convert char to flag value see ALL_FLAG and e_flag, define_enum.c
 */
-static int get_flag_value(char *all_flag, char c) 
+static int get_flag_value(t_flag_context *flag_c, char *c) 
 {
     int i = 0;
     int flag = -1;
+	char *all_flag = flag_c->opt_str;
 
     while (all_flag && all_flag[i]) {
-        if (c == all_flag[i]) {
+        if (*c == all_flag[i]) {
             flag = (1 << i);
             break;
         }
@@ -40,43 +41,49 @@ int flag_value_long_format(t_flag_context *flag_c, char *full_name)
     int flag = -1;
 
     opt = search_exist_opt(flag_c->opt_lst, is_same_full_name, full_name);
+	ft_printf_fd(2, "full_name: %s\n", full_name);
     if (opt) {
-        flag = (1 << opt->flag_val);
+		ft_printf_fd(2, "FOUND opt->fullname: %s\n", opt->full_name);
+	    flag = opt->flag_val;
     }
     return (flag);
 
 }
 
 
-static void *check_for_flag(char* programe_name, char *str, t_flag_context *flag_c, int *flags, int8_t *error)
+static void *check_for_flag(char* programe_name, char *str, t_flag_context *flag_c, int *flags, int8_t *error, uint8_t long_option)
 {
     t_opt_node *opt = NULL;
     int tmp_value = 0;
     int8_t already_present = 0;
 
+
+	int (*ptr_func)() = (long_option == 1) ? flag_value_long_format : get_flag_value;
+	int8_t (*is_same_func)() = (long_option == 1) ? is_same_full_name : is_same_char_opt;
+
     if (!str[1]) {
-        ft_printf_fd(2, PARSE_FLAG_ERR_MSG,  programe_name, str[0],  programe_name);
+        ft_printf_fd(2, PARSE_FLAG_ERR_MSG,  programe_name, str,  programe_name);
         *error = -1;
-    } else if (str[1] == '-' && str[2] == '\0') { /* special case to skip '--' fix with long option handling */
-        return (NULL);
-    } else {
-        for (int j = 1; str[j]; ++j) {
-            tmp_value =  get_flag_value(flag_c->opt_str, str[j]);
-            if (tmp_value == -1) {
-                ft_printf_fd(2, PARSE_FLAG_ERR_MSG,  programe_name, str[j],  programe_name);
-                *error = -1;
-                return (NULL);
-            }
-            already_present = flag_already_present(*flags, tmp_value);
-            if (!already_present) {
-                set_flag(flags, tmp_value);
-            }
-            opt = search_exist_opt(flag_c->opt_lst, is_same_char_opt, &str[j]);
-            if (opt && opt->has_value) {
-                return(opt);
-            }
-        }
-    }
+		return (NULL);
+    } 
+	for (int j = 1; str[j]; ++j) {
+		// ft_printf_fd(1, RED"str: %s\n"RESET, &str[j]);
+
+		tmp_value = ptr_func(flag_c, &str[j]);
+		if (tmp_value == -1) {
+			ft_printf_fd(2, PARSE_FLAG_ERR_MSG,  programe_name, &str[j],  programe_name);
+			*error = -1;
+			return (NULL);
+		}
+		already_present = flag_already_present(*flags, tmp_value);
+		if (!already_present) {
+			set_flag(flags, tmp_value);
+		}
+		opt = search_exist_opt(flag_c->opt_lst, is_same_func, &str[j]);
+		if (opt) {
+			return(opt);
+		}
+	}
     return (NULL);
 }
 
@@ -158,16 +165,21 @@ int parse_flag(int argc, char **argv, t_flag_context *flag_c, int8_t *error)
 {
     int flags = 0;
     t_opt_node *opt = NULL;
+	// int func_find_flag = get_flag_value;
 
     for (int i = 1; i < argc; ++i) {
         ft_printf_fd(1, YELLOW"Check str flag:argv[%d] %s\n"RESET,i, argv[i]);
         if (argv[i][0] == '-') {
             /* if second char is '-' check for long format instead of char */
-
-            opt = check_for_flag(argv[0], argv[i], flag_c, &flags, error);
+			if (argv[i][1] && argv[i][1] == '-') {
+				ft_printf_fd(1, "Long format for |%s|\n", argv[i]);
+            	opt = check_for_flag(argv[0], &argv[i][1], flag_c, &flags, error, 1);
+			} else {
+            	opt = check_for_flag(argv[0], argv[i], flag_c, &flags, error, 0);
+			}
             if (*error == -1) { /* if invalid flag return */
                 return (FALSE);
-            } else if (opt && !search_opt_value(argv, &i, opt)) {
+            } else if (opt && opt->has_value && !search_opt_value(argv, &i, opt)) {
                 *error = -1;
                 return (FALSE);
             }

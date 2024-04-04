@@ -21,7 +21,7 @@ enum ping_flag  {
 };
 
 /* Message invalid option */
-#define PARSE_FLAG_ERR_MSG              RED"%s: invalid option -- %c\nTry ./%s -h for more information\n"RESET
+#define PARSE_FLAG_ERR_MSG              RED"%s: invalid option -- %s\nTry ./%s -h for more information\n"RESET
 
 /* Message argument required for flag */
 #define PARSE_FLAG_ERR_MSG_ARGS_REQ     RED"%s: option requires an argument -- %c\nTry ./%s -h for more information\n"RESET
@@ -31,6 +31,9 @@ enum ping_flag  {
 
 #define OPT_NO_VALUE    0U          /* no value linked */
 #define OPT_HAS_VALUE   1U          /* value linked */
+
+#define CHAR_FORMAT		0U          /* short format for check_for_flag */
+#define LONG_FORMAT		1U          /* long format for check_for_flag */
 
 typedef struct opt_node {
     uint8_t             flag_char;  /* char represent flag */
