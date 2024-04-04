@@ -32,7 +32,7 @@ int8_t is_same_full_name(void *node, void *data) {
 int8_t is_same_char_opt(void *content, void *c) {
     if (!content || !c)
         return (0);
-    return ((uint8_t)((t_opt_node *)content)->flag_char == *(uint8_t *)c);
+    return (((t_opt_node *)content)->flag_char == *(uint8_t *)c);
 }
 
 /**
