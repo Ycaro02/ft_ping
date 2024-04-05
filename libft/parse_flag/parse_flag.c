@@ -47,9 +47,9 @@ int flag_value_long_format(t_flag_context *flag_c, char *full_name)
     int flag = -1;
 
     opt = search_exist_opt(flag_c->opt_lst, is_same_full_name, full_name);
-	ft_printf_fd(2, "full_name: %s\n", full_name);
+	// ft_printf_fd(2, "full_name: %s\n", full_name);
     if (opt) {
-		ft_printf_fd(2, "FOUND opt->fullname: %s\n", opt->full_name);
+		// ft_printf_fd(2, "FOUND opt->fullname: %s\n", opt->full_name);
 	    flag = opt->flag_val;
     }
     return (flag);
@@ -70,7 +70,7 @@ static void *check_for_flag(char* programe_name, char *str, t_flag_context *flag
 {
     t_opt_node	*opt = NULL;
     int			tmp_value = 0;
-	/* Function ptr to choice between char and long format function call */
+	/* Function ptr to choice between char or long format function call */
 	int			(*get_flag_val_func)() = get_flag_value;
 	int8_t		(*is_same_func)() = is_same_char_opt;
 	int			j_start = 1;
@@ -87,7 +87,7 @@ static void *check_for_flag(char* programe_name, char *str, t_flag_context *flag
 		return (NULL);
     } 
 	for (int j = j_start; str[j]; ++j) {
-		ft_printf_fd(1, RED"str: %s\n"RESET, &str[j]);
+		// ft_printf_fd(1, RED"str: %s\n"RESET, &str[j]);
 		tmp_value = get_flag_val_func(flag_c, &str[j]);
 		if (tmp_value == -1) {
 			ft_printf_fd(2, PARSE_FLAG_ERR_MSG,  programe_name, &str[j],  programe_name);
@@ -151,35 +151,33 @@ uint32_t parse_flag_value(char *str) {
  * @param opt pointer on opt node to update
  * @return 1 if found, 0 otherwise
 */
-static int search_opt_value(char **argv, int *i, t_opt_node *opt, uint8_t long_format_bool)
+int search_opt_value(char **argv, int *i, t_opt_node *opt, uint8_t long_format_bool)
 {
-    int char_skip = 0;
-    int8_t in_search = 0;
-    char opt_val = '\0';
-	int to_skip_idx = 2;
+    int		char_skip = 0;
+    int8_t	in_search = 0 , next_char = 0;
+	/* to skip idx start at 2 to skip '-' + '?' (char option) */
+	/* if long format enable, add strlen of name, keep first 2 for '--' */
+	int		to_skip_idx = (long_format_bool == LONG_FORMAT) ? 2 + ft_strlen(opt->full_name) : 2;
+	/* idx to avoid [*i + j] multiple time*/
+	int		idx = *i;
 
-	if (long_format_bool == LONG_FORMAT) {
-		to_skip_idx += ft_strlen(opt->full_name);
-	}
-
-    // ft_printf_fd(2, CYAN"update opt |%c|, curr val %d -> ", opt->flag_char, opt->value);
     for (int j = 0; argv[*i + j]; ++j) {
-        in_search = 1;
+        idx = *i + j;
+		in_search = 1;
         char_skip = ((j == 0) * to_skip_idx);
-        opt_val = find_next_no_space(&argv[*i + j][char_skip]);
-        if (opt_val != '\0') {
-            opt->value = parse_flag_value(&argv[*i + j][char_skip]);
+        next_char = find_next_no_space(&argv[idx][char_skip]);
+        if (next_char != 0) {
+            opt->value = parse_flag_value(&argv[idx][char_skip]);
             if (opt->value == 0) {
-                ft_printf_fd(2, PARSE_FLAG_ERR_MSG_WRONG_ARGS,  argv[0], opt->flag_char, &argv[*i + j][char_skip],  argv[0]);
+                ft_printf_fd(2, PARSE_FLAG_ERR_MSG_WRONG_ARGS, argv[0], opt->flag_char, &argv[idx][char_skip], argv[0]);
                 return (FALSE);
             }
-            argv[*i + j] = "";
+            argv[idx] = "";
             *i += j;
             in_search = 0;
-            // ft_printf_fd(2, "new val %u, j = %d, first off %d\n"RESET, opt->value, j, char_skip); 
             break;
         }
-        argv[*i + j] = "";
+        argv[idx] = "";
     }
     if (in_search){
         ft_printf_fd(2, RESET""PARSE_FLAG_ERR_MSG_ARGS_REQ,  argv[0], opt->flag_char,  argv[0]);
@@ -187,6 +185,9 @@ static int search_opt_value(char **argv, int *i, t_opt_node *opt, uint8_t long_f
     }
     return (TRUE);
 }
+
+// ft_printf_fd(2, CYAN"update opt |%c|, curr val %d -> ", opt->flag_char, opt->value);
+// ft_printf_fd(2, "new val %u, j = %d, first off %d\n"RESET, opt->value, j, char_skip); 
 
 /**
  * @brief Parse flag

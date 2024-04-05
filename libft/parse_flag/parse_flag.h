@@ -101,7 +101,7 @@ int8_t  add_flag_option(t_flag_context *flag_c, uint8_t c, uint32_t flag_val, ui
  * @param flag_c flag context
  * @param opt_lst list of opt node
 */
-void    display_option_list(t_flag_context *flag_c, t_list *opt_lst);
+void display_option_list(t_flag_context flag_c);
 
 /**
  *	@brief Free flag context
@@ -122,5 +122,7 @@ int8_t  is_same_flag_val_opt(void *content, void *value);
  * @return opt_node if found, NULL otherwise
 */
 void	*search_exist_opt(t_list *opt_lst, int8_t (cmp()), void *data);
+
+int search_opt_value(char **argv, int *i, t_opt_node *opt, uint8_t long_format_bool);
 
 #endif /* PARSE_FLAG_H */

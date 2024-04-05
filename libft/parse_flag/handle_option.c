@@ -4,12 +4,13 @@
 /**
  * @brief Display option list for debug
 */
-void display_option_list(t_flag_context *flag_c, t_list *opt_lst)
+void display_option_list(t_flag_context flag_c)
 {
     t_opt_node *node = NULL; 
-    for (t_list *tmp = opt_lst; tmp; tmp = tmp->next) {
+	ft_printf_fd(2, CYAN"Option list: Full flag str: %s\n"RESET, flag_c.opt_str);
+    for (t_list *tmp = flag_c.opt_lst; tmp; tmp = tmp->next) {
         node = tmp->content;
-        ft_printf_fd(1, "Flag: %c, Flag_val %d Value: %d str : %s\n", node->flag_char, node->flag_val, node->value, flag_c->opt_str);
+        ft_printf_fd(1, CYAN"Flag: %c"RESET", "PURPLE"Flag_val %d"RESET" "ORANGE"Value: %d\n"RESET, node->flag_char, node->flag_val, node->value);
     }
 }
 

@@ -19,6 +19,9 @@ int8_t init_flag_context(int argc, char**argv, uint16_t *flag, uint8_t *exit_cod
 		free_flag_context(&flag_c);
 		return (FALSE);
 	}
+
+	display_option_list(flag_c);
+
 	free_flag_context(&flag_c);
 
 	if (has_flag(*flag, H_OPTION)) {
