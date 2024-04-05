@@ -142,7 +142,7 @@ int sending_ping_loop(t_context *c)
     init_signal_handler();
 
     while (args) {
-        if (get_destination_addr(args->content, (in_addr_t *)&c->dest.sockaddr.sin_addr.s_addr, &c->dest.name) == 0) {
+        if (!get_destination_addr(args->content, (in_addr_t *)&c->dest.sockaddr.sin_addr.s_addr, &c->dest.name)) {
             return (0);
         } else if (!send_ping(c)) {
             return (0);

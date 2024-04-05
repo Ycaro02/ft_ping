@@ -83,7 +83,6 @@ t_context init_context_structure()
 t_context init_ping_context(int argc, char **argv)
 {
     t_context	c = init_context_structure(argc, argv);
-	char		*dest_str = "";
 
 	/* init flag context and parse cmd line to get flag in c.flag */	
 	if (!init_flag_context(argc, argv, &c.flag, &c.exit_code) ){
@@ -91,20 +90,10 @@ t_context init_ping_context(int argc, char **argv)
 	}
 	/* extract all args in c.str_args */
 	c.str_args = extract_args(argc, argv); 
-	if (c.str_args) {
-		dest_str = c.str_args->content;
-	}
-
-	if (!get_destination_addr(dest_str, (in_addr_t *)&c.dest.sockaddr.sin_addr, &c.dest.name)) {
-		ft_lstclear(&c.str_args, free);
-		return (c);
-	}
 
 	// for (t_list *current = c.str_args; current; current = current->next) {
 	// 	ft_printf_fd(1, "arg: %s\n", (char *)current->content);
 	// }
-
-
     c.send_sock = open_send_socket();
     c.rcv_sock = open_rcv_socket();
     return (c);    

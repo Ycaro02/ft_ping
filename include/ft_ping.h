@@ -18,6 +18,8 @@
 
 #include "../libft/parse_flag/parse_flag.h" /* Parse flag library */
 
+/* Need to implement send packet to aditional target when sigint is receive*/
+
 /* Typedef sockaddr_in structure */
 typedef struct sockaddr_in t_sockaddr_in;
 
