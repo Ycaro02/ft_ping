@@ -71,12 +71,12 @@ static void *check_for_flag(char* programe_name, char *str, t_flag_context *flag
     t_opt_node	*opt = NULL;
     int			tmp_value = 0;
 	/* Function ptr to choice between char and long format function call */
-	int			(*ptr_func)() = get_flag_value;
+	int			(*get_flag_val_func)() = get_flag_value;
 	int8_t		(*is_same_func)() = is_same_char_opt;
 	int			j_start = 1;
 
 	if (long_option) {
-		ptr_func = flag_value_long_format;
+		get_flag_val_func = flag_value_long_format;
 		is_same_func = is_same_full_name;
 		j_start = 2;
 	}
@@ -88,7 +88,7 @@ static void *check_for_flag(char* programe_name, char *str, t_flag_context *flag
     } 
 	for (int j = j_start; str[j]; ++j) {
 		ft_printf_fd(1, RED"str: %s\n"RESET, &str[j]);
-		tmp_value = ptr_func(flag_c, &str[j]);
+		tmp_value = get_flag_val_func(flag_c, &str[j]);
 		if (tmp_value == -1) {
 			ft_printf_fd(2, PARSE_FLAG_ERR_MSG,  programe_name, &str[j],  programe_name);
 			*error = -1;
