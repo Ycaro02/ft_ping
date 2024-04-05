@@ -12,7 +12,7 @@ t_list *extract_args(int argc, char **argv)
 	t_list *lst = NULL;
 
 	for (int i = 1; i < argc; i++) {
-		if (argv[i][0] != '-') {
+		if (argv[i][0] != '-' && argv[i][0] != '\0') {
 			ft_lstadd_back(&lst, ft_lstnew(ft_strdup(argv[i])));
 		}
 	}

@@ -104,7 +104,7 @@ int send_ping(t_context *c)
     t_ping_packet   packet;
     int8_t          error = 0;
 
-    init_signal_handler();
+    // init_signal_handler();
     packet = build_ping_packet(c->src_addr, c->dest.sockaddr.sin_addr.s_addr);
     display_first_stat(c, packet);
     while (!g_signal_received && c->summary.nb_send < 5) {
@@ -114,6 +114,44 @@ int send_ping(t_context *c)
         while (!g_signal_received && !listen_icmp_reply(c, &error)) ;
         update_packet(&packet);
         usleep(1000000); /* possible option -i set by user */
+    }
+    return (1);
+}
+
+
+static void reset_data(t_context *c)
+{
+    if (c->summary.nb_send > 0) {
+        display_clear_summary(c);
+    }
+    if (c->summary.rcv_time_lst) {
+        ft_lstclear(&c->summary.rcv_time_lst, free);
+    }
+    ft_bzero(&c->summary, sizeof(c->summary));
+    ft_bzero(&c->state, sizeof(c->state));
+    if (c->dest.name) {
+        free(c->dest.name);
+        c->dest.name = NULL;
+    }
+}
+
+int sending_ping_loop(t_context *c)
+{
+    t_list *args = c->str_args;
+
+    init_signal_handler();
+
+    while (args) {
+        if (get_destination_addr(args->content, (in_addr_t *)&c->dest.sockaddr.sin_addr.s_addr, &c->dest.name) == 0) {
+            return (0);
+        } else if (!send_ping(c)) {
+            return (0);
+        }
+        args = args->next;
+        if (args) {
+            reset_data(c);
+        }
+        
     }
     return (1);
 }

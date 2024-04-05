@@ -202,16 +202,13 @@ int parse_flag(int argc, char **argv, t_flag_context *flag_c, int8_t *error)
     int flags = 0;
     t_opt_node *opt = NULL;
 	uint8_t long_format_bool = CHAR_FORMAT;
-	// int func_find_flag = get_flag_value;
 
     for (int i = 1; i < argc; ++i) {
-        ft_printf_fd(1, YELLOW"Check str flag:argv[%d] %s\n"RESET,i, argv[i]);
+        // ft_printf_fd(1, YELLOW"Check str flag:argv[%d] %s\n"RESET,i, argv[i]);
         if (argv[i][0] == '-') {
             /* if second char is '-' check for long format instead of char */
 			if (argv[i][1] && argv[i][1] == '-') {
-				ft_printf_fd(1, "Long format for |%s|\n", argv[i]);
 				long_format_bool = LONG_FORMAT;
-            	// opt = check_for_flag(argv[0], &argv[i][1], flag_c, &flags, error, LONG_FORMAT);
 			} 
 
 			opt = check_for_flag(argv[0], argv[i], flag_c, &flags, error, long_format_bool);

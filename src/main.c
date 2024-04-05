@@ -53,7 +53,7 @@ int8_t get_destination_addr(char *dest_str, in_addr_t *dest_addr, char **dest_na
 			 free(*dest_name);
 		 }
 		 *dest_name = ft_strdup(dest_str);
-		 ft_printf_fd(1, ORANGE"PING str: %s name:  (%s)\n"RESET, dest_str, *dest_name);
+		//  ft_printf_fd(1, ORANGE"PING str: %s name:  (%s)\n"RESET, dest_str, *dest_name);
 	}
 	return (TRUE);
 }
@@ -99,6 +99,11 @@ t_context init_ping_context(int argc, char **argv)
 		ft_lstclear(&c.str_args, free);
 		return (c);
 	}
+
+	// for (t_list *current = c.str_args; current; current = current->next) {
+	// 	ft_printf_fd(1, "arg: %s\n", (char *)current->content);
+	// }
+
 
     c.send_sock = open_send_socket();
     c.rcv_sock = open_rcv_socket();
@@ -212,7 +217,7 @@ int main(int argc, char **argv)
     c = init_ping_context(argc, argv);
     if (c.send_sock == -1 || c.rcv_sock == -1) {
         goto free_context_label;
-    } else if (!send_ping(&c)) {
+    } else if (!sending_ping_loop(&c)) {
         goto free_context_label;
     }
     /* If no error occur return code is 0*/

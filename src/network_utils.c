@@ -71,7 +71,7 @@ in_addr_t hostname_to_ipv4_addr(char *hostname)
 
     host = gethostbyname(hostname);
     if (host == NULL) {
-        ft_printf_fd(2, PURPLE"ft_ping: %s: Name or service not known\n"RESET, hostname);
+        // ft_printf_fd(2, PURPLE"ft_ping: %s: Name or service not known\n"RESET, hostname);
         return (0);
     }
     // display_hostent(host);
