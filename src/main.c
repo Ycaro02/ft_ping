@@ -33,6 +33,48 @@ int8_t init_flag_context(int argc, char**argv, uint16_t *flag, uint8_t *exit_cod
 	return (TRUE);
 }
 
+/**
+ *	@Brief get destination address
+ *	@param dest_str destination address string (ipv4 or hostname) [input]
+ *	@param dest_addr pointer on destination address [output]
+ *	@param dest_name pointer on destination name [output]
+*/
+int8_t get_destination_addr(char *dest_str, in_addr_t *dest_addr, char **dest_name)
+{
+	/* get ipv4 address of destination addr */
+	*dest_addr = ipv4_str_toaddr(dest_str);
+	if (*dest_addr == 0) {
+		 *dest_addr = hostname_to_ipv4_addr(dest_str);
+		 if (*dest_addr == 0) {
+        	ft_printf_fd(2, RED"ft_ping: %s: Name or service not known\n"RESET, dest_str);
+			return (FALSE);
+		 }
+		 if (dest_name && *dest_name) {
+			 free(*dest_name);
+		 }
+		 *dest_name = ft_strdup(dest_str);
+		 ft_printf_fd(1, ORANGE"PING str: %s name:  (%s)\n"RESET, dest_str, *dest_name);
+	}
+	return (TRUE);
+}
+
+/**
+ * @brief Initialize ping context
+ * @param argc number of arguments
+ * @param argv arguments, destination address and potential flag
+ * @return t_context initialized context
+*/
+t_context init_context_structure()
+{
+	t_context	c;
+    ft_bzero(&c, sizeof(t_context));
+	c.exit_code = 1;
+	c.send_sock = -1;
+	c.rcv_sock = -1;
+    c.src_addr = get_process_ipv4_addr();
+    c.dst_sockaddr.sin_family = AF_INET;
+	return (c);
+}
 
 /**
  *	@brief Initialize ping context
@@ -40,48 +82,26 @@ int8_t init_flag_context(int argc, char**argv, uint16_t *flag, uint8_t *exit_cod
 */
 t_context init_ping_context(int argc, char **argv)
 {
-    t_context	c;
-	/* args (ip addr/hostname) list*/
-	t_list		*args = NULL; 
-	/* destination addr string */
-	char *dest_str = "";
-	in_addr_t *dest_addr = NULL;
-
-
-    ft_bzero(&c, sizeof(t_context));
-	c.exit_code = 1;
-	c.send_sock = -1;
-	c.rcv_sock = -1;
-    c.src_addr = get_process_ipv4_addr();
-    c.dst_sockaddr.sin_family = AF_INET;
+    t_context	c = init_context_structure(argc, argv);
+	char		*dest_str = "";
 
 	/* init flag context and parse cmd line to get flag in c.flag */	
 	if (!init_flag_context(argc, argv, &c.flag, &c.exit_code) ){
 		return (c);
 	}
-	/* need to iter on all args */
-	args = extract_args(argc, argv); 
-	if (args) {
-		dest_str = args->content;
+	/* extract all args in c.str_args */
+	c.str_args = extract_args(argc, argv); 
+	if (c.str_args) {
+		dest_str = c.str_args->content;
 	}
 
-	/* store in local pointer var to avoid repeat this structure access 4 time */
-	dest_addr = (in_addr_t *)&c.dst_sockaddr.sin_addr;
-    /* get ipv4 address of destination addr */
-	*dest_addr = ipv4_str_toaddr(dest_str);
-	if (*dest_addr == 0) {
-		 *dest_addr = hostname_to_ipv4_addr(dest_str);
-		 if (*dest_addr == 0) {
-        	ft_printf_fd(2, RED"ft_ping: %s: Name or service not known\n"RESET, dest_str);
-			ft_lstclear(&args, free);
-			return (c);
-		 }
-		 c.name = ft_strdup(dest_str);
+	if (!get_destination_addr(dest_str, (in_addr_t *)&c.dst_sockaddr.sin_addr, &c.name)) {
+		ft_lstclear(&c.str_args, free);
+		return (c);
 	}
 
     c.send_sock = open_send_socket();
     c.rcv_sock = open_rcv_socket();
-	ft_lstclear(&args, free);
     return (c);    
 }
 
@@ -168,6 +188,10 @@ static void free_context(t_context *c)
 	if (c->name) {
 		free(c->name);
 	}
+	if (c.str_args) {
+		ft_lstclear(&c.str_args, free);
+	}
+
     close_multi_socket(c->rcv_sock, c->send_sock);
     ft_printf_fd(1, ORANGE"All ressources free\n"RESET);
 }

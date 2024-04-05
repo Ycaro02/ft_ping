@@ -112,6 +112,7 @@ typedef struct s_ping_state
 */
 typedef struct s_context
 {
+	t_list			*str_args;		/* args (ip addr/hostname) list*/
     t_sockaddr_in   dst_sockaddr;	/* Destination socket address */
 	t_ping_state    state;          /* ping state */
 	t_ping_sum		summary;		/* ping summary*/
