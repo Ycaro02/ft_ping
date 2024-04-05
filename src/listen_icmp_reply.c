@@ -3,7 +3,7 @@
 static void display_clean_data(t_context *c, t_iphdr *iphdr ,t_icmphdr *icmphdr)
 {
 	char buff[1024];
-	char *dest_str = inet_ntoa(*(struct in_addr *)&(c->dst_sockaddr.sin_addr.s_addr));
+	char *dest_str = inet_ntoa(*(struct in_addr *)&(c->dest.sockaddr.sin_addr.s_addr));
 
 	ft_bzero(buff, 1024);
 	sprintf(buff, GREEN"64"RESET" bytes from "PURPLE"%s"RESET": icmp_seq="ORANGE"%u"RESET" ttl="RED"%d "RESET, dest_str, ntohs(icmphdr->un.echo.sequence), iphdr->ttl);
@@ -44,7 +44,7 @@ static void display_clean_error(t_context *c, ssize_t bytes_rcv, uint8_t error)
 {
 	char buff[1024];
 	char *error_str = get_str_msg_type(error);
-	char *dest_str = inet_ntoa(*(struct in_addr *)&(c->dst_sockaddr.sin_addr.s_addr));
+	char *dest_str = inet_ntoa(*(struct in_addr *)&(c->dest.sockaddr.sin_addr.s_addr));
 
 	ft_bzero(buff, 1024);
 	sprintf(buff, "from "CYAN"%s (%s)"RESET" %s\n", dest_str, dest_str, error_str);
@@ -71,11 +71,11 @@ int8_t listen_icmp_reply(t_context *c, int8_t *error)
 	ft_bzero(buffer, BUFFER_SIZE);
 	ft_bzero(&src_addr, sizeof(src_addr));
 
-	// ft_printf_fd(1, "Listen on addr: %s\n", inet_ntoa(*(struct in_addr *)&c->dst_sockaddr.sin_addr.s_addr));
+	// ft_printf_fd(1, "Listen on addr: %s\n", inet_ntoa(*(struct in_addr *)&c->dest.sockaddr.sin_addr.s_addr));
 	errno = 0;
 	bytes_received = recvfrom(c->rcv_sock, buffer, BUFFER_SIZE, 0, (struct sockaddr*)&src_addr, &addr_len);
 	// ft_printf_fd(1, "bytes_received %d from %s\n", bytes_received, inet_ntoa(src_addr.sin_addr));
-	if (src_addr.sin_addr.s_addr != c->dst_sockaddr.sin_addr.s_addr) {
+	if (src_addr.sin_addr.s_addr != c->dest.sockaddr.sin_addr.s_addr) {
 		return (FALSE);
 	} else if (g_signal_received) {
 		return (TRUE);

@@ -72,7 +72,7 @@ t_context init_context_structure()
 	c.send_sock = -1;
 	c.rcv_sock = -1;
     c.src_addr = get_process_ipv4_addr();
-    c.dst_sockaddr.sin_family = AF_INET;
+    c.dest.sockaddr.sin_family = AF_INET;
 	return (c);
 }
 
@@ -95,7 +95,7 @@ t_context init_ping_context(int argc, char **argv)
 		dest_str = c.str_args->content;
 	}
 
-	if (!get_destination_addr(dest_str, (in_addr_t *)&c.dst_sockaddr.sin_addr, &c.name)) {
+	if (!get_destination_addr(dest_str, (in_addr_t *)&c.dest.sockaddr.sin_addr, &c.dest.name)) {
 		ft_lstclear(&c.str_args, free);
 		return (c);
 	}
@@ -161,7 +161,7 @@ static void compute_standard_deviation(t_ping_sum *summary, t_list *time_lst)
 
 void display_clear_summary(t_context *c)
 {
-	char *name = c->name ? c->name : inet_ntoa(*(struct in_addr *)&c->dst_sockaddr.sin_addr.s_addr);
+	char *name = c->dest.name ? c->dest.name : inet_ntoa(*(struct in_addr *)&c->dest.sockaddr.sin_addr.s_addr);
 	uint32_t packet_loss = 0;
 	
 	if (c->summary.nb_send == 0) {
@@ -185,11 +185,11 @@ static void free_context(t_context *c)
 	if (c->summary.rcv_time_lst) {
 		ft_lstclear(&c->summary.rcv_time_lst, free);
 	}
-	if (c->name) {
-		free(c->name);
+	if (c->dest.name) {
+		free(c->dest.name);
 	}
-	if (c.str_args) {
-		ft_lstclear(&c.str_args, free);
+	if (c->str_args) {
+		ft_lstclear(&c->str_args, free);
 	}
 
     close_multi_socket(c->rcv_sock, c->send_sock);

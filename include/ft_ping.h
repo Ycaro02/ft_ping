@@ -107,19 +107,29 @@ typedef struct s_ping_state
 	suseconds_t		rcv_time;		/* Last ping receive time */
 }	t_ping_state;
 
+
+/**
+ * Destination data structure
+*/
+typedef struct s_dest_data
+{
+	t_sockaddr_in	sockaddr;        /* Destination address */
+	char            *name;          /* Destination name */
+} t_dest_data;
+
+
 /**
  * Context structure for ping
 */
 typedef struct s_context
 {
-	t_list			*str_args;		/* args (ip addr/hostname) list*/
-    t_sockaddr_in   dst_sockaddr;	/* Destination socket address */
 	t_ping_state    state;          /* ping state */
 	t_ping_sum		summary;		/* ping summary*/
+	t_dest_data		dest;			/* current destination data structure */	
+	t_list			*str_args;		/* args (ip addr/hostname) list*/
     in_addr_t       src_addr;		/* Source address */
     int             send_sock;      /* socket for sending */
     int             rcv_sock;       /* socket for receiving */
-	char			*name;			/* destination name */
     uint16_t        flag;           /* ping command flag */
 	uint8_t			exit_code;		/* exit code */
 } t_context;

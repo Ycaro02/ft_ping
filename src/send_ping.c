@@ -35,7 +35,7 @@ uint8_t send_echo_request(t_context *c, t_ping_packet packet)
     errno = 0;
 
     send_ret = sendto(c->send_sock, &packet, sizeof(packet), 0\
-        , (struct sockaddr *)&c->dst_sockaddr, sizeof(c->dst_sockaddr));
+        , (struct sockaddr *)&c->dest.sockaddr, sizeof(c->dest.sockaddr));
     if (send_ret == -1) {
         perror("ft_ping: sending packet");
         return (0);
@@ -43,7 +43,7 @@ uint8_t send_echo_request(t_context *c, t_ping_packet packet)
     c->state.send_time = get_ms_time();
     c->summary.nb_send++;
     // display_detail_packet(&packet.iphdr, &packet.icmphdr, packet.data);
-    // ft_printf_fd(1, GREEN"Packet sent %u bytes to %s\n"RESET, send_ret, inet_ntoa(*(struct in_addr *)&c->dst_sockaddr.sin_addr.s_addr));
+    // ft_printf_fd(1, GREEN"Packet sent %u bytes to %s\n"RESET, send_ret, inet_ntoa(*(struct in_addr *)&c->dest.sockaddr.sin_addr.s_addr));
     return (1);
 }
 
@@ -80,8 +80,8 @@ void update_packet(t_ping_packet *packet)
 static void display_first_stat(t_context *c, t_ping_packet packet)
 {
     char buff[1024];
-    char *dest_str = inet_ntoa(*(struct in_addr *)&(c->dst_sockaddr.sin_addr.s_addr));
-    char *name = c->name ? c->name : dest_str;
+    char *dest_str = inet_ntoa(*(struct in_addr *)&(c->dest.sockaddr.sin_addr.s_addr));
+    char *name = c->dest.name ? c->dest.name : dest_str;
 
     ft_bzero(buff, 1024);
 
@@ -105,7 +105,7 @@ int send_ping(t_context *c)
     int8_t          error = 0;
 
     init_signal_handler();
-    packet = build_ping_packet(c->src_addr, c->dst_sockaddr.sin_addr.s_addr);
+    packet = build_ping_packet(c->src_addr, c->dest.sockaddr.sin_addr.s_addr);
     display_first_stat(c, packet);
     while (!g_signal_received && c->summary.nb_send < 5) {
         if (!send_echo_request(c, packet)) {
