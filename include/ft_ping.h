@@ -86,7 +86,8 @@ enum ping_flag  {
 };
 
 /**
- * Ping summary structure one for program
+ * Ping summary structure store all ping summary data on same target, 
+ * display and reset between different target
 */
 typedef struct s_ping_summary 
 {
@@ -121,13 +122,24 @@ typedef struct s_dest_data
 
 
 /**
- * Context structure for ping
+ * Packet structure
+*/
+typedef struct s_ping_packet
+{
+    t_iphdr    iphdr;                   /* IP header */
+    t_icmphdr  icmphdr;                 /* ICMP header */
+    uint8_t    data[ICMP_DATA_SIZE];    /* Data/Payload */
+} t_ping_packet;
+
+/**
+ * Context ping structure
 */
 typedef struct s_context
 {
 	t_ping_state    state;          /* ping state */
 	t_ping_sum		summary;		/* ping summary*/
-	t_dest_data		dest;			/* current destination data structure */	
+	t_dest_data		dest;			/* current destination data structure */
+	t_ping_packet	packet;			/* current packet */
 	t_list			*str_args;		/* args (ip addr/hostname) list*/
     in_addr_t       src_addr;		/* Source address */
     int             send_sock;      /* socket for sending */
@@ -136,15 +148,7 @@ typedef struct s_context
 	uint8_t			exit_code;		/* exit code */
 } t_context;
 
-/**
- * Packet structure for ping
-*/
-typedef struct s_ping_packet
-{
-    t_iphdr    iphdr;                   /* IP header */
-    t_icmphdr  icmphdr;                 /* ICMP header */
-    uint8_t    data[ICMP_DATA_SIZE];    /* Data/Payload */
-} t_ping_packet;
+
 
 
 /* Signal handling global variable */

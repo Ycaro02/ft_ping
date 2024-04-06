@@ -143,7 +143,7 @@ char *get_str_msg_type(uint8_t type)
 	case ICMP_REDIRECT:
 		return (RED"REDIRECT"RESET);
 	case ICMP_TIME_EXCEEDED:
-		return (RED"TIME EXCEEDED"RESET);
+		return (RED"Time to live exceeded"RESET);
 	case ICMP_PARAMETERPROB:
 		return (RED"PARAMETER PROBLEM"RESET);
 	case ICMP_TIMESTAMP:

@@ -41,6 +41,22 @@ void update_ping_summary(t_context *c, suseconds_t start, suseconds_t end)
 }
 
 
+static void display_ip_header_dump(t_iphdr *iphdr)
+{
+	ft_printf_fd(1, "IP Hdr Dump:\n");
+	for (int i = 0; i < 20; i += 2) {
+		dprintf(1, "%02x%02x ", ((uint8_t *)iphdr)[i], ((uint8_t *)iphdr)[i + 1]);
+	}
+	ft_printf_fd(1, "\n");
+	ft_printf_fd(1, "Vr HL TOS  Len   ID Flg  off TTL Pro  cks      Src	Dst	Data\n");
+	/*			Vr	 HL  TOS  LEN   ID  flg  off  ttl  pro  cks  src dest*/
+	dprintf(1, "%2d  %2d %02x %04x %04x %3d %04x  %02x  %02x %04x ",
+		iphdr->version, iphdr->ihl, iphdr->tos, ntohs(iphdr->tot_len), ntohs(iphdr->id)\
+		, 0,  ntohs(iphdr->frag_off), iphdr->ttl, iphdr->protocol, ntohs(iphdr->check));
+	ft_printf_fd(1, "%s  ", inet_ntoa(*(struct in_addr *)&iphdr->saddr));
+	ft_printf_fd(1, "%s\n", inet_ntoa(*(struct in_addr *)&iphdr->daddr));
+}
+
 /**
  * To addd
  *	PING google.com (142.250.75.238): 56 data bytes, id 0x389f = 14495
@@ -51,7 +67,6 @@ void update_ping_summary(t_context *c, suseconds_t start, suseconds_t end)
  *	4  5  00 0054 35d5   2 0000  01  01 a731 192.168.1.18  142.250.75.238 
  **	ICMP: type 8, code 0, size 64, id 0x389f, seq 0x0000
 */
-
 static void display_clean_error(struct in_addr *src_addr, ssize_t bytes_rcv, uint8_t error)
 {
 	char buff[1024];
@@ -63,7 +78,9 @@ static void display_clean_error(struct in_addr *src_addr, ssize_t bytes_rcv, uin
 	sprintf(buff, "from "CYAN"%s (%s)"RESET" %s\n", dest_str, dest_str, error_str);
 
 	ft_printf_fd(1, ""RED"%u"RESET" bytes %s", bytes_rcv, buff);
+
 	// 92 bytes from livebox.home (192.168.1.1):
+	// if -v display ip header dump
 }
 
 /**
@@ -92,7 +109,7 @@ int8_t listen_icmp_reply(t_context *c, int8_t *error, uint16_t ip_header_id)
 		// ft_printf_fd(1, RED"WRONG ADDR RECEIVE\n"RESET);
 		if (bytes_received >= PACKET_SIZE) {
 			icmp_hdr = (t_icmphdr *)(buffer + IP_HDR_SIZE);
-			ip_hdr = (t_iphdr *)(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE); /* hardcode suppose ip header dont have any option */
+			ip_hdr = (t_iphdr *)(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE); /* hardcode suppose ip header dont have any option need to adapt it*/
 			// ft_printf_fd(1, "new header ip ID: %d\n", ntohs(((t_iphdr *)buffer)->id));
 			// ft_printf_fd(1, "real header ip ID: %d\n", ntohs(ip_hdr->id));
 			if (ntohs(ip_hdr->id) != ip_header_id) {
@@ -100,6 +117,7 @@ int8_t listen_icmp_reply(t_context *c, int8_t *error, uint16_t ip_header_id)
 			}
 			/* for -v (mandatory) need to add special display on error, hexadump of ip hdr and display basic info on icmp for*/
 			display_clean_error((struct in_addr *)&src_addr.sin_addr.s_addr, bytes_received - IP_HDR_SIZE, icmp_hdr->type);
+			display_ip_header_dump(ip_hdr);
 			*error = 1;
 			return (TRUE);
 		}
