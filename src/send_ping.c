@@ -103,17 +103,24 @@ int send_ping(t_context *c)
 {
     t_ping_packet   packet;
     int8_t          error = 0;
+	int8_t			listen_bool = 1;
 
     // init_signal_handler();
     packet = build_ping_packet(c->src_addr, c->dest.sockaddr.sin_addr.s_addr);
     display_first_stat(c, packet);
-    while (!g_signal_received && c->summary.nb_send < 5) {
-        if (!send_echo_request(c, packet)) {
+    while (c->summary.nb_send < 5) {
+        listen_bool = g_signal_received == 0;
+		ft_printf_fd(1, "listen_bool %d for addr %s\n", listen_bool, inet_ntoa(*(struct in_addr *)&c->dest.sockaddr.sin_addr.s_addr));
+		if (!listen_bool && c->summary.nb_send > 0) { 
+			return (1);
+		} else if (!send_echo_request(c, packet)) {
             return (0);
         }
-        while (!g_signal_received && !listen_icmp_reply(c, &error)) ;
+        while (listen_bool && !g_signal_received && !listen_icmp_reply(c, &error)) ;
         update_packet(&packet);
-        usleep(1000000); /* possible option -i set by user */
+		if (listen_bool) {
+        	usleep(1000000); /* possible option -i set by user */
+		}
     }
     return (1);
 }
@@ -151,7 +158,6 @@ int sending_ping_loop(t_context *c)
         if (args) {
             reset_data(c);
         }
-        
     }
     return (1);
 }

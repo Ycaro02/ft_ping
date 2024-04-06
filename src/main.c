@@ -148,7 +148,6 @@ static void compute_standard_deviation(t_ping_sum *summary, t_list *time_lst)
 		sum += (diff * diff);
 		++nb_elem;
 	}
-
 	summary->stddev = sqrt(sum / nb_elem);
 }
 

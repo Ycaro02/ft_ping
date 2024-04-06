@@ -151,13 +151,12 @@ typedef struct s_ping_packet
 extern int		g_signal_received;
 
 /* main */
-int8_t get_destination_addr(char *dest_str, in_addr_t *dest_addr, char **dest_name);
-void display_clear_summary(t_context *c);
-
+int8_t			get_destination_addr(char *dest_str, in_addr_t *dest_addr, char **dest_name);
+void			display_clear_summary(t_context *c);
 
 /* send ping */
 int				send_ping(t_context *c);
-int sending_ping_loop(t_context *c);
+int				sending_ping_loop(t_context *c);
 
 /* socket handle */
 void			close_multi_socket(int sock1, int sock2);
