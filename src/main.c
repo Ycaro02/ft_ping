@@ -2,27 +2,21 @@
 
 int g_signal_received = 0;
 
-int8_t init_flag_context(int argc, char**argv, uint16_t *flag, uint8_t *exit_code)
+
+int8_t call_flag_parser(t_flag_context *flag_c, int argc, char **argv, uint16_t *flag, uint8_t *exit_code)
 {
-	t_flag_context flag_c;
 	int8_t flag_error = 0;
 
-	ft_bzero(&flag_c, sizeof(t_flag_context));
-	add_flag_option(&flag_c, H_FLAG_CHAR, H_OPTION, OPT_NO_VALUE, "help");
-	add_flag_option(&flag_c, V_FLAG_CHAR, V_OPTION, OPT_NO_VALUE, "verbose");
-	add_flag_option(&flag_c, C_FLAG_CHAR, C_OPTION, OPT_HAS_VALUE, "count");
-	add_flag_option(&flag_c, T_FLAG_CHAR, T_OPTION, OPT_HAS_VALUE, "ttl");
-
 	/* get flag */
-	*flag = parse_flag(argc, argv, &flag_c, &flag_error);
+	*flag = parse_flag(argc, argv, flag_c, &flag_error);
 	if (flag_error == -1) {
-		free_flag_context(&flag_c);
+		free_flag_context(flag_c);
 		return (FALSE);
 	}
 
-	display_option_list(flag_c);
+	display_option_list(*flag_c); /* to remove*/
 
-	free_flag_context(&flag_c);
+	free_flag_context(flag_c);
 
 	if (has_flag(*flag, H_OPTION)) {
 		ft_printf_fd(1, MANDATORY_HELP_MESSAGE, argv[0]);
@@ -30,7 +24,41 @@ int8_t init_flag_context(int argc, char**argv, uint16_t *flag, uint8_t *exit_cod
 		return (FALSE);
 	}
 
-	return (TRUE);
+	return (TRUE);	
+}
+
+int8_t init_flag_context(int argc, char**argv, uint16_t *flag, uint8_t *exit_code)
+{
+	t_flag_context flag_c;
+	int8_t ret = 0;
+
+	ft_bzero(&flag_c, sizeof(t_flag_context));
+	add_flag_option(&flag_c, H_FLAG_CHAR, H_OPTION, OPT_NO_VALUE, "help");
+	add_flag_option(&flag_c, V_FLAG_CHAR, V_OPTION, OPT_NO_VALUE, "verbose");
+	
+	ret = call_flag_parser(&flag_c, argc, argv, flag, exit_code);
+	return (ret);
+	// add_flag_option(&flag_c, C_FLAG_CHAR, C_OPTION, OPT_HAS_VALUE, "count");
+	// add_flag_option(&flag_c, T_FLAG_CHAR, T_OPTION, OPT_HAS_VALUE, "ttl");
+
+	/* get flag */
+	// *flag = parse_flag(argc, argv, &flag_c, &flag_error);
+	// if (flag_error == -1) {
+	// 	free_flag_context(&flag_c);
+	// 	return (FALSE);
+	// }
+
+	// display_option_list(flag_c); /* to remove*/
+
+	// free_flag_context(&flag_c);
+
+	// if (has_flag(*flag, H_OPTION)) {
+	// 	ft_printf_fd(1, MANDATORY_HELP_MESSAGE, argv[0]);
+	// 	*exit_code = 0;
+	// 	return (FALSE);
+	// }
+
+	// return (TRUE);
 }
 
 
@@ -75,7 +103,9 @@ t_context init_ping_context(int argc, char **argv)
     return (c);    
 }
 
-
+/**
+ *	@brief free context structure field and close socket
+*/
 static void free_context(t_context *c)
 {
 	if (c->summary.rcv_time_lst) {

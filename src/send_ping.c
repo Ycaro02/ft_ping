@@ -118,7 +118,7 @@ int send_ping(t_context *c)
 		} else if (!send_echo_request(c, c->packet)) {
             return (0);
         }
-        while (listen_bool && !listen_icmp_reply(c, &error, ntohs(c->packet.iphdr.id))) ;
+        while (listen_bool && !listen_icmp_reply(c, &error)) ;
         update_packet(&c->packet);
 		if (listen_bool) {
         	usleep(1000000); /* possible option -i set by user */

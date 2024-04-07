@@ -95,7 +95,7 @@ static void display_clean_error(struct in_addr *src_addr, ssize_t bytes_rcv, uin
  *	@param ip_header_id ip header id to check if icmp reply is for the current packet
  *	@return TRUE if error occur, FALSE if we need to continue to listen icmp reply, CORRECT_BUFFER if icmp reply is correct
 */
-static int8_t parse_icmp_reply(t_context *c, uint8_t buffer[], int8_t *error, uint16_t ip_header_id)
+static int8_t parse_icmp_reply(t_context *c, uint8_t buffer[], int8_t *error)
 {
     ssize_t			bytes_received;
     t_iphdr			*ip_hdr = NULL;
@@ -117,7 +117,7 @@ static int8_t parse_icmp_reply(t_context *c, uint8_t buffer[], int8_t *error, ui
 		return (TRUE);
 	} else if (bytes_received > PACKET_SIZE) { /* error case */
 		ip_hdr = (t_iphdr *)(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE); /* hardcode suppose ip header dont have any option need to adapt it for bonus */
-		if (ntohs(ip_hdr->id) != ip_header_id) {
+		if (ntohs(ip_hdr->id) != c->packet.iphdr.id ) {
 			return (FALSE);
 		}
 		display_clean_error((struct in_addr *)&src_addr.sin_addr.s_addr, bytes_received - IP_HDR_SIZE, ((t_icmphdr *)(buffer + IP_HDR_SIZE))->type);
@@ -130,7 +130,7 @@ static int8_t parse_icmp_reply(t_context *c, uint8_t buffer[], int8_t *error, ui
 
 	ip_hdr = (t_iphdr *)buffer;
 	t_icmphdr *icmp_hdr = (t_icmphdr *)(buffer + IP_HDR_SIZE);
-	if (ip_hdr->protocol == IPPROTO_ICMP && icmp_hdr->type != ICMP_ECHO) {
+	if (ip_hdr->protocol == IPPROTO_ICMP && icmp_hdr->type != ICMP_ECHO && icmp_hdr->un.echo.id == c->packet.icmphdr.un.echo.id) {
 		return (CORRECT_BUFFER);
 	}
 
@@ -143,7 +143,7 @@ static int8_t parse_icmp_reply(t_context *c, uint8_t buffer[], int8_t *error, ui
  *	@param error pointer to set at 1 if error occur (no enought bytes or invalid checksum)
  *  @return True if message receive from source address and need to go next send\listen, FALSE if we need to continue to listen same reply
 */
-int8_t listen_icmp_reply(t_context *c, int8_t *error, uint16_t ip_header_id)
+int8_t listen_icmp_reply(t_context *c, int8_t *error)
 {
     uint8_t         buffer[BUFFER_SIZE];
     t_iphdr			*ip_hdr;
@@ -153,7 +153,7 @@ int8_t listen_icmp_reply(t_context *c, int8_t *error, uint16_t ip_header_id)
 
 	ft_bzero(buffer, BUFFER_SIZE);
 
-	ret = parse_icmp_reply(c, buffer, error, ip_header_id);
+	ret = parse_icmp_reply(c, buffer, error);
 	if (ret != CORRECT_BUFFER) {
 		// ft_printf_fd(1, "Incorect ret %d\n", ret);
 		return (ret);
@@ -163,7 +163,7 @@ int8_t listen_icmp_reply(t_context *c, int8_t *error, uint16_t ip_header_id)
 	icmp_hdr = (t_icmphdr *)(buffer + IP_HDR_SIZE);
 
 	if (ntohs(icmp_hdr->un.echo.id) != ntohs(c->packet.icmphdr.un.echo.id)) {
-		ft_printf_fd(1, RED"ID mismatch %u != %u\n"RESET, ntohs(ip_hdr->id), ip_header_id);
+		ft_printf_fd(1, RED"ID mismatch %u != %u\n"RESET, ntohs(ip_hdr->id), ntohs(c->packet.icmphdr.un.echo.id));
 		return (FALSE);
 	}
 	
@@ -171,6 +171,9 @@ int8_t listen_icmp_reply(t_context *c, int8_t *error, uint16_t ip_header_id)
 		*error = 1;
 		return (TRUE);
 	}
+
+	// display_detail_packet(ip_hdr, icmp_hdr, buffer + IP_HDR_SIZE + ICMP_HDR_SIZE);
+
 	c->state.rcv_time = get_ms_time();
 	update_ping_summary(c, c->state.send_time, c->state.rcv_time);
 	display_clean_data(c, ip_hdr, icmp_hdr);

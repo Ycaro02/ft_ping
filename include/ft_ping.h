@@ -175,7 +175,7 @@ int				open_rcv_socket(void);
 int				open_send_socket(void);
 
 /* listen icmp reply */
-int8_t			listen_icmp_reply(t_context *c, int8_t *error, uint16_t ip_header_id);
+int8_t listen_icmp_reply(t_context *c, int8_t *error);
 void			update_ping_summary(t_context *c, suseconds_t start, suseconds_t end);
 
 /* build request */
