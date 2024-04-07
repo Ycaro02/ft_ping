@@ -65,6 +65,8 @@ void increment_icmp_seq(uint16_t *seq_id)
 void update_packet(t_ping_packet *packet)
 {
     increment_icmp_seq(&packet->icmphdr.un.echo.sequence);
+    /* update ICMP timestamp */
+	gettimeofday((struct timeval *)packet->data , NULL);
     /* Reset checksum */
     packet->icmphdr.checksum = 0;    
     packet->iphdr.check = 0;
@@ -72,6 +74,7 @@ void update_packet(t_ping_packet *packet)
     packet->icmphdr.checksum = compute_checksum((uint16_t *)&packet->icmphdr, ICMP_HDR_SIZE + ICMP_DATA_SIZE);
     /* Compute IP checksum */
     packet->iphdr.check = compute_checksum((uint16_t *)&packet->iphdr, IP_HDR_SIZE);
+
 }
 
 /**
