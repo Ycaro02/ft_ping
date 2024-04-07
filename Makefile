@@ -9,14 +9,6 @@ ASCII_NAME		=	${NAME}
 
 PING_ADDR		=	localhost --count 3 --verbose -c 5 -c3 --ttl 12 127.0.0.1 -c2
 
-
-ifeq ($(findstring bonus, $(MAKECMDGOALS)), bonus)
-ASCII_NAME	= "bonus"
-SRCS += $(SRCS_BONUS)
-else
-SRCS += $(MAIN_MANDATORY)
-endif
-
 all:		$(NAME)
 
 %.o : %.c

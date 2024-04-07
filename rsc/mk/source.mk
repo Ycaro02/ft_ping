@@ -15,6 +15,7 @@ SRCS			=	handle_socket.c\
 					detail_display.c\
 					garbage_func.c\
 
+SRCS_BONUS		=	main_bonus.c\
 
 MAKE_LIBFT		=	make -s -C libft
 
@@ -28,8 +29,9 @@ OBJS 			= $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
 
 RM			=	rm -rf
 
-SRCS_BONUS		=	main_bonus.c\
-
-OBJS_BONUS		= $(addprefix $(OBJ_DIR)/, $(SRCS_BONUS:.c=.o))
-
-OBJS_MAIN_BONUS	= $(addprefix $(OBJ_DIR)/, $(MAIN_BONUS:.c=.o))
+ifeq ($(findstring bonus, $(MAKECMDGOALS)), bonus)
+ASCII_NAME	= "bonus"
+SRCS += $(SRCS_BONUS)
+else
+SRCS += $(MAIN_MANDATORY)
+endif
