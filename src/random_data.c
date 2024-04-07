@@ -4,7 +4,7 @@
  *	@brief Get random number % max
  *	@param max max value
 */
-static uint32_t     gener_uint32(int max)
+uint32_t     gener_uint32(int max)
 {
     uint32_t res = 0;
 	int fd = open("/dev/urandom", O_RDONLY); 

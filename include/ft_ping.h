@@ -187,6 +187,7 @@ uint8_t			verify_checksum(void *buffer, uint16_t ip_checksum, uint16_t icmp_chec
 
 /* random data */
 void			gener_random_data(uint8_t *buff, int size);
+uint32_t     gener_uint32(int max);
 
 /* time */
 suseconds_t		get_ms_time(void);

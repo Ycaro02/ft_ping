@@ -3,7 +3,12 @@
 /* Get icmp paquets id */
 static uint16_t get_icmp_id()
 {
-	static uint16_t id = 1;
+	static uint16_t id = 0;
+	
+	if (id == 0) {
+		id = (getpid() & 0xFFFF);
+		id %= gener_uint32((UINT16_MAX >> 2));
+	}
 
 	if (id == UINT16_MAX) {
 		id = 1;
