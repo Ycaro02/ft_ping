@@ -98,10 +98,10 @@ enum ping_flag  {
 */
 typedef struct s_ping_summary 
 {
-	t_list			*rcv_time_lst;	/* List of ping time */
+	t_list			*rcv_time_lst;	/* List of ping receive time (diff between send and receive ts) */
 	suseconds_t		min;			/* Minimum time */
 	suseconds_t		max;			/* Maximum time */
-	suseconds_t		average;		/* Average time, really needed, recompute between each ping sent ? */
+	suseconds_t		average;		/* Average time */
 	suseconds_t		stddev;			/* Standard deviation */
 	uint32_t		nb_send;		/* Number of ping send */
 	uint32_t		nb_rcv;			/* Number of ping received */
@@ -109,7 +109,7 @@ typedef struct s_ping_summary
 }	t_ping_sum;
 
 /**
- * Ping state structure for each ping
+ * Ping state structure store last ping send and receive time
 */
 typedef struct s_ping_state
 {
