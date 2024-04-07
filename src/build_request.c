@@ -25,7 +25,7 @@ t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest)
 	packet.iphdr.tot_len = htons(sizeof(t_ping_packet));
 	packet.iphdr.id = htons((getpid() & 0xFFFF));
     packet.iphdr.frag_off = 0;
-	packet.iphdr.ttl = 2;
+	packet.iphdr.ttl = 64;
     packet.iphdr.protocol = IPPROTO_ICMP;
     packet.iphdr.check = 0;
     packet.iphdr.saddr = addr_from;
