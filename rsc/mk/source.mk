@@ -2,8 +2,9 @@ OBJ_DIR			=	obj
 
 SRC_DIR 		=	src
 
-SRCS			=	main.c\
-					handle_socket.c\
+MAIN_MANDATORY 	=	main.c
+
+SRCS			=	handle_socket.c\
 					listen_icmp_reply.c\
 					build_request.c\
 					checksum.c\
@@ -12,6 +13,7 @@ SRCS			=	main.c\
 					network_utils.c\
 					send_ping.c\
 					detail_display.c\
+					garbage_func.c\
 
 
 MAKE_LIBFT		=	make -s -C libft
@@ -25,3 +27,9 @@ LIST			= 	libft/list/linked_list.a
 OBJS 			= $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
 
 RM			=	rm -rf
+
+SRCS_BONUS		=	main_bonus.c\
+
+OBJS_BONUS		= $(addprefix $(OBJ_DIR)/, $(SRCS_BONUS:.c=.o))
+
+OBJS_MAIN_BONUS	= $(addprefix $(OBJ_DIR)/, $(MAIN_BONUS:.c=.o))

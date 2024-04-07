@@ -190,14 +190,13 @@ void			gener_random_data(uint8_t *buff, int size);
 
 /* time */
 suseconds_t		get_ms_time(void);
+void display_ms_time(char *color, suseconds_t time, uint8_t last);
 
 /* network utils */
 in_addr_t		ipv4_str_toaddr(char *str);
 in_addr_t		get_process_ipv4_addr();
 in_addr_t		hostname_to_ipv4_addr(char *hostname);
 
-/* main */
-void			display_ms_time(char *color, suseconds_t time, uint8_t last);
 
 /* detail display */
 char			*get_str_msg_type(uint8_t type);

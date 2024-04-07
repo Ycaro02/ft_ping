@@ -9,6 +9,14 @@ ASCII_NAME		=	${NAME}
 
 PING_ADDR		=	localhost --count 3 --verbose -c 5 -c3 --ttl 12 127.0.0.1 -c2
 
+
+ifeq ($(findstring bonus, $(MAKECMDGOALS)), bonus)
+ASCII_NAME	= "bonus"
+SRCS += $(SRCS_BONUS)
+else
+SRCS += $(MAIN_MANDATORY)
+endif
+
 all:		$(NAME)
 
 %.o : %.c
@@ -40,6 +48,14 @@ $(OBJ_DIR):
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@printf "$(YELLOW)Compile $<$(RESET)\n"
 	@$(CC) -o $@ -c $< $(CFLAGS)
+
+bonus: clear_mandatory ${NAME}
+
+clear_mandatory:
+ifeq ($(shell [ -f ${OBJ_DIR}/main.o ] && echo 0 || echo 1), 0)
+	@printf "$(RED)Clean mandatory obj $(RESET)\n"
+	@rm -rf ${OBJ_DIR}
+endif
 
 clean:
 ifeq ($(shell [ -d ${OBJ_DIR} ] && echo 0 || echo 1), 0)
