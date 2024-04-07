@@ -76,6 +76,9 @@ Options:\n\
 #define	C_FLAG_CHAR 'c'			/* 2 */
 #define	T_FLAG_CHAR 't'			/* 3 */
 
+#define CORRECT_BUFFER 2U
+
+
 /* Ping flag value */
 enum ping_flag  {
     UNKNOW=0, 

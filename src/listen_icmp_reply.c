@@ -87,6 +87,42 @@ static void display_clean_error(struct in_addr *src_addr, ssize_t bytes_rcv, uin
 	// if -v display ip header dump
 }
 
+
+static int8_t parse_icmp_reply(t_context *c, uint8_t buffer[], int8_t *error, uint16_t ip_header_id)
+{
+    ssize_t			bytes_received;
+    t_iphdr			*ip_hdr = NULL;
+	t_sockaddr_in	src_addr;
+	socklen_t		addr_len = sizeof(t_sockaddr_in);
+
+	ft_bzero(&src_addr, sizeof(src_addr));
+	errno = 0;
+	bytes_received = recvfrom(c->rcv_sock, buffer, BUFFER_SIZE, 0, (struct sockaddr*)&src_addr, &addr_len);
+	if (g_signal_received) {
+		return (TRUE);
+	} else if (errno == EAGAIN || errno == EWOULDBLOCK) {
+		ft_printf_fd(2, RED"Timeout Reached\n"RESET);
+		return (TRUE);
+	} else if (bytes_received < PACKET_SIZE) {
+		ft_printf_fd(1, RED"\nNot enought bytes received number: %d\n"RESET, bytes_received);
+		perror("recvfrom");
+		*error = 1;
+		return (TRUE);
+	} else if (bytes_received > PACKET_SIZE) {
+		ip_hdr = (t_iphdr *)(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE); /* hardcode suppose ip header dont have any option need to adapt it*/
+		if (ntohs(ip_hdr->id) != ip_header_id) {
+			return (FALSE);
+		}
+		display_clean_error((struct in_addr *)&src_addr.sin_addr.s_addr, bytes_received - IP_HDR_SIZE, ((t_icmphdr *)(buffer + IP_HDR_SIZE))->type);
+		if (has_flag(c->flag, V_OPTION)) {
+			display_ip_header_dump(ip_hdr, (t_icmphdr *)((void *)ip_hdr + IP_HDR_SIZE));
+		}
+		*error = 1;
+		return (TRUE);
+	}
+	return (CORRECT_BUFFER);
+}
+
 /**
  *  @brief Listen icmp reply
  *  @param c ping context
@@ -96,53 +132,27 @@ static void display_clean_error(struct in_addr *src_addr, ssize_t bytes_rcv, uin
 int8_t listen_icmp_reply(t_context *c, int8_t *error, uint16_t ip_header_id)
 {
     uint8_t         buffer[BUFFER_SIZE];
-	t_sockaddr_in	src_addr;
     t_iphdr			*ip_hdr;
     t_icmphdr		*icmp_hdr;
-    ssize_t			bytes_received;
-	socklen_t		addr_len = sizeof(t_sockaddr_in);
+	int8_t			ret;
+
 
 	ft_bzero(buffer, BUFFER_SIZE);
-	ft_bzero(&src_addr, sizeof(src_addr));
 
-	// ft_printf_fd(1, "Listen on addr: %s\n", inet_ntoa(*(struct in_addr *)&c->dest.sockaddr.sin_addr.s_addr));
-	errno = 0;
-	bytes_received = recvfrom(c->rcv_sock, buffer, BUFFER_SIZE, 0, (struct sockaddr*)&src_addr, &addr_len);
-
-
-
-	if (g_signal_received) {
-		return (TRUE);
-	} else if (bytes_received < PACKET_SIZE) {
-		ft_printf_fd(1, RED"\nNot enought bytes received number: %d\n"RESET, bytes_received);
-		perror("recvfrom");
-		*error = 1;
-		return (TRUE);
-	} else if (errno == EAGAIN || errno == EWOULDBLOCK) {
-		ft_printf_fd(2, RED"Timeout Reached\n"RESET);
-		return (TRUE);
-	} else if (bytes_received > PACKET_SIZE) {
-		icmp_hdr = (t_icmphdr *)(buffer + IP_HDR_SIZE);
-		ip_hdr = (t_iphdr *)(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE); /* hardcode suppose ip header dont have any option need to adapt it*/
-		if (ntohs(ip_hdr->id) != ip_header_id) {
-			return (FALSE);
-		}
-		display_clean_error((struct in_addr *)&src_addr.sin_addr.s_addr, bytes_received - IP_HDR_SIZE, icmp_hdr->type);
-		if (has_flag(c->flag, V_OPTION)) {
-			display_ip_header_dump(ip_hdr, (t_icmphdr *)((void *)ip_hdr + IP_HDR_SIZE));
-		}
-		*error = 1;
-		return (TRUE);
+	ret = parse_icmp_reply(c, buffer, error, ip_header_id);
+	if (ret != CORRECT_BUFFER) {
+		ft_printf_fd(1, "Incorect ret %d\n", ret);
+		return (ret);
 	}
 
-
 	ip_hdr = (t_iphdr *)buffer;
+	icmp_hdr = (t_icmphdr *)(buffer + IP_HDR_SIZE);
 
-	if (ntohs(ip_hdr->id) != ip_header_id) {
+	if (ntohs(icmp_hdr->un.echo.id) != ntohs(c->packet.icmphdr.un.echo.id)) {
+		ft_printf_fd(1, RED"ID mismatch %u != %u\n"RESET, ntohs(ip_hdr->id), ip_header_id);
 		return (FALSE);
 	}
 	
-	icmp_hdr = (t_icmphdr *)(buffer + IP_HDR_SIZE);
 	if (verify_checksum(buffer, ip_hdr->check, icmp_hdr->checksum) == FALSE) {
 		*error = 1;
 		return (TRUE);
