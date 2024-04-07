@@ -41,20 +41,24 @@ void update_ping_summary(t_context *c, suseconds_t start, suseconds_t end)
 }
 
 
-static void display_ip_header_dump(t_iphdr *iphdr)
+static void display_ip_header_dump(t_iphdr *iphdr, t_icmphdr *icmphdr)
 {
 	ft_printf_fd(1, "IP Hdr Dump:\n");
 	for (int i = 0; i < 20; i += 2) {
 		dprintf(1, "%02x%02x ", ((uint8_t *)iphdr)[i], ((uint8_t *)iphdr)[i + 1]);
 	}
-	ft_printf_fd(1, "\n");
-	ft_printf_fd(1, "Vr HL TOS  Len   ID Flg  off TTL Pro  cks      Src	Dst	Data\n");
-	/*			Vr	 HL  TOS  LEN   ID  flg  off  ttl  pro  cks  src dest*/
+	ft_printf_fd(1, "\nVr HL TOS  Len   ID Flg  off TTL Pro  cks      Src	Dst	Data\n");
+	/*			Vr	 HL  TOS  LEN  ID   flg off   ttl   pro  cks */
 	dprintf(1, "%2d  %2d %02x %04x %04x %3d %04x  %02x  %02x %04x ",
 		iphdr->version, iphdr->ihl, iphdr->tos, ntohs(iphdr->tot_len), ntohs(iphdr->id)\
 		, 0,  ntohs(iphdr->frag_off), iphdr->ttl, iphdr->protocol, ntohs(iphdr->check));
+	
 	ft_printf_fd(1, "%s  ", inet_ntoa(*(struct in_addr *)&iphdr->saddr));
 	ft_printf_fd(1, "%s\n", inet_ntoa(*(struct in_addr *)&iphdr->daddr));
+	
+	dprintf(1, "ICMP: type %u, code %u, size %lu, id 0x%04x, seq 0x%04x\n", icmphdr->type\
+		, icmphdr->code, ntohs(iphdr->tot_len) - IP_HDR_SIZE\
+		, ntohs(icmphdr->un.echo.id), ntohs(icmphdr->un.echo.sequence));
 }
 
 /**
@@ -104,37 +108,40 @@ int8_t listen_icmp_reply(t_context *c, int8_t *error, uint16_t ip_header_id)
 	// ft_printf_fd(1, "Listen on addr: %s\n", inet_ntoa(*(struct in_addr *)&c->dest.sockaddr.sin_addr.s_addr));
 	errno = 0;
 	bytes_received = recvfrom(c->rcv_sock, buffer, BUFFER_SIZE, 0, (struct sockaddr*)&src_addr, &addr_len);
-	// ft_printf_fd(1, "bytes_received %d from %s\n", bytes_received, inet_ntoa(src_addr.sin_addr));
-	if (src_addr.sin_addr.s_addr != c->dest.sockaddr.sin_addr.s_addr)  {
-		// ft_printf_fd(1, RED"WRONG ADDR RECEIVE\n"RESET);
-		if (bytes_received >= PACKET_SIZE) {
-			icmp_hdr = (t_icmphdr *)(buffer + IP_HDR_SIZE);
-			ip_hdr = (t_iphdr *)(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE); /* hardcode suppose ip header dont have any option need to adapt it*/
-			// ft_printf_fd(1, "new header ip ID: %d\n", ntohs(((t_iphdr *)buffer)->id));
-			// ft_printf_fd(1, "real header ip ID: %d\n", ntohs(ip_hdr->id));
-			if (ntohs(ip_hdr->id) != ip_header_id) {
-				return (FALSE);
-			}
-			/* for -v (mandatory) need to add special display on error, hexadump of ip hdr and display basic info on icmp for*/
-			display_clean_error((struct in_addr *)&src_addr.sin_addr.s_addr, bytes_received - IP_HDR_SIZE, icmp_hdr->type);
-			display_ip_header_dump(ip_hdr);
-			*error = 1;
-			return (TRUE);
-		}
-		return (FALSE);
-	} else if (g_signal_received) {
-		return (TRUE);
-	} else if (errno == EAGAIN || errno == EWOULDBLOCK) {
-		ft_printf_fd(2, RED"Timeout Reached\n"RESET);
+
+
+
+	if (g_signal_received) {
 		return (TRUE);
 	} else if (bytes_received < PACKET_SIZE) {
 		ft_printf_fd(1, RED"\nNot enought bytes received number: %d\n"RESET, bytes_received);
 		perror("recvfrom");
 		*error = 1;
 		return (TRUE);
+	} else if (errno == EAGAIN || errno == EWOULDBLOCK) {
+		ft_printf_fd(2, RED"Timeout Reached\n"RESET);
+		return (TRUE);
+	} else if (bytes_received > PACKET_SIZE) {
+		icmp_hdr = (t_icmphdr *)(buffer + IP_HDR_SIZE);
+		ip_hdr = (t_iphdr *)(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE); /* hardcode suppose ip header dont have any option need to adapt it*/
+		if (ntohs(ip_hdr->id) != ip_header_id) {
+			return (FALSE);
+		}
+		display_clean_error((struct in_addr *)&src_addr.sin_addr.s_addr, bytes_received - IP_HDR_SIZE, icmp_hdr->type);
+		if (has_flag(c->flag, V_OPTION)) {
+			display_ip_header_dump(ip_hdr, (t_icmphdr *)((void *)ip_hdr + IP_HDR_SIZE));
+		}
+		*error = 1;
+		return (TRUE);
 	}
 
+
 	ip_hdr = (t_iphdr *)buffer;
+
+	if (ntohs(ip_hdr->id) != ip_header_id) {
+		return (FALSE);
+	}
+	
 	icmp_hdr = (t_icmphdr *)(buffer + IP_HDR_SIZE);
 	if (verify_checksum(buffer, ip_hdr->check, icmp_hdr->checksum) == FALSE) {
 		*error = 1;
