@@ -7,7 +7,9 @@ CFLAGS			=	-Wall -Wextra -Werror -O3 -g
 ASCII_ART		=	./rsc/mk/ascii.sh
 ASCII_NAME		=	${NAME}
 
-PING_ADDR		=	localhost --count 3 --verbose -c 5 -c3 --ttl 12 127.0.0.1 -c2
+PING_ADDR		=	localhost --verbose -v 127.0.0.1
+RUN_TEST		=	./rsc/sh/run_test.sh
+VALGRIND_TEST	=	./rsc/sh/valgrind_test.sh
 
 all:		$(NAME)
 
@@ -66,10 +68,10 @@ clean_lib:
 
 test: $(NAME)
 	@printf "$(CYAN)Test $(NAME) ${PING_ADDR} $(RESET)\n"
-	@sudo ./$(NAME) $(PING_ADDR)
+	@sudo ./$(RUN_TEST) $(PING_ADDR)
 
 vtest: $(NAME)
-	@sudo valgrind --leak-check=full --show-leak-kinds=all --track-fds=yes ./$(NAME) $(PING_ADDR)
+	@sudo ./$(VALGRIND_TEST) $(PING_ADDR)
 
 re:			fclean all
 
