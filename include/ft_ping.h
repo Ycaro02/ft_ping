@@ -44,11 +44,15 @@ typedef struct timeval t_timeval;
 /* ICMP header structure size */
 #define ICMP_HDR_SIZE sizeof(t_icmphdr)
 
-/* ICMP Payload/data size */
+/* ICMP Payload/data size in bytes */
 #define ICMP_DATA_SIZE 56
+
+/* Size of timestamp send in bytes */
+#define ICMP_TIMESTAMP_SIZE	8 
 
 /* Size of int16 in bits */
 #define	SHORT_INT_BITS	16
+
 
 /* Local host addr string */
 #define LOCAL_HOST_ADDR "127.0.0.1"

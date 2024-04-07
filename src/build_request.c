@@ -37,7 +37,11 @@ t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest)
     packet.icmphdr.checksum = 0;
     packet.icmphdr.un.echo.id = htons(id);
     packet.icmphdr.un.echo.sequence = 0;
-    gener_random_data(packet.data, ICMP_DATA_SIZE);
+
+	/* Build ICMP timestamp */
+	gettimeofday((struct timeval *)packet.data , NULL);
+	/* Build ICMP data */
+    gener_random_data(packet.data + ICMP_TIMESTAMP_SIZE, (ICMP_DATA_SIZE - ICMP_TIMESTAMP_SIZE));
 
 	/* Compute ICMP checksum */
 	packet.icmphdr.checksum = compute_checksum((uint16_t *)&packet.icmphdr, ICMP_HDR_SIZE + ICMP_DATA_SIZE);
