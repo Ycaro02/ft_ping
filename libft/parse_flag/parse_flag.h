@@ -12,10 +12,17 @@
 /* Message wrong arguments for flag */
 #define PARSE_FLAG_ERR_MSG_WRONG_ARGS   RED"%s: invalid argument -- %c don't accept [%s] as argument\nTry ./%s -h for more information\n"RESET
 
-#define OPT_NO_VALUE    0U          /* no value linked */
 
 #define CHAR_FORMAT		0U          /* short format for check_for_flag */
 #define LONG_FORMAT		1U          /* long format for check_for_flag */
+
+#define OPT_NO_VALUE		0U       /* no value linked */
+#define DECIMAL_VALUE		1U       /* decimal base for value */
+#define HEXADECIMAL_VALUE	2U       /* hexadecimal base for value */
+#define OCTAL_VALUE			3U       /* octal base for value */
+#define BINARY_VALUE		4U       /* binary base for value */
+#define CHAR_VALUE			5U       /* char value just store string */
+
 
 typedef struct opt_node {
     uint8_t             flag_char;  /* char represent flag */
@@ -23,6 +30,7 @@ typedef struct opt_node {
     uint32_t			max_val;	/* max value for linked val */
 	uint32_t            value;      /* value if value is linked */
     uint8_t             has_value;  /* if value is linked */
+	int8_t				value_type; /* value type */
     char                *full_name; /* full name opt */
 }   t_opt_node;
 
@@ -91,10 +99,11 @@ int8_t  flag_already_present(int flags, int flag_val);
  *	@param c flag char
  *	@param flag_val flag value
  *	@param value value
+ *	@param value_type type of value
  *	@param full_name full name of the flag
  *	@return 1 if success, 0 otherwise
 */
-int8_t  add_flag_option(t_flag_context *flag_c, uint8_t c, uint32_t flag_val, uint32_t value, char *full_name);
+int8_t add_flag_option(t_flag_context *flag_c, uint8_t c, uint32_t flag_val, uint32_t value, int8_t value_type, char* full_name);
 
 /**
  * @brief Display option list for debug

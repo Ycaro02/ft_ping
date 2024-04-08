@@ -33,7 +33,7 @@ typedef struct iphdr t_iphdr;
 typedef struct timeval t_timeval;
 
 /* Buffer size */
-#define BUFF_SIZE 1024
+#define BUFF_SIZE 4096
 
 /* ICMP packet size */
 #define PACKET_SIZE 84
@@ -95,7 +95,6 @@ Options:\n\
 
 
 /* - todo
-		-s, --size=NUMBER          send NUMBER data octets
 		-p, --pattern=PATTERN      fill ICMP packet with given pattern (hex)
 		-n, --numeric              do not resolve host addresses
 		-w, --timeout=N            stop after N seconds

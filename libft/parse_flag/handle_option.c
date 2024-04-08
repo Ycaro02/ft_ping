@@ -72,7 +72,7 @@ void *search_exist_opt(t_list *opt_lst, int8_t (cmp()), void *data)
  *	@param full_name full name of the flag
  *	@return opt_node if success, NULL otherwise
 */
-static t_opt_node *create_opt_node(uint8_t c, uint32_t flag_val, uint32_t value, char *full_name)
+static t_opt_node *create_opt_node(uint8_t c, uint32_t flag_val, uint32_t value, char *full_name, int8_t value_type)
 {
     t_opt_node *opt = ft_calloc(sizeof(t_opt_node), 1);
 
@@ -86,6 +86,7 @@ static t_opt_node *create_opt_node(uint8_t c, uint32_t flag_val, uint32_t value,
     opt->value = (value != OPT_NO_VALUE);
     opt->has_value = (value != OPT_NO_VALUE);
     opt->full_name = ft_strdup(full_name);
+	opt->value_type = value_type;
 	ft_printf_fd(2, RED"full_name: %s, max_val: %u, has_vas %u\n"RESET, full_name, value, opt->has_value);
 
     return (opt);
@@ -118,10 +119,11 @@ static int8_t update_opt_str(t_flag_context *flag_c, uint8_t c)
  *	@param c flag char
  *	@param flag_val flag value
  *	@param value max value accepted
+ *	@param value_type type of value
  *	@param full_name full name of the flag
  *	@return 1 if success, 0 otherwise
 */
-int8_t add_flag_option(t_flag_context *flag_c, uint8_t c, uint32_t flag_val, uint32_t value, char* full_name)
+int8_t add_flag_option(t_flag_context *flag_c, uint8_t c, uint32_t flag_val, uint32_t value, int8_t value_type, char* full_name)
 {
     t_opt_node *opt = NULL;
     int8_t ret = 0;
@@ -135,7 +137,7 @@ int8_t add_flag_option(t_flag_context *flag_c, uint8_t c, uint32_t flag_val, uin
         ft_printf_fd(2, RED"Opt char |%c| or flag val |%d| already present\n"RESET, c, flag_val);
         return (0);
     }
-    opt = create_opt_node(c, flag_val, value, full_name);
+    opt = create_opt_node(c, flag_val, value, full_name, value_type);
     ft_lstadd_back(&flag_c->opt_lst, ft_lstnew(opt));
     ret = update_opt_str(flag_c, c); 
     return (ret);
