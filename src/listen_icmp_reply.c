@@ -93,7 +93,7 @@ static void display_clean_error(struct in_addr *src_addr, ssize_t bytes_rcv, uin
  *	@param buffer buffer to store icmp reply
  *	@param error pointer to set at 1 if error occur
  *	@param ip_header_id ip header id to check if icmp reply is for the current packet
- *	@return TRUE if error occur, FALSE if we need to continue to listen icmp reply, CORRECT_BUFFER if icmp reply is correct
+ *	@return STOP if error occur, CONTINUE if we need to continue to listen icmp reply, CORRECT_BUFFER if icmp reply is correct
 */
 static int8_t parse_icmp_reply(t_context *c, uint8_t buffer[], int8_t *error)
 {
@@ -106,27 +106,27 @@ static int8_t parse_icmp_reply(t_context *c, uint8_t buffer[], int8_t *error)
 	errno = 0;
 	bytes_received = recvfrom(c->rcv_sock, buffer, BUFF_SIZE, 0, (struct sockaddr*)&src_addr, &addr_len);
 	if (g_signal_received) { /* signal receive case SIGINT */
-		return (TRUE);
+		return (STOP_LISTEN);
 	} else if (errno == EAGAIN || errno == EWOULDBLOCK) { /* timeout case */
 		ft_printf_fd(2, RED"Timeout Reached\n"RESET);
-		return (TRUE);
+		return (STOP_LISTEN);
 	} else if (bytes_received < PACKET_SIZE) { /* not enought bytes received or recvfrom error (-1 returned) */
 		ft_printf_fd(1, RED"\nNot enought bytes received number: %d\n"RESET, bytes_received);
 		perror("recvfrom");
 		*error = 1;
-		return (TRUE);
+		return (STOP_LISTEN);
 	} else if (bytes_received > PACKET_SIZE) { /* error case */
 		ip_hdr = (t_iphdr *)(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE); /* get sent ip header: first ip_hdr_size of data */
 		if (ip_hdr->id != c->packet.iphdr.id) {
 			ft_printf_fd(1, RED"ID mismatch %u != %u\n"RESET, ntohs(ip_hdr->id), ntohs(c->packet.iphdr.id));
-			return (FALSE);
+			return (CONTINUE_LISTEN);
 		}
 		display_clean_error((struct in_addr *)&src_addr.sin_addr.s_addr, bytes_received - IP_HDR_SIZE, ((t_icmphdr *)(buffer + IP_HDR_SIZE))->type);
 		if (has_flag(c->flag, V_OPTION)) {
 			display_ip_header_dump(ip_hdr, (t_icmphdr *)((void *)ip_hdr + IP_HDR_SIZE));
 		}
 		*error = 1;
-		return (TRUE);
+		return (STOP_LISTEN);
 	}
 
 	ip_hdr = (t_iphdr *)buffer;
@@ -135,14 +135,14 @@ static int8_t parse_icmp_reply(t_context *c, uint8_t buffer[], int8_t *error)
 		return (CORRECT_BUFFER);
 	}
 
-	return (FALSE);
+	return (CONTINUE_LISTEN);
 }
 
 /**
  *  @brief Listen icmp reply
  *  @param c ping context structure
  *	@param error pointer to set at 1 if error occur (no enought bytes or invalid checksum)
- *  @return True if message receive from source address and need to go next send\listen, FALSE if we need to continue to listen same reply
+ *  @return CONTINUE if message receive from source address and need to go next send\listen, STOP if we need to continue to listen same reply
 */
 int8_t listen_icmp_reply(t_context *c, int8_t *error)
 {
@@ -165,12 +165,12 @@ int8_t listen_icmp_reply(t_context *c, int8_t *error)
 
 	if (ntohs(icmp_hdr->un.echo.id) != ntohs(c->packet.icmphdr.un.echo.id)) {
 		ft_printf_fd(1, RED"ID mismatch %u != %u\n"RESET, ntohs(ip_hdr->id), ntohs(c->packet.icmphdr.un.echo.id));
-		return (FALSE);
+		return (CONTINUE_LISTEN);
 	}
 	
 	if (verify_checksum(buffer, ip_hdr->check, icmp_hdr->checksum) == FALSE) {
 		*error = 1;
-		return (TRUE);
+		return (STOP_LISTEN);
 	}
 
 	// display_detail_packet(ip_hdr, icmp_hdr, buffer + IP_HDR_SIZE + ICMP_HDR_SIZE);
@@ -179,5 +179,5 @@ int8_t listen_icmp_reply(t_context *c, int8_t *error)
 	update_ping_summary(c, c->state.send_time, c->state.rcv_time);
 	display_clean_data(c, ip_hdr, icmp_hdr);
 	ft_bzero(buffer, BUFF_SIZE);
-	return (TRUE);
+	return (STOP_LISTEN);
 }

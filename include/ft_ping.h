@@ -82,13 +82,16 @@ Options:\n\
   -t --TTL value\tChange time to live value only between 1 and 255\n"
 
 /* Ping Flag char */
-#define HELP_FLAG_CHAR '?'         /* 0 help*/
+#define HELP_FLAG_CHAR '?'      /* 0 help */
 #define	V_FLAG_CHAR 'v'         /* 1 verbose */ 
 #define	C_FLAG_CHAR 'c'			/* 2 count */
 #define	T_FLAG_CHAR 't'			/* 3 ttl */
 
-/* Correct buffer return for listen repply*/
-#define CORRECT_BUFFER 2U
+
+/* Explicit value for listen reply function */
+#define CONTINUE_LISTEN	0	/* Continue listening reply */
+#define STOP_LISTEN		1	/* Stop listening reply */
+#define CORRECT_BUFFER	2	/* Correct buffer parse reply */
 
 
 /* - todo
