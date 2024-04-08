@@ -104,12 +104,19 @@ static void display_first_stat(t_context *c, t_ping_packet packet)
 */
 int send_ping(t_context *c)
 {
-    int8_t          error = 0;
-	int8_t			listen_bool = 1;
+    int8_t          error = 0, listen_bool = 1, count_opt = 0;
+	
+
+	uint8_t nb_to_send = 1;
+
+	if (has_flag(c->flag, C_OPTION)) {
+		count_opt = 1;
+		nb_to_send = c->opt_value.count;
+	}
 
     c->packet = build_ping_packet(c, c->src_addr, c->dest.sockaddr.sin_addr.s_addr);
     display_first_stat(c, c->packet);
-    while (1) {
+    while (nb_to_send != 0) {
         listen_bool = g_signal_received == 0;
 		// ft_printf_fd(1, "listen_bool %d for addr %s\n", listen_bool, inet_ntoa(*(struct in_addr *)&c->dest.sockaddr.sin_addr.s_addr));
 		if (!listen_bool && c->summary.nb_send > 0) { 
@@ -121,6 +128,9 @@ int send_ping(t_context *c)
         update_packet(&c->packet);
 		if (listen_bool) {
         	usleep(1000000); /* possible option -i set by user */
+		}
+		if (count_opt) {
+			--nb_to_send;
 		}
     }
     return (1);
