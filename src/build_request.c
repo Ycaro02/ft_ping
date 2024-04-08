@@ -13,23 +13,36 @@ static uint16_t get_icmp_id()
 	return (id);
 }
 
-t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest)
+static void fill_ip_header(t_context *c, t_iphdr *iphdr)
+{
+	/* Build IP packet header */
+	/* version and ihl are uint8 val no need to apply host to newwork function */
+	iphdr->version = 4;
+	iphdr->ihl = 5;
+	iphdr->tos = 0;
+	iphdr->tot_len = htons(sizeof(t_ping_packet));
+	iphdr->id = htons((getpid() & 0xFFFF));
+	iphdr->frag_off = 0;
+
+	if (has_flag(c->flag, T_OPTION)) {
+		iphdr->ttl = c->opt_value.ttl;
+	} else {
+		iphdr->ttl = 64;
+	}
+
+	iphdr->protocol = IPPROTO_ICMP;
+	iphdr->check = 0;
+}
+
+t_ping_packet build_ping_packet(t_context *c, in_addr_t addr_from, in_addr_t addr_dest)
 {
     t_ping_packet packet;
     uint16_t id = get_icmp_id();
 
 	ft_bzero(&packet, sizeof(packet));
+
 	/* Build IP packet header */
-	/* version and ihl are uint8 val no need to apply host to newwork function */
-    packet.iphdr.version = 4;
-	packet.iphdr.ihl = 5;
-    packet.iphdr.tos = 0;
-	packet.iphdr.tot_len = htons(sizeof(t_ping_packet));
-	packet.iphdr.id = htons((getpid() & 0xFFFF));
-    packet.iphdr.frag_off = 0;
-	packet.iphdr.ttl = 64;
-    packet.iphdr.protocol = IPPROTO_ICMP;
-    packet.iphdr.check = 0;
+	fill_ip_header(c, &packet.iphdr);
     packet.iphdr.saddr = addr_from;
 	packet.iphdr.daddr = addr_dest;
 

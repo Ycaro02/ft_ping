@@ -196,11 +196,11 @@ int				open_rcv_socket(void);
 int				open_send_socket(void);
 
 /* listen icmp reply */
-int8_t listen_icmp_reply(t_context *c, int8_t *error);
+int8_t			listen_icmp_reply(t_context *c, int8_t *error);
 void			update_ping_summary(t_context *c, suseconds_t start, suseconds_t end);
 
 /* build request */
-t_ping_packet	build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest);
+t_ping_packet	build_ping_packet(t_context *c, in_addr_t addr_from, in_addr_t addr_dest);
 
 /* checksum */
 uint16_t		compute_checksum(uint16_t *data, size_t size);
@@ -208,7 +208,7 @@ uint8_t			verify_checksum(void *buffer, uint16_t ip_checksum, uint16_t icmp_chec
 
 /* random data */
 void			gener_random_data(uint8_t *buff, int size);
-uint32_t     gener_uint32(int max);
+uint32_t		gener_uint32(int max);
 
 /* time */
 suseconds_t		get_ms_time(void);

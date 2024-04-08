@@ -117,7 +117,8 @@ static int8_t parse_icmp_reply(t_context *c, uint8_t buffer[], int8_t *error)
 		return (TRUE);
 	} else if (bytes_received > PACKET_SIZE) { /* error case */
 		ip_hdr = (t_iphdr *)(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE); /* hardcode suppose ip header dont have any option need to adapt it for bonus */
-		if (ntohs(ip_hdr->id) != c->packet.iphdr.id ) {
+		if (ip_hdr->id != c->packet.iphdr.id) {
+			ft_printf_fd(1, RED"ID mismatch %u != %u\n"RESET, ntohs(ip_hdr->id), ntohs(c->packet.iphdr.id));
 			return (FALSE);
 		}
 		display_clean_error((struct in_addr *)&src_addr.sin_addr.s_addr, bytes_received - IP_HDR_SIZE, ((t_icmphdr *)(buffer + IP_HDR_SIZE))->type);

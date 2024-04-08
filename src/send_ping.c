@@ -104,11 +104,10 @@ static void display_first_stat(t_context *c, t_ping_packet packet)
 */
 int send_ping(t_context *c)
 {
-    // t_ping_packet   packet;
     int8_t          error = 0;
 	int8_t			listen_bool = 1;
 
-    c->packet = build_ping_packet(c->src_addr, c->dest.sockaddr.sin_addr.s_addr);
+    c->packet = build_ping_packet(c, c->src_addr, c->dest.sockaddr.sin_addr.s_addr);
     display_first_stat(c, c->packet);
     while (1) {
         listen_bool = g_signal_received == 0;
