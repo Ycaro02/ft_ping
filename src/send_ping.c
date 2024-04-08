@@ -110,7 +110,7 @@ int send_ping(t_context *c)
 
     c->packet = build_ping_packet(c->src_addr, c->dest.sockaddr.sin_addr.s_addr);
     display_first_stat(c, c->packet);
-    while (!g_signal_received) {
+    while (1) {
         listen_bool = g_signal_received == 0;
 		// ft_printf_fd(1, "listen_bool %d for addr %s\n", listen_bool, inet_ntoa(*(struct in_addr *)&c->dest.sockaddr.sin_addr.s_addr));
 		if (!listen_bool && c->summary.nb_send > 0) { 

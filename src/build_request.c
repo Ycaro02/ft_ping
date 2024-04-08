@@ -6,14 +6,11 @@ static uint16_t get_icmp_id()
 	static uint16_t id = 0;
 	
 	if (id == 0) {
-		id = (getpid() & 0xFFFF);
-		id %= gener_uint32((UINT16_MAX >> 2));
+		id = gener_uint32((UINT16_MAX >> 1));
+		id += gener_uint32((UINT16_MAX >> 1));
 	}
 
-	if (id == UINT16_MAX) {
-		id = 1;
-	}
-	return (id++);
+	return (id);
 }
 
 t_ping_packet build_ping_packet(in_addr_t addr_from, in_addr_t addr_dest)
