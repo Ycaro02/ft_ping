@@ -96,6 +96,7 @@ Options:\n\
 #define STOP_LISTEN		1	/* Stop listening reply */
 #define CORRECT_BUFFER	2	/* Correct buffer parse reply */
 
+#define ONE_SEC			1000000
 
 #define MAX_PATTERN_SIZE	(uint32_t)(ICMP_DATA_SIZE - ICMP_TIMESTAMP_SIZE)
 
@@ -221,7 +222,7 @@ void			display_clear_summary(t_context *c);
 
 /* socket handle */
 void			close_multi_socket(int sock1, int sock2);
-int				open_rcv_socket(void);
+int				open_rcv_socket(uint8_t linger);
 int				open_send_socket(void);
 
 /* listen icmp reply */

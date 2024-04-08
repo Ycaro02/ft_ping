@@ -122,7 +122,7 @@ int send_ping(t_context *c)
         while (listen_bool && !listen_icmp_reply(c, &error)) ;
         update_packet(&c->packet);
 		if (listen_bool) {
-        	usleep(1000000); /* possible option -i set by user */
+        	usleep(ONE_SEC);
 		}
 		if (count_opt) {
 			--nb_to_send;

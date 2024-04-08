@@ -50,7 +50,10 @@ t_context init_ping_context(int argc, char **argv)
 	// 	ft_printf_fd(1, "arg: %s\n", (char *)current->content);
 	// }
     c.send_sock = open_send_socket();
-    c.rcv_sock = open_rcv_socket();
+	if (c.opt_value.linger == 0){
+		c.opt_value.linger = 10; /* Default time to wait response */
+	}
+    c.rcv_sock = open_rcv_socket(c.opt_value.linger);
     return (c);    
 }
 

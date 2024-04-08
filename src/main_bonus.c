@@ -7,7 +7,7 @@ static void set_opt_value(t_list *opt_lst, uint32_t flag, uint32_t to_find, void
 {
 	if (has_flag(flag, to_find)) {
 		t_opt_node *opt = search_exist_opt(opt_lst, is_same_flag_val_opt, (void *)&to_find);
-		ft_printf_fd(1, "for tofind %u: opt: %p\n", to_find, opt);
+		// ft_printf_fd(1, "for tofind %u: opt: %p\n", to_find, opt);
 		if (!opt) {
 			return ;
 		}

@@ -18,12 +18,12 @@ int open_send_socket(void)
     return (sockfd);
 }
 
-int open_rcv_socket(void)
+int open_rcv_socket(uint8_t linger)
 {
     int 	sockfd = -1;
 	struct	timeval tv;
 
-	tv.tv_sec = 10; /* potential bonus option */
+	tv.tv_sec = (time_t)linger; /* potential bonus option */
 	tv.tv_usec = 0;
 
     errno = 0;
