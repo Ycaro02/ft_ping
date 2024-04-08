@@ -8,7 +8,7 @@ ASCII_ART		=	./rsc/mk/ascii.sh
 ASCII_NAME		=	${NAME}
 
 MANDATORY_ARGS	=	localhost --verbose -v 127.0.0.1
-BONUD_ARGS		=	127.0.0.2 --count 5 --ttl32 localhost
+BONUS_ARGS		=	127.0.0.2 --count2 --ttl32 localhost
 
 RUN_TEST		=	./rsc/sh/run_test.sh
 VALGRIND_TEST	=	./rsc/sh/valgrind_test.sh
@@ -77,8 +77,13 @@ vtest: $(NAME)
 
 btest:
 	@make -s bonus
-	@printf "$(CYAN)Test $(NAME) ${BONUD_ARGS} $(RESET)\n"
-	@sudo ./$(RUN_TEST) $(BONUD_ARGS)
+	@printf "$(CYAN)Test $(NAME) ${BONUS_ARGS} $(RESET)\n"
+	@sudo ./$(RUN_TEST) $(BONUS_ARGS)
+
+bvtest:
+	@make -s bonus
+	@printf "$(CYAN)Test $(NAME) ${BONUS_ARGS} $(RESET)\n"
+	@sudo ./$(VALGRIND_TEST) $(BONUS_ARGS)
 
 re:			fclean all
 
