@@ -87,8 +87,6 @@ static void display_first_stat(t_context *c, t_ping_packet packet)
     char *name = c->dest.name ? c->dest.name : dest_str;
 
     ft_bzero(buff, 1024);
-
-
     sprintf(buff, "PING "CYAN"%s (%s)"RESET": "RED"%d"RESET" data bytes", name, dest_str, ICMP_DATA_SIZE);
     ft_printf_fd(1, "%s", buff);
 	if (c->flag & V_OPTION) {
@@ -105,15 +103,12 @@ static void display_first_stat(t_context *c, t_ping_packet packet)
 int send_ping(t_context *c)
 {
     int8_t          error = 0, listen_bool = 1, count_opt = 0;
-	
-
-	uint8_t nb_to_send = 1;
+	uint8_t			nb_to_send = 1;
 
 	if (has_flag(c->flag, C_OPTION)) {
 		count_opt = 1;
 		nb_to_send = c->opt_value.count;
 	}
-
     c->packet = build_ping_packet(c, c->src_addr, c->dest.sockaddr.sin_addr.s_addr);
     display_first_stat(c, c->packet);
     while (nb_to_send != 0) {
