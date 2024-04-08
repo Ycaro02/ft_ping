@@ -57,6 +57,10 @@ int8_t init_flag_context(int argc, char**argv, t_context *c)
 		ft_printf_fd(1, BONUS_HELP_MESSAGE, argv[0]);
 		*exit_code = 0;
 		return (FALSE);
+	} else if (has_flag(c->flag, VERSION_OPTION)) {
+		ft_printf_fd(1, VERSION_STRING, argv[0]);
+		*exit_code = 0;
+		return (FALSE);
 	}
 
 

@@ -100,17 +100,22 @@ Options:\n\
 
 #define MAX_PATTERN_SIZE	(uint32_t)(ICMP_DATA_SIZE - ICMP_TIMESTAMP_SIZE)
 
+#define VERSION_STRING		CYAN"ft_ping (LIBFT post_common)"RESET" "PURPLE"0.0.1"RESET"\n\
+    Reference  "YELLOW"GNU inetutils 2.0."RESET"\n\
+    Written by "ORANGE"Ycaro02."RESET"\n\
+"
 
 /* - todo
 		-p, --pattern=PATTERN      fill ICMP packet with given pattern (hex) : PARSED
-		-w, --timeout=N            stop after N seconds : PARSED
-		-V, --version              print program version and exit : PARSED
+			- just need to fill data with given pattern
 	- done:
 		-t --ttl
 		-c --count 
+		-w, --timeout=N            stop after N seconds : PARSED, tested with 255  (max val)
 		-W, --linger=N             number of seconds to wait for response
 		-v --verbose
 		-h --help
+		-V, --version              print program version and exit : PARSED
 */
 
 /* Ping flag value */
