@@ -79,19 +79,24 @@ Options:\n\
   -h --help  \t\tShow this help message and exit\n\
   -v --verbose\t\tVerbose output\n\
   -c --count value\tStop after sending count ECHO_REQUEST packets\n\
-  -t --TTL value\tChange time to live value only between 1 and 255\n"
+  -t --TTL value\tChange time to live value only between 1 and 255\n\
+  -p --pattern value\tFill ICMP packet with given pattern (hex)\n\
+  "
 
 /* Ping Flag char */
 #define HELP_FLAG_CHAR '?'      /* 0 help */
 #define	V_FLAG_CHAR 'v'         /* 1 verbose */ 
 #define	C_FLAG_CHAR 'c'			/* 2 count */
 #define	T_FLAG_CHAR 't'			/* 3 ttl */
-
+#define P_FLAG_CHAR 'p'			/* 4 pattern */
 
 /* Explicit value for listen reply function */
 #define CONTINUE_LISTEN	0	/* Continue listening reply */
 #define STOP_LISTEN		1	/* Stop listening reply */
 #define CORRECT_BUFFER	2	/* Correct buffer parse reply */
+
+
+#define MAX_PATTERN_SIZE	(uint32_t)(ICMP_DATA_SIZE - ICMP_TIMESTAMP_SIZE)
 
 
 /* - todo
@@ -113,6 +118,7 @@ enum e_ping_flag  {
     V_OPTION=(1 << 1),
 	C_OPTION=(1 << 2),
 	T_OPTION=(1 << 3),
+	P_OPTION=(1 << 4)
 };
 
 /**
@@ -165,6 +171,7 @@ typedef struct s_opt_value
 {
 	uint32_t	ttl;
 	uint32_t	count;
+	char		*pattern;
 } t_opt_value;
 
 /**

@@ -3,7 +3,7 @@
 int g_signal_received = 0;
 
 
-static void set_opt_value(t_list *opt_lst, uint32_t flag, uint32_t to_find, uint32_t *to_update)
+static void set_opt_value(t_list *opt_lst, uint32_t flag, uint32_t to_find, void *to_update)
 {
 	if (has_flag(flag, to_find)) {
 		t_opt_node *opt = search_exist_opt(opt_lst, is_same_flag_val_opt, (void *)&to_find);
@@ -11,7 +11,11 @@ static void set_opt_value(t_list *opt_lst, uint32_t flag, uint32_t to_find, uint
 		if (!opt) {
 			return ;
 		}
-		*to_update = opt->value;
+		if (opt->value_type == DECIMAL_VALUE) {
+			*(uint32_t *)to_update = opt->val.digit;
+		} else if (opt->value_type == HEXA_VALUE) {
+			*(char **)to_update = ft_strdup(opt->val.str);
+		}
 	}
 }
 
@@ -27,6 +31,7 @@ int8_t init_flag_context(int argc, char**argv, t_context *c)
 	add_flag_option(&flag_c, V_FLAG_CHAR, V_OPTION, OPT_NO_VALUE, OPT_NO_VALUE, "verbose");
 	add_flag_option(&flag_c, C_FLAG_CHAR, C_OPTION, UINT32_MAX, DECIMAL_VALUE, "count");
 	add_flag_option(&flag_c, T_FLAG_CHAR, T_OPTION, UINT8_MAX, DECIMAL_VALUE, "ttl");
+	add_flag_option(&flag_c, P_FLAG_CHAR, P_OPTION, MAX_PATTERN_SIZE, HEXA_VALUE, "pattern");
 
 
 	ret = call_flag_parser(&flag_c, argc, argv, &c->flag);
@@ -34,9 +39,11 @@ int8_t init_flag_context(int argc, char**argv, t_context *c)
 		display_option_list(flag_c); /* to remove*/
 		set_opt_value(flag_c.opt_lst, c->flag, T_OPTION, &c->opt_value.ttl);
 		set_opt_value(flag_c.opt_lst, c->flag, C_OPTION, &c->opt_value.count);
+		set_opt_value(flag_c.opt_lst, c->flag, P_OPTION, &c->opt_value.pattern);
+		free_flag_context(&flag_c);
 		ft_printf_fd(1, ORANGE"ttl: %u\n"RESET, c->opt_value.ttl);
 		ft_printf_fd(1, ORANGE"count: %u\n"RESET, c->opt_value.count);
-		free_flag_context(&flag_c);
+		ft_printf_fd(1, ORANGE"pattern: %s len: %d\n"RESET, c->opt_value.pattern, ft_strlen(c->opt_value.pattern));
 	}
 
 

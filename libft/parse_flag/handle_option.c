@@ -10,8 +10,17 @@ void display_option_list(t_flag_context flag_c)
 	ft_printf_fd(2, CYAN"Option list: Full flag str: %s\n"RESET, flag_c.opt_str);
     for (t_list *tmp = flag_c.opt_lst; tmp; tmp = tmp->next) {
         node = tmp->content;
-        ft_printf_fd(1, CYAN"Flag: %c"RESET", "PURPLE"Flag_val %d"RESET" "ORANGE"Value: %d\n"RESET, node->flag_char, node->flag_val, node->value);
-    }
+        ft_printf_fd(1, CYAN"Flag: %c"RESET", "PURPLE"Flag_val %d "RESET, node->flag_char, node->flag_val);
+    
+		if (node->value_type == DECIMAL_VALUE) {
+			ft_printf_fd(1, ORANGE"Digit value: %u\n"RESET, node->val.digit);
+		}
+		else if (node->value_type == HEXA_VALUE) {
+			ft_printf_fd(1, PURPLE"Str value: %s\nLen str %d\n"RESET, node->val.str, ft_strlen(node->val.str));
+		} else {
+			ft_printf_fd(1, "No value\n");
+		}
+	}
 }
 
 /**
@@ -83,10 +92,17 @@ static t_opt_node *create_opt_node(uint8_t c, uint32_t flag_val, uint32_t value,
     opt->flag_char = c;
     opt->flag_val = flag_val;
 	opt->max_val = value;
-    opt->value = (value != OPT_NO_VALUE);
+    // opt->value = (value != OPT_NO_VALUE);
     opt->has_value = (value != OPT_NO_VALUE);
     opt->full_name = ft_strdup(full_name);
 	opt->value_type = value_type;
+	if (value_type == DECIMAL_VALUE) {
+		opt->val.digit = 0;
+	}
+	else if (value_type == HEXA_VALUE) {
+		opt->val.str = NULL;
+	}
+	//
 	ft_printf_fd(2, RED"full_name: %s, max_val: %u, has_vas %u\n"RESET, full_name, value, opt->has_value);
 
     return (opt);
@@ -154,6 +170,9 @@ void free_opt_node(void *content)
         if (opt->full_name) {
             free(opt->full_name);
         }
+		if (opt->value_type == HEXA_VALUE && opt->val.str) {
+			free(opt->val.str);
+		}
         free(opt);
     }
 }

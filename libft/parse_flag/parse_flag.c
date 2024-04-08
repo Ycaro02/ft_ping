@@ -134,14 +134,26 @@ static char find_next_no_space(char *str) {
  * @return value if valid, 0 otherwise
 */
 
-uint32_t parse_flag_value(char *str, uint32_t max_accepted) {
-    uint32_t value = 0;
-    if (str_is_digit(str)) {
-        value = ft_atoi(str);
-    }
-    /* value * 1 if true othewise return 0 */
-    value *= (value <= max_accepted);
-    return (value);
+static int8_t parse_flag_value(t_opt_node *opt, char *str, uint32_t max_accepted, int8_t value_type) {
+    uint64_t tmp = 0;
+	if (value_type == DECIMAL_VALUE) {
+		if (str_is_digit(str)) {
+			tmp = array_to_uint32(str);
+			if (tmp == OUT_OF_UINT32) {
+				tmp = 0;
+			}
+		}
+    	/* value * 1 if true othewise return 0 */
+	    tmp *= (tmp <= max_accepted);
+		opt->val.digit = (uint32_t)tmp;
+		return (opt->val.digit != 0);
+	} else if (value_type == HEXA_VALUE) {
+		if (str_is_hexa(str) && ft_strlen(str) <= opt->max_val) {
+			opt->val.str = ft_strdup(str);
+			return (TRUE);
+		}
+	}
+    return (FALSE);
 }
 
 /**
@@ -154,7 +166,7 @@ uint32_t parse_flag_value(char *str, uint32_t max_accepted) {
 int search_opt_value(char **argv, int *i, t_opt_node *opt, uint8_t long_format_bool)
 {
     int		char_skip = 0;
-    int8_t	in_search = 0 , next_char = 0;
+    int8_t	in_search = 0 , next_char = 0, ret = 0;
 	/* to skip idx start at 2 to skip '-' + '?' (char option) */
 	/* if long format enable, add strlen of name, keep first 2 for '--' */
 	int		to_skip_idx = (long_format_bool == LONG_FORMAT) ? 2 + ft_strlen(opt->full_name) : 2;
@@ -167,8 +179,8 @@ int search_opt_value(char **argv, int *i, t_opt_node *opt, uint8_t long_format_b
         char_skip = ((j == 0) * to_skip_idx);
         next_char = find_next_no_space(&argv[idx][char_skip]);
         if (next_char != 0) {
-            opt->value = parse_flag_value(&argv[idx][char_skip], opt->max_val);
-            if (opt->value == 0) {
+            ret = parse_flag_value(opt, &argv[idx][char_skip], opt->max_val, opt->value_type);
+            if (ret == 0) {
                 ft_printf_fd(2, PARSE_FLAG_ERR_MSG_WRONG_ARGS, argv[0], opt->flag_char, &argv[idx][char_skip], argv[0]);
                 return (FALSE);
             }

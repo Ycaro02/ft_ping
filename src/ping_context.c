@@ -68,6 +68,10 @@ void free_context(t_context *c)
 	if (c->str_args) {
 		ft_lstclear(&c->str_args, free);
 	}
+	if (c->opt_value.pattern) {
+		free(c->opt_value.pattern);
+	}
+
 
     close_multi_socket(c->rcv_sock, c->send_sock);
     ft_printf_fd(1, ORANGE"All ressources free\n"RESET);

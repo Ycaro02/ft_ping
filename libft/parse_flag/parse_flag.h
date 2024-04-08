@@ -18,19 +18,26 @@
 
 #define OPT_NO_VALUE		0U       /* no value linked */
 #define DECIMAL_VALUE		1U       /* decimal base for value */
-#define HEXADECIMAL_VALUE	2U       /* hexadecimal base for value */
+#define HEXA_VALUE			2U       /* hexadecimal base for value */
 #define OCTAL_VALUE			3U       /* octal base for value */
 #define BINARY_VALUE		4U       /* binary base for value */
 #define CHAR_VALUE			5U       /* char value just store string */
 
 
+
 typedef struct opt_node {
     uint8_t             flag_char;  /* char represent flag */
     uint32_t            flag_val;   /* flag value, used with bitwise to create application flag */
-    uint32_t			max_val;	/* max value for linked val */
-	uint32_t            value;      /* value if value is linked */
+    uint32_t			max_val;	/* max value for linked val, or strlen max for string store */
+	// uint32_t            value;      /* value if value is linked */
     uint8_t             has_value;  /* if value is linked */
 	int8_t				value_type; /* value type */
+
+	union u_val {
+		uint32_t digit;
+		char	 *str;	
+	} val;
+
     char                *full_name; /* full name opt */
 }   t_opt_node;
 
