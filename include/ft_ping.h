@@ -177,13 +177,16 @@ typedef struct s_ping_packet
     uint8_t    data[ICMP_DATA_SIZE];    /* Data/Payload */
 } t_ping_packet;
 
+/**
+ * Flag option value structure
+*/
 typedef struct s_opt_value
 {
-	char		*pattern;
-	uint32_t	ttl;
-	uint32_t	count;
-	uint8_t		timeout;
-	uint8_t		linger;
+	char		*pattern;				/* -p Data pattern */
+	uint32_t	ttl;					/* -t Tile to live */
+	uint32_t	count;					/* -c Count before stop send ping */
+	uint8_t		timeout;				/* -w Timeout time in sec before stop program */
+	uint8_t		linger;					/* -W Linger, listening reply timeout in sec */
 } t_opt_value;
 
 /**
@@ -209,9 +212,8 @@ typedef struct s_context
 /* Signal handling global variable */
 extern int		g_signal_received;
 
-/* main */
-int8_t init_flag_context(int argc, char**argv, t_context *c);
-
+/* main, special case two different func are define in different main to add specific option */
+int8_t			init_flag_context(int argc, char**argv, t_context *c);
 
 /* ping context */
 int8_t			call_flag_parser(t_flag_context *flag_c, int argc, char **argv, uint32_t *flag);
