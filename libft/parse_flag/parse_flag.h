@@ -23,22 +23,19 @@
 #define BINARY_VALUE		4U       /* binary base for value */
 #define CHAR_VALUE			5U       /* char value just store string */
 
-
-
 typedef struct opt_node {
     uint8_t             flag_char;  /* char represent flag */
     uint32_t            flag_val;   /* flag value, used with bitwise to create application flag */
     uint32_t			max_val;	/* max value for linked val, or strlen max for string store */
-	// uint32_t            value;      /* value if value is linked */
     uint8_t             has_value;  /* if value is linked */
 	int8_t				value_type; /* value type */
-
+    char                *full_name; /* full name opt */
+	/* union value if value is linked */
 	union u_val {
 		uint32_t digit;
 		char	 *str;	
 	} val;
 
-    char                *full_name; /* full name opt */
 }   t_opt_node;
 
 typedef struct flag_context {
