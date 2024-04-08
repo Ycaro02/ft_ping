@@ -23,7 +23,7 @@ jobs:
       run: make test vtest
 
     - name: Run bonus test
-      run: make btest
+      run: make btest bvtest
 
     - name: clean
       run: make fclean
