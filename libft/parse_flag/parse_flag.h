@@ -13,7 +13,6 @@
 #define PARSE_FLAG_ERR_MSG_WRONG_ARGS   RED"%s: invalid argument -- %c don't accept [%s] as argument\nTry ./%s -h for more information\n"RESET
 
 #define OPT_NO_VALUE    0U          /* no value linked */
-#define OPT_HAS_VALUE   1U          /* value linked */
 
 #define CHAR_FORMAT		0U          /* short format for check_for_flag */
 #define LONG_FORMAT		1U          /* long format for check_for_flag */
@@ -124,6 +123,14 @@ int8_t  is_same_flag_val_opt(void *content, void *value);
 */
 void	*search_exist_opt(t_list *opt_lst, int8_t (cmp()), void *data);
 
-int search_opt_value(char **argv, int *i, t_opt_node *opt, uint8_t long_format_bool);
+/**
+ * @brief Search for value linked to flag
+ * @param argv pointer on argv from main
+ * @param i pointer on first argv index counter
+ * @param opt pointer on opt node to update
+ * @param long_format_bool long format or short (char) format
+ * @return 1 if found, 0 otherwise
+*/
+int		search_opt_value(char **argv, int *i, t_opt_node *opt, uint8_t long_format_bool);
 
 #endif /* PARSE_FLAG_H */
