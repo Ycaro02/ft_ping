@@ -10,7 +10,7 @@ int8_t init_flag_context(int argc, char**argv, t_context *c)
 	uint8_t		*exit_code = &c->exit_code;
 
 	ft_bzero(&flag_c, sizeof(t_flag_context));
-	add_flag_option(&flag_c, H_FLAG_CHAR, H_OPTION, OPT_NO_VALUE, "help");
+	add_flag_option(&flag_c, H_FLAG_CHAR, HELP_OPTION, OPT_NO_VALUE, "help");
 	add_flag_option(&flag_c, V_FLAG_CHAR, V_OPTION, OPT_NO_VALUE, "verbose");
 	
 	ret = call_flag_parser(&flag_c, argc, argv, &c->flag);
@@ -19,7 +19,7 @@ int8_t init_flag_context(int argc, char**argv, t_context *c)
 		free_flag_context(&flag_c);
 	}
 
-	if (has_flag(c->flag, H_OPTION)) {
+	if (has_flag(c->flag, HELP_OPTION)) {
 		ft_printf_fd(1, MANDATORY_HELP_MESSAGE, argv[0]);
 		*exit_code = 0;
 		return (FALSE);

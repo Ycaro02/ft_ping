@@ -82,7 +82,7 @@ Options:\n\
   -t --TTL value\tChange time to live value only between 1 and 255\n"
 
 /* Ping Flag char */
-#define H_FLAG_CHAR 'h'         /* 0 help*/
+#define H_FLAG_CHAR '?'         /* 0 help*/
 #define	V_FLAG_CHAR 'v'         /* 1 verbose */ 
 #define	C_FLAG_CHAR 'c'			/* 2 count */
 #define	T_FLAG_CHAR 't'			/* 3 ttl */
@@ -106,7 +106,7 @@ Options:\n\
 /* Ping flag value */
 enum e_ping_flag  {
     UNKNOW=0, 
-    H_OPTION=(1 << 0),
+    HELP_OPTION=(1 << 0),
     V_OPTION=(1 << 1),
 	C_OPTION=(1 << 2),
 	T_OPTION=(1 << 3),
