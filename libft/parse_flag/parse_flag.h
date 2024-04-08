@@ -21,7 +21,8 @@
 typedef struct opt_node {
     uint8_t             flag_char;  /* char represent flag */
     uint32_t            flag_val;   /* flag value, used with bitwise to create application flag */
-    uint32_t            value;      /* value if value is linked */
+    uint32_t			max_val;	/* max value for linked val */
+	uint32_t            value;      /* value if value is linked */
     uint8_t             has_value;  /* if value is linked */
     char                *full_name; /* full name opt */
 }   t_opt_node;

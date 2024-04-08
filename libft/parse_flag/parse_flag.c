@@ -134,13 +134,13 @@ static char find_next_no_space(char *str) {
  * @return value if valid, 0 otherwise
 */
 
-uint32_t parse_flag_value(char *str) {
+uint32_t parse_flag_value(char *str, uint32_t max_accepted) {
     uint32_t value = 0;
     if (str_is_digit(str)) {
         value = ft_atoi(str);
     }
     /* value * 1 if true othewise return 0 */
-    value *= (value <= UINT8_MAX);
+    value *= (value <= max_accepted);
     return (value);
 }
 
@@ -167,7 +167,7 @@ int search_opt_value(char **argv, int *i, t_opt_node *opt, uint8_t long_format_b
         char_skip = ((j == 0) * to_skip_idx);
         next_char = find_next_no_space(&argv[idx][char_skip]);
         if (next_char != 0) {
-            opt->value = parse_flag_value(&argv[idx][char_skip]);
+            opt->value = parse_flag_value(&argv[idx][char_skip], opt->max_val);
             if (opt->value == 0) {
                 ft_printf_fd(2, PARSE_FLAG_ERR_MSG_WRONG_ARGS, argv[0], opt->flag_char, &argv[idx][char_skip], argv[0]);
                 return (FALSE);

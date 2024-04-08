@@ -82,9 +82,12 @@ static t_opt_node *create_opt_node(uint8_t c, uint32_t flag_val, uint32_t value,
     }
     opt->flag_char = c;
     opt->flag_val = flag_val;
-    opt->value = value;
-    opt->has_value = value;
+	opt->max_val = value;
+    opt->value = (value != OPT_NO_VALUE);
+    opt->has_value = (value != OPT_NO_VALUE);
     opt->full_name = ft_strdup(full_name);
+	ft_printf_fd(2, RED"full_name: %s, max_val: %u, has_vas %u\n"RESET, full_name, value, opt->has_value);
+
     return (opt);
 }
 
@@ -114,7 +117,7 @@ static int8_t update_opt_str(t_flag_context *flag_c, uint8_t c)
  *	@param flag_c flag context
  *	@param c flag char
  *	@param flag_val flag value
- *	@param value value
+ *	@param value max value accepted
  *	@param full_name full name of the flag
  *	@return 1 if success, 0 otherwise
 */

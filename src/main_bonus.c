@@ -25,8 +25,8 @@ int8_t init_flag_context(int argc, char**argv, t_context *c)
 	ft_bzero(&flag_c, sizeof(t_flag_context));
 	add_flag_option(&flag_c, H_FLAG_CHAR, HELP_OPTION, OPT_NO_VALUE, "help");
 	add_flag_option(&flag_c, V_FLAG_CHAR, V_OPTION, OPT_NO_VALUE, "verbose");
-	add_flag_option(&flag_c, C_FLAG_CHAR, C_OPTION, OPT_HAS_VALUE, "count");
-	add_flag_option(&flag_c, T_FLAG_CHAR, T_OPTION, OPT_HAS_VALUE, "ttl");
+	add_flag_option(&flag_c, C_FLAG_CHAR, C_OPTION, UINT32_MAX, "count");
+	add_flag_option(&flag_c, T_FLAG_CHAR, T_OPTION, UINT8_MAX, "ttl");
 
 
 	ret = call_flag_parser(&flag_c, argc, argv, &c->flag);
