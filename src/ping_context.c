@@ -1,6 +1,5 @@
 #include "../include/ft_ping.h"
 
-
 /**
  * @brief Initialize ping context
  * @param argc number of arguments
@@ -19,7 +18,7 @@ t_context init_context_structure()
 	return (c);
 }
 
-int8_t call_flag_parser(t_flag_context *flag_c, int argc, char **argv, uint16_t *flag)
+int8_t call_flag_parser(t_flag_context *flag_c, int argc, char **argv, uint32_t *flag)
 {
 	int8_t flag_error = 0;
 
@@ -29,8 +28,6 @@ int8_t call_flag_parser(t_flag_context *flag_c, int argc, char **argv, uint16_t 
 		free_flag_context(flag_c);
 		return (FALSE);
 	}
-	display_option_list(*flag_c); /* to remove*/
-	free_flag_context(flag_c);
 	return (TRUE);	
 }
 
@@ -43,7 +40,7 @@ t_context init_ping_context(int argc, char **argv)
     t_context	c = init_context_structure(argc, argv);
 
 	/* init flag context and parse cmd line to get flag in c.flag */	
-	if (!init_flag_context(argc, argv, &c.flag, &c.exit_code) ){
+	if (!init_flag_context(argc, argv, &c) ){
 		return (c);
 	}
 	/* extract all args in c.str_args */

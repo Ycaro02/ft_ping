@@ -2,10 +2,25 @@
 
 int g_signal_received = 0;
 
-int8_t init_flag_context(int argc, char**argv, uint16_t *flag, uint8_t *exit_code)
+
+static void set_opt_value(t_list *opt_lst, uint32_t flag, uint32_t to_find, uint32_t *to_update)
+{
+	if (has_flag(flag, to_find)) {
+		t_opt_node *opt = search_exist_opt(opt_lst, is_same_flag_val_opt, (void *)&to_find);
+		ft_printf_fd(1, "for tofind %u: opt: %p\n", to_find, opt);
+		if (!opt) {
+			return ;
+		}
+		*to_update = opt->value;
+	}
+}
+
+int8_t init_flag_context(int argc, char**argv, t_context *c)
 {
 	t_flag_context flag_c;
 	int8_t ret = 0;
+
+	uint8_t		*exit_code = &c->exit_code;
 
 	ft_bzero(&flag_c, sizeof(t_flag_context));
 	add_flag_option(&flag_c, H_FLAG_CHAR, H_OPTION, OPT_NO_VALUE, "help");
@@ -14,10 +29,18 @@ int8_t init_flag_context(int argc, char**argv, uint16_t *flag, uint8_t *exit_cod
 	add_flag_option(&flag_c, T_FLAG_CHAR, T_OPTION, OPT_HAS_VALUE, "ttl");
 
 
-	ret = call_flag_parser(&flag_c, argc, argv, flag);
+	ret = call_flag_parser(&flag_c, argc, argv, &c->flag);
+	if (ret) {
+		display_option_list(flag_c); /* to remove*/
+		set_opt_value(flag_c.opt_lst, c->flag, T_OPTION, &c->opt_value.ttl);
+		set_opt_value(flag_c.opt_lst, c->flag, C_OPTION, &c->opt_value.count);
+		ft_printf_fd(1, ORANGE"ttl: %u\n"RESET, c->opt_value.ttl);
+		ft_printf_fd(1, ORANGE"count: %u\n"RESET, c->opt_value.count);
+		free_flag_context(&flag_c);
+	}
 
 
-	if (has_flag(*flag, H_OPTION)) {
+	if (has_flag(c->flag, H_OPTION)) {
 		ft_printf_fd(1, BONUS_HELP_MESSAGE, argv[0]);
 		*exit_code = 0;
 		return (FALSE);

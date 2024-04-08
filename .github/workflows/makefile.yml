@@ -22,5 +22,8 @@ jobs:
     - name: Run All test
       run: make test vtest
 
+    - name: Run bonus test
+      run: make btest
+
     - name: clean
       run: make fclean

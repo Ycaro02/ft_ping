@@ -2,23 +2,28 @@
 
 int g_signal_received = 0;
 
-int8_t init_flag_context(int argc, char**argv, uint16_t *flag, uint8_t *exit_code)
+int8_t init_flag_context(int argc, char**argv, t_context *c)
 {
 	t_flag_context flag_c;
 	int8_t ret = 0;
+
+	uint8_t		*exit_code = &c->exit_code;
 
 	ft_bzero(&flag_c, sizeof(t_flag_context));
 	add_flag_option(&flag_c, H_FLAG_CHAR, H_OPTION, OPT_NO_VALUE, "help");
 	add_flag_option(&flag_c, V_FLAG_CHAR, V_OPTION, OPT_NO_VALUE, "verbose");
 	
-	ret = call_flag_parser(&flag_c, argc, argv, flag);
+	ret = call_flag_parser(&flag_c, argc, argv, &c->flag);
+	if (ret) {
+		display_option_list(flag_c); /* to remove*/
+		free_flag_context(&flag_c);
+	}
 
-	if (has_flag(*flag, H_OPTION)) {
+	if (has_flag(c->flag, H_OPTION)) {
 		ft_printf_fd(1, MANDATORY_HELP_MESSAGE, argv[0]);
 		*exit_code = 0;
 		return (FALSE);
 	}
-
 	return (ret);
 }
 

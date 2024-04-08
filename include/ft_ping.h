@@ -145,6 +145,12 @@ typedef struct s_ping_packet
     uint8_t    data[ICMP_DATA_SIZE];    /* Data/Payload */
 } t_ping_packet;
 
+typedef struct s_opt_value
+{
+	uint32_t	ttl;
+	uint32_t	count;
+} t_opt_value;
+
 /**
  * Context ping structure
 */
@@ -154,11 +160,12 @@ typedef struct s_context
 	t_ping_sum		summary;		/* ping summary*/
 	t_dest_data		dest;			/* current destination data structure */
 	t_ping_packet	packet;			/* current packet */
+	t_opt_value		opt_value;		/* flag value */
 	t_list			*str_args;		/* args (ip addr/hostname) list*/
     in_addr_t       src_addr;		/* Source address */
     int             send_sock;      /* socket for sending */
     int             rcv_sock;       /* socket for receiving */
-    uint16_t        flag;           /* ping command flag */
+    uint32_t        flag;           /* ping command flag */
 	uint8_t			exit_code;		/* exit code */
 } t_context;
 
@@ -167,11 +174,11 @@ typedef struct s_context
 extern int		g_signal_received;
 
 /* main */
-int8_t			init_flag_context(int argc, char**argv, uint16_t *flag, uint8_t *exit_code);
+int8_t init_flag_context(int argc, char**argv, t_context *c);
 
 
 /* ping context */
-int8_t			call_flag_parser(t_flag_context *flag_c, int argc, char **argv, uint16_t *flag);
+int8_t			call_flag_parser(t_flag_context *flag_c, int argc, char **argv, uint32_t *flag);
 t_context		init_ping_context(int argc, char **argv);
 void			free_context(t_context *c);
 
