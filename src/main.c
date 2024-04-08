@@ -11,7 +11,14 @@ int8_t init_flag_context(int argc, char**argv, uint16_t *flag, uint8_t *exit_cod
 	add_flag_option(&flag_c, H_FLAG_CHAR, H_OPTION, OPT_NO_VALUE, "help");
 	add_flag_option(&flag_c, V_FLAG_CHAR, V_OPTION, OPT_NO_VALUE, "verbose");
 	
-	ret = call_flag_parser(&flag_c, argc, argv, flag, exit_code);
+	ret = call_flag_parser(&flag_c, argc, argv, flag);
+
+	if (has_flag(*flag, H_OPTION)) {
+		ft_printf_fd(1, MANDATORY_HELP_MESSAGE, argv[0]);
+		*exit_code = 0;
+		return (FALSE);
+	}
+
 	return (ret);
 }
 

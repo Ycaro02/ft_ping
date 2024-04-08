@@ -7,7 +7,9 @@ CFLAGS			=	-Wall -Wextra -Werror -O3 -g
 ASCII_ART		=	./rsc/mk/ascii.sh
 ASCII_NAME		=	${NAME}
 
-PING_ADDR		=	localhost --verbose -v 127.0.0.1
+MANDATORY_ARGS	=	localhost --verbose -v 127.0.0.1
+BONUD_ARGS		=	127.0.0.2 --count 5 --ttl32 localhost
+
 RUN_TEST		=	./rsc/sh/run_test.sh
 VALGRIND_TEST	=	./rsc/sh/valgrind_test.sh
 
@@ -67,11 +69,16 @@ clean_lib:
 	@$(MAKE_LIST) fclean
 
 test: $(NAME)
-	@printf "$(CYAN)Test $(NAME) ${PING_ADDR} $(RESET)\n"
-	@sudo ./$(RUN_TEST) $(PING_ADDR)
+	@printf "$(CYAN)Test $(NAME) ${MANDATORY_ARGS} $(RESET)\n"
+	@sudo ./$(RUN_TEST) $(MANDATORY_ARGS)
 
 vtest: $(NAME)
-	@sudo ./$(VALGRIND_TEST) $(PING_ADDR)
+	@sudo ./$(VALGRIND_TEST) $(MANDATORY_ARGS)
+
+btest:
+	@make -s bonus
+	@printf "$(CYAN)Test $(NAME) ${BONUD_ARGS} $(RESET)\n"
+	@sudo ./$(RUN_TEST) $(BONUD_ARGS)
 
 re:			fclean all
 

@@ -71,25 +71,32 @@ typedef struct timeval t_timeval;
 Options:\n\
   -h --help  \t\tShow this help message and exit\n\
   -v --verbose\t\tVerbose output\n\
+  Run make bonus for additional options\n"
+
+#define BONUS_HELP_MESSAGE \
+"Usage: %s destination\n\
+Options:\n\
+  -h --help  \t\tShow this help message and exit\n\
+  -v --verbose\t\tVerbose output\n\
   -c --count value\tStop after sending count ECHO_REQUEST packets\n\
   -t --TTL value\tChange time to live value only between 1 and 255\n"
 
 /* Ping Flag char */
-#define H_FLAG_CHAR 'h'         /* 0*/
-#define	V_FLAG_CHAR 'v'         /* 1 */ 
-#define	C_FLAG_CHAR 'c'			/* 2 */
-#define	T_FLAG_CHAR 't'			/* 3 */
+#define H_FLAG_CHAR 'h'         /* 0 help*/
+#define	V_FLAG_CHAR 'v'         /* 1 verbose */ 
+#define	C_FLAG_CHAR 'c'			/* 2 count */
+#define	T_FLAG_CHAR 't'			/* 3 ttl */
 
 #define CORRECT_BUFFER 2U
 
 
 /* Ping flag value */
-enum ping_flag  {
+enum e_ping_flag  {
     UNKNOW=0, 
-    H_OPTION=1,
-    V_OPTION=2,
-	C_OPTION=4,
-	T_OPTION=8,
+    H_OPTION=(1 << 0),
+    V_OPTION=(1 << 1),
+	C_OPTION=(1 << 2),
+	T_OPTION=(1 << 3),
 };
 
 /**
@@ -156,8 +163,6 @@ typedef struct s_context
 } t_context;
 
 
-
-
 /* Signal handling global variable */
 extern int		g_signal_received;
 
@@ -166,7 +171,7 @@ int8_t			init_flag_context(int argc, char**argv, uint16_t *flag, uint8_t *exit_c
 
 
 /* ping context */
-int8_t			call_flag_parser(t_flag_context *flag_c, int argc, char **argv, uint16_t *flag, uint8_t *exit_code);
+int8_t			call_flag_parser(t_flag_context *flag_c, int argc, char **argv, uint16_t *flag);
 t_context		init_ping_context(int argc, char **argv);
 void			free_context(t_context *c);
 
