@@ -13,7 +13,9 @@ SRCS			=	handle_socket.c\
 					network_utils.c\
 					send_ping.c\
 					detail_display.c\
-					garbage_func.c\
+					ping_context.c\
+					handle_summary.c\
+
 
 SRCS_BONUS		=	main_bonus.c\
 

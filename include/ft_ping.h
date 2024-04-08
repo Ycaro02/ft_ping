@@ -162,12 +162,21 @@ typedef struct s_context
 extern int		g_signal_received;
 
 /* main */
-int8_t			get_destination_addr(char *dest_str, in_addr_t *dest_addr, char **dest_name);
-void			display_clear_summary(t_context *c);
+int8_t			init_flag_context(int argc, char**argv, uint16_t *flag, uint8_t *exit_code);
+
+
+/* ping context */
+int8_t			call_flag_parser(t_flag_context *flag_c, int argc, char **argv, uint16_t *flag, uint8_t *exit_code);
+t_context		init_ping_context(int argc, char **argv);
+void			free_context(t_context *c);
 
 /* send ping */
 int				send_ping(t_context *c);
 int				sending_ping_loop(t_context *c);
+
+/* summary */
+void			display_clear_summary(t_context *c);
+
 
 /* socket handle */
 void			close_multi_socket(int sock1, int sock2);
@@ -197,6 +206,8 @@ void display_ms_time(char *color, suseconds_t time, uint8_t last);
 in_addr_t		ipv4_str_toaddr(char *str);
 in_addr_t		get_process_ipv4_addr();
 in_addr_t		hostname_to_ipv4_addr(char *hostname);
+int8_t			get_destination_addr(char *dest_str, in_addr_t *dest_addr, char **dest_name);
+
 
 
 /* detail display */

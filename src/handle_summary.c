@@ -1,30 +1,5 @@
 #include "../include/ft_ping.h"
 
-/**
- *	@Brief get destination address
- *	@param dest_str destination address string (ipv4 or hostname) [input]
- *	@param dest_addr pointer on destination address [output]
- *	@param dest_name pointer on destination name [output]
-*/
-int8_t get_destination_addr(char *dest_str, in_addr_t *dest_addr, char **dest_name)
-{
-	/* get ipv4 address of destination addr */
-	*dest_addr = ipv4_str_toaddr(dest_str);
-	if (*dest_addr == 0) {
-		 *dest_addr = hostname_to_ipv4_addr(dest_str);
-		 if (*dest_addr == 0) {
-        	ft_printf_fd(2, RED"ft_ping: %s: Name or service not known\n"RESET, dest_str);
-			return (FALSE);
-		 }
-		 if (dest_name && *dest_name) {
-			 free(*dest_name);
-		 }
-		 *dest_name = ft_strdup(dest_str);
-		//  ft_printf_fd(1, ORANGE"PING str: %s name:  (%s)\n"RESET, dest_str, *dest_name);
-	}
-	return (TRUE);
-}
-
 
 
 static void compute_average_time(t_ping_sum *summary, t_list *time_lst)
