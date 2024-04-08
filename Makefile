@@ -8,7 +8,7 @@ ASCII_ART		=	./rsc/mk/ascii.sh
 ASCII_NAME		=	${NAME}
 
 MANDATORY_ARGS	=	localhost --verbose -v 127.0.0.1
-BONUS_ARGS		=	127.0.0.2 --count2 --ttl32 localhost
+BONUS_ARGS		=	-w2 localhost -c1 --count 2 -W 5 --count1 --pattern ffffaaaa333388 --ttl4 --count3
 
 RUN_TEST		=	./rsc/sh/run_test.sh
 VALGRIND_TEST	=	./rsc/sh/valgrind_test.sh

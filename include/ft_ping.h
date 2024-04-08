@@ -18,8 +18,6 @@
 
 #include "../libft/parse_flag/parse_flag.h" /* Parse flag library */
 
-/* Need to implement send packet to aditional target when sigint is receive*/
-
 /* Typedef sockaddr_in structure */
 typedef struct sockaddr_in t_sockaddr_in;
 
@@ -89,6 +87,9 @@ Options:\n\
 #define	C_FLAG_CHAR 'c'			/* 2 count */
 #define	T_FLAG_CHAR 't'			/* 3 ttl */
 #define P_FLAG_CHAR 'p'			/* 4 pattern */
+#define	TIMEOUT_FLAG_CHAR 'w'	/* 5 timeout */
+#define	LINGER_FLAG_CHAR 'W'	/* 6 linger */
+#define VERSION_FLAG_CHAR 'V'	/* 7 version */
 
 /* Explicit value for listen reply function */
 #define CONTINUE_LISTEN	0	/* Continue listening reply */
@@ -100,10 +101,10 @@ Options:\n\
 
 
 /* - todo
-		-p, --pattern=PATTERN      fill ICMP packet with given pattern (hex)
-		-n, --numeric              do not resolve host addresses
-		-w, --timeout=N            stop after N seconds
-		-V, --version              print program version and exit
+		-p, --pattern=PATTERN      fill ICMP packet with given pattern (hex) : PARSED
+		-w, --timeout=N            stop after N seconds : PARSED
+		-W, --linger=N             number of seconds to wait for response : PARSED
+		-V, --version              print program version and exit : PARSED
 	- done:
 		-t --ttl
 		-c --count 
@@ -118,7 +119,10 @@ enum e_ping_flag  {
     V_OPTION=(1 << 1),
 	C_OPTION=(1 << 2),
 	T_OPTION=(1 << 3),
-	P_OPTION=(1 << 4)
+	P_OPTION=(1 << 4),
+	TIMEOUT_OPTION=(1 << 5),
+	LINGER_OPTION=(1 << 6),
+	VERSION_OPTION=(1 << 7)
 };
 
 /**
@@ -169,9 +173,11 @@ typedef struct s_ping_packet
 
 typedef struct s_opt_value
 {
+	char		*pattern;
 	uint32_t	ttl;
 	uint32_t	count;
-	char		*pattern;
+	uint8_t		timeout;
+	uint8_t		linger;
 } t_opt_value;
 
 /**

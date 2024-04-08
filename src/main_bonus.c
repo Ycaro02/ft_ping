@@ -32,7 +32,9 @@ int8_t init_flag_context(int argc, char**argv, t_context *c)
 	add_flag_option(&flag_c, C_FLAG_CHAR, C_OPTION, UINT32_MAX, DECIMAL_VALUE, "count");
 	add_flag_option(&flag_c, T_FLAG_CHAR, T_OPTION, UINT8_MAX, DECIMAL_VALUE, "ttl");
 	add_flag_option(&flag_c, P_FLAG_CHAR, P_OPTION, MAX_PATTERN_SIZE, HEXA_VALUE, "pattern");
-
+	add_flag_option(&flag_c, TIMEOUT_FLAG_CHAR, TIMEOUT_OPTION, UINT8_MAX, DECIMAL_VALUE, "timeout");
+	add_flag_option(&flag_c, LINGER_FLAG_CHAR, LINGER_OPTION, UINT8_MAX, DECIMAL_VALUE, "linger");
+	add_flag_option(&flag_c, VERSION_FLAG_CHAR, VERSION_OPTION, OPT_NO_VALUE, OPT_NO_VALUE, "version");
 
 	ret = call_flag_parser(&flag_c, argc, argv, &c->flag);
 	if (ret) {
@@ -40,10 +42,14 @@ int8_t init_flag_context(int argc, char**argv, t_context *c)
 		set_opt_value(flag_c.opt_lst, c->flag, T_OPTION, &c->opt_value.ttl);
 		set_opt_value(flag_c.opt_lst, c->flag, C_OPTION, &c->opt_value.count);
 		set_opt_value(flag_c.opt_lst, c->flag, P_OPTION, &c->opt_value.pattern);
+		set_opt_value(flag_c.opt_lst, c->flag, TIMEOUT_OPTION, &c->opt_value.timeout);
+		set_opt_value(flag_c.opt_lst, c->flag, LINGER_OPTION, &c->opt_value.linger);
 		free_flag_context(&flag_c);
 		ft_printf_fd(1, ORANGE"ttl: %u\n"RESET, c->opt_value.ttl);
 		ft_printf_fd(1, ORANGE"count: %u\n"RESET, c->opt_value.count);
 		ft_printf_fd(1, ORANGE"pattern: %s len: %d\n"RESET, c->opt_value.pattern, ft_strlen(c->opt_value.pattern));
+		ft_printf_fd(1, ORANGE"timeout: %u\n"RESET, c->opt_value.timeout);
+		ft_printf_fd(1, ORANGE"linger: %u\n"RESET, c->opt_value.linger);
 	}
 
 
