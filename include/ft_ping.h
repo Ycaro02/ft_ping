@@ -104,11 +104,11 @@ Options:\n\
 /* - todo
 		-p, --pattern=PATTERN      fill ICMP packet with given pattern (hex) : PARSED
 		-w, --timeout=N            stop after N seconds : PARSED
-		-W, --linger=N             number of seconds to wait for response : PARSED
 		-V, --version              print program version and exit : PARSED
 	- done:
 		-t --ttl
 		-c --count 
+		-W, --linger=N             number of seconds to wait for response
 		-v --verbose
 		-h --help
 */
@@ -197,6 +197,7 @@ typedef struct s_context
     int             rcv_sock;       /* socket for receiving */
     uint32_t        flag;           /* ping command flag */
 	uint8_t			exit_code;		/* exit code */
+	suseconds_t		start;			/* start time */
 } t_context;
 
 

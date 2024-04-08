@@ -87,6 +87,15 @@ static void display_clean_error(struct in_addr *src_addr, ssize_t bytes_rcv, uin
 	// if -v display ip header dump
 }
 
+
+static int8_t is_timeout_time(suseconds_t start, suseconds_t timeout, uint8_t flag)
+{
+	if (!has_flag(flag, TIMEOUT_OPTION)) {
+		return (FALSE);
+	}
+	return (get_ms_time() >= (start + (timeout * ONE_SEC)));
+}
+
 /**
  *	@brief Parse icmp reply
  *	@param c ping context structure
@@ -105,9 +114,16 @@ static int8_t parse_icmp_reply(t_context *c, uint8_t buffer[], int8_t *error)
 	ft_bzero(&src_addr, sizeof(src_addr));
 	errno = 0;
 	bytes_received = recvfrom(c->rcv_sock, buffer, BUFF_SIZE, 0, (struct sockaddr*)&src_addr, &addr_len);
+	
+	int8_t timeout_down = is_timeout_time(c->start, c->opt_value.timeout, c->flag);
+	if (timeout_down) {
+		// ft_printf_fd(1, "Timeout need to leave\n");
+		g_signal_received = 1;
+	}
+	
 	if (g_signal_received) { /* signal receive case SIGINT */
 		return (STOP_LISTEN);
-	} else if (errno == EAGAIN || errno == EWOULDBLOCK) { /* timeout case */
+	} else if (errno == EAGAIN || errno == EWOULDBLOCK) { /* timeout/linger case */
 		ft_printf_fd(2, RED"Timeout Reached\n"RESET);
 		return (STOP_LISTEN);
 	} else if (bytes_received < PACKET_SIZE) { /* not enought bytes received or recvfrom error (-1 returned) */

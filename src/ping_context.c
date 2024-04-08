@@ -10,6 +10,7 @@ t_context init_context_structure()
 {
 	t_context	c;
     ft_bzero(&c, sizeof(t_context));
+	c.start = get_ms_time();
 	c.exit_code = 1;
 	c.send_sock = -1;
 	c.rcv_sock = -1;
