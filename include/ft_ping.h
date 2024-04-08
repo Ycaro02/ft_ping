@@ -23,7 +23,7 @@
 /* Typedef sockaddr_in structure */
 typedef struct sockaddr_in t_sockaddr_in;
 
-/* Typedef for icmp header structure */
+/* Typedef for icmp header structure 8 bytes */
 typedef struct icmphdr t_icmphdr;
 
 /* Typedef for ip header structure */
@@ -33,13 +33,13 @@ typedef struct iphdr t_iphdr;
 typedef struct timeval t_timeval;
 
 /* Buffer size */
-#define BUFFER_SIZE 1024
+#define BUFF_SIZE 1024
 
 /* ICMP packet size */
 #define PACKET_SIZE 84
 
-/* IP header structure size */
-#define IP_HDR_SIZE sizeof(struct iphdr)
+/* IP header structure size 20 bytes */
+#define IP_HDR_SIZE sizeof(t_iphdr)
 
 /* ICMP header structure size */
 #define ICMP_HDR_SIZE sizeof(t_icmphdr)
@@ -89,6 +89,19 @@ Options:\n\
 
 #define CORRECT_BUFFER 2U
 
+
+/* - todo
+		-s, --size=NUMBER          send NUMBER data octets
+		-p, --pattern=PATTERN      fill ICMP packet with given pattern (hex)
+		-n, --numeric              do not resolve host addresses
+		-w, --timeout=N            stop after N seconds
+		-V, --version              print program version and exit
+	- done:
+		-t --ttl
+		-c --count 
+		-v --verbose
+		-h --help
+*/
 
 /* Ping flag value */
 enum e_ping_flag  {

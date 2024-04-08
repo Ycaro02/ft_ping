@@ -2,10 +2,10 @@
 
 static void display_clean_data(t_context *c, t_iphdr *iphdr ,t_icmphdr *icmphdr)
 {
-	char buff[1024];
+	char buff[BUFF_SIZE];
 	char *dest_str = inet_ntoa(*(struct in_addr *)&(c->dest.sockaddr.sin_addr.s_addr));
 
-	ft_bzero(buff, 1024);
+	ft_bzero(buff, BUFF_SIZE);
 	sprintf(buff, GREEN"64"RESET" bytes from "PURPLE"%s"RESET": icmp_seq="ORANGE"%u"RESET" ttl="RED"%d "RESET, dest_str, ntohs(icmphdr->un.echo.sequence), iphdr->ttl);
 	ft_printf_fd(1, "%s", buff);
 	display_ms_time(YELLOW, c->state.rcv_time - c->state.send_time, TRUE);
@@ -73,12 +73,12 @@ static void display_ip_header_dump(t_iphdr *iphdr, t_icmphdr *icmphdr)
 */
 static void display_clean_error(struct in_addr *src_addr, ssize_t bytes_rcv, uint8_t error)
 {
-	char buff[1024];
+	char buff[BUFF_SIZE];
 	char *error_str = get_str_msg_type(error);
 	// char *dest_str = inet_ntoa(*(struct in_addr *)&(c->dest.sockaddr.sin_addr.s_addr));
 	char *dest_str = inet_ntoa(*src_addr);
 
-	ft_bzero(buff, 1024);
+	ft_bzero(buff, BUFF_SIZE);
 	sprintf(buff, "from "CYAN"%s (%s)"RESET" %s\n", dest_str, dest_str, error_str);
 
 	ft_printf_fd(1, ""RED"%u"RESET" bytes %s", bytes_rcv, buff);
@@ -104,7 +104,7 @@ static int8_t parse_icmp_reply(t_context *c, uint8_t buffer[], int8_t *error)
 
 	ft_bzero(&src_addr, sizeof(src_addr));
 	errno = 0;
-	bytes_received = recvfrom(c->rcv_sock, buffer, BUFFER_SIZE, 0, (struct sockaddr*)&src_addr, &addr_len);
+	bytes_received = recvfrom(c->rcv_sock, buffer, BUFF_SIZE, 0, (struct sockaddr*)&src_addr, &addr_len);
 	if (g_signal_received) { /* signal receive case SIGINT */
 		return (TRUE);
 	} else if (errno == EAGAIN || errno == EWOULDBLOCK) { /* timeout case */
@@ -116,7 +116,7 @@ static int8_t parse_icmp_reply(t_context *c, uint8_t buffer[], int8_t *error)
 		*error = 1;
 		return (TRUE);
 	} else if (bytes_received > PACKET_SIZE) { /* error case */
-		ip_hdr = (t_iphdr *)(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE); /* hardcode suppose ip header dont have any option need to adapt it for bonus */
+		ip_hdr = (t_iphdr *)(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE); /* get sent ip header: first ip_hdr_size of data */
 		if (ip_hdr->id != c->packet.iphdr.id) {
 			ft_printf_fd(1, RED"ID mismatch %u != %u\n"RESET, ntohs(ip_hdr->id), ntohs(c->packet.iphdr.id));
 			return (FALSE);
@@ -146,13 +146,13 @@ static int8_t parse_icmp_reply(t_context *c, uint8_t buffer[], int8_t *error)
 */
 int8_t listen_icmp_reply(t_context *c, int8_t *error)
 {
-    uint8_t         buffer[BUFFER_SIZE];
+    uint8_t         buffer[BUFF_SIZE];
     t_iphdr			*ip_hdr;
     t_icmphdr		*icmp_hdr;
 	int8_t			ret;
 
 
-	ft_bzero(buffer, BUFFER_SIZE);
+	ft_bzero(buffer, BUFF_SIZE);
 
 	ret = parse_icmp_reply(c, buffer, error);
 	if (ret != CORRECT_BUFFER) {
@@ -178,6 +178,6 @@ int8_t listen_icmp_reply(t_context *c, int8_t *error)
 	c->state.rcv_time = get_ms_time();
 	update_ping_summary(c, c->state.send_time, c->state.rcv_time);
 	display_clean_data(c, ip_hdr, icmp_hdr);
-	ft_bzero(buffer, BUFFER_SIZE);
+	ft_bzero(buffer, BUFF_SIZE);
 	return (TRUE);
 }

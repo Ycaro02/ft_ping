@@ -82,11 +82,11 @@ void update_packet(t_ping_packet *packet)
 */
 static void display_first_stat(t_context *c, t_ping_packet packet)
 {
-    char buff[1024];
+    char buff[BUFF_SIZE];
     char *dest_str = inet_ntoa(*(struct in_addr *)&(c->dest.sockaddr.sin_addr.s_addr));
     char *name = c->dest.name ? c->dest.name : dest_str;
 
-    ft_bzero(buff, 1024);
+    ft_bzero(buff, BUFF_SIZE);
     sprintf(buff, "PING "CYAN"%s (%s)"RESET": "RED"%d"RESET" data bytes", name, dest_str, ICMP_DATA_SIZE);
     ft_printf_fd(1, "%s", buff);
 	if (c->flag & V_OPTION) {
