@@ -3,6 +3,12 @@
 
 #include "../libft.h"
 
+/**
+ * Basic stack string implementation, using a fixed size buffer
+ * This is useful for small strings, and avoid dynamic allocation
+ * Written by Ycaro
+*/
+
 /* Buffer size of stack string */
 #define SSTRING_MAX 1024
 
