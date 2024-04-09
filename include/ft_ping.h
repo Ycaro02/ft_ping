@@ -33,37 +33,27 @@ typedef struct timeval t_timeval;
 /* Buffer size */
 #define BUFF_SIZE 4096
 
-/* ICMP packet size */
-#define PACKET_SIZE 84
+/* ICMP size define */
+#define PACKET_SIZE				84					/* ICMP packet size */
+#define IP_HDR_SIZE 			sizeof(t_iphdr)		/* IP header structure size 20 bytes */
+#define ICMP_HDR_SIZE			sizeof(t_icmphdr)	/* ICMP header structure size */
+#define ICMP_DATA_SIZE			56					/* ICMP Payload/data size in bytes */
+#define ICMP_TIMESTAMP_SIZE		8					/* Size of timestamp send in bytes */
+#define ICMP_BRUT_DATA_BYTES	8					/* Size of brut byte we dont't give to user with pattern options */
+#define	SHORT_INT_BITS			16					/* Size of int16 in bits */
 
-/* IP header structure size 20 bytes */
-#define IP_HDR_SIZE sizeof(t_iphdr)
+/* Explicit value for listen reply function */
+#define CONTINUE_LISTEN		0	/* Continue listening reply */
+#define STOP_LISTEN			1	/* Stop listening reply */
+#define CORRECT_BUFFER		2	/* Correct buffer parse reply */
 
-/* ICMP header structure size */
-#define ICMP_HDR_SIZE sizeof(t_icmphdr)
-
-/* ICMP Payload/data size in bytes */
-#define ICMP_DATA_SIZE 56
-
-/* Size of timestamp send in bytes */
-#define ICMP_TIMESTAMP_SIZE	8 
-
-/* Size of int16 in bits */
-#define	SHORT_INT_BITS	16
-
+/* Time define one sec in ms*/
+#define ONE_SEC			1000000
 
 /* Local host addr string */
 #define LOCAL_HOST_ADDR "127.0.0.1"
 
-/* Data magic value 'f' */
-#define DATA_MBVAL 102
-/* Magic value index */
-#define DATA_MBIDX 3
-/* Padding 0 after magic val */
-#define DATA_PAD_ZERO 4
-/* End of padding */
-#define DATA_END_PAD DATA_MBIDX + DATA_PAD_ZERO
-
+/* Help string for mandatory part */
 #define MANDATORY_HELP_MESSAGE \
 "Usage: %s destination\n\
 Options:\n\
@@ -71,6 +61,7 @@ Options:\n\
   -v --verbose\t\tVerbose output\n\
   Run make bonus for additional options\n"
 
+/* Help string for bonus part */
 #define BONUS_HELP_MESSAGE \
 "Usage: %s destination\n\
 Options:\n\
@@ -79,44 +70,29 @@ Options:\n\
   -c --count value\tStop after sending count ECHO_REQUEST packets\n\
   -t --TTL value\tChange time to live value only between 1 and 255\n\
   -p --pattern value\tFill ICMP packet with given pattern (hex)\n\
+  -w, --timeout=N            stop after N seconds\n\
+  -W, --linger=N             number of seconds to wait for response\n\
+  -V, --version\t\tPrint program version and exit\n\
   "
 
-/* Ping Flag char */
-#define HELP_FLAG_CHAR '?'      /* 0 help */
-#define	V_FLAG_CHAR 'v'         /* 1 verbose */ 
-#define	C_FLAG_CHAR 'c'			/* 2 count */
-#define	T_FLAG_CHAR 't'			/* 3 ttl */
-#define P_FLAG_CHAR 'p'			/* 4 pattern */
-#define	TIMEOUT_FLAG_CHAR 'w'	/* 5 timeout */
-#define	LINGER_FLAG_CHAR 'W'	/* 6 linger */
-#define VERSION_FLAG_CHAR 'V'	/* 7 version */
-
-/* Explicit value for listen reply function */
-#define CONTINUE_LISTEN	0	/* Continue listening reply */
-#define STOP_LISTEN		1	/* Stop listening reply */
-#define CORRECT_BUFFER	2	/* Correct buffer parse reply */
-
-#define ONE_SEC			1000000
-
-#define MAX_PATTERN_SIZE	(uint32_t)(ICMP_DATA_SIZE - ICMP_TIMESTAMP_SIZE)
-
+/* String describing version */
 #define VERSION_STRING		CYAN"ft_ping (LIBFT post_common)"RESET" "PURPLE"0.0.1"RESET"\n\
     Reference  "YELLOW"GNU inetutils 2.0."RESET"\n\
     Written by "ORANGE"Ycaro02."RESET"\n\
 "
 
-/* - todo
-		-p, --pattern=PATTERN      fill ICMP packet with given pattern (hex) : PARSED
-			- just need to fill data with given pattern
-	- done:
-		-t --ttl
-		-c --count 
-		-w, --timeout=N            stop after N seconds : PARSED, tested with 255  (max val)
-		-W, --linger=N             number of seconds to wait for response
-		-v --verbose
-		-h --help
-		-V, --version              print program version and exit : PARSED
-*/
+/* Max pattern size accepted for --pattern */
+#define MAX_PATTERN_SIZE		(uint32_t)(ICMP_DATA_SIZE - ICMP_TIMESTAMP_SIZE)
+
+/* Ping Flag char */
+#define HELP_FLAG_CHAR		'?'		/* 0 help display help */
+#define	V_FLAG_CHAR			'v'		/* 1 verbose verbose option */ 
+#define	C_FLAG_CHAR			'c'		/* 2 count number of ping send for each target */
+#define	T_FLAG_CHAR			't'		/* 3 ttl time to live */
+#define P_FLAG_CHAR			'p'		/* 4 pattern fill data with given pattern (hexadecimal only)*/
+#define	TIMEOUT_FLAG_CHAR	'w'		/* 5 timeout stop after N seconds */
+#define	LINGER_FLAG_CHAR	'W'		/* 6 linger number of seconds to wait for response */
+#define VERSION_FLAG_CHAR	'V'		/* 7 version desplay version */
 
 /* Ping flag value */
 enum e_ping_flag  {
@@ -162,8 +138,8 @@ typedef struct s_ping_state
 */
 typedef struct s_dest_data
 {
-	t_sockaddr_in	sockaddr;        /* Destination address */
-	char            *name;          /* Destination name */
+	t_sockaddr_in	sockaddr;		/* Destination address */
+	char            *name;			/* Destination name */
 } t_dest_data;
 
 
@@ -227,7 +203,6 @@ int				sending_ping_loop(t_context *c);
 /* summary */
 void			display_clear_summary(t_context *c);
 
-
 /* socket handle */
 void			close_multi_socket(int sock1, int sock2);
 int				open_rcv_socket(uint8_t linger);
@@ -250,15 +225,13 @@ uint32_t		gener_uint32(int max);
 
 /* time */
 suseconds_t		get_ms_time(void);
-void display_ms_time(char *color, suseconds_t time, uint8_t last);
+void			display_ms_time(char *color, suseconds_t time, uint8_t last);
 
 /* network utils */
 in_addr_t		ipv4_str_toaddr(char *str);
 in_addr_t		get_process_ipv4_addr();
 in_addr_t		hostname_to_ipv4_addr(char *hostname);
 int8_t			get_destination_addr(char *dest_str, in_addr_t *dest_addr, char **dest_name);
-
-
 
 /* detail display */
 char			*get_str_msg_type(uint8_t type);
@@ -270,3 +243,13 @@ void			display_char_data(uint8_t *data, size_t size);
 void			display_detail_iphdr(struct iphdr *header);
 void			display_detail_icmphdr(struct icmphdr *header);
 void			display_rcv_timelist(t_list *rcv_list);
+
+
+/* Data magic value 'f' */
+// #define DATA_MBVAL 102
+/* Magic value index */
+// #define DATA_MBIDX 3
+/* Padding 0 after magic val */
+// #define DATA_PAD_ZERO 4
+/* End of padding */
+// #define DATA_END_PAD 7

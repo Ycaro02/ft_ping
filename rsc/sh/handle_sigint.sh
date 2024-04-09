@@ -36,8 +36,9 @@ send_sigint_all() {
 wait_and_display_log() {
     local file="${1}"
     local to_found="${2}"
-	display_color_msg ${MAGENTA} "Waiting 5 sec, display ${1}"
-    sleep 5
+	local to_wait="${3}"
+	display_color_msg ${MAGENTA} "Waiting ${to_wait} sec, display ${1}"
+    sleep ${to_wait}
 	send_sigint_all ${to_found}
     cat ${file}
     rm ${file}

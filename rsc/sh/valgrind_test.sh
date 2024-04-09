@@ -12,7 +12,7 @@ run_valgrind_test() {
     local args="$@"
     display_color_msg ${YELLOW} "Running ${VALGRIND} ${PING_CMD}|${args}|"
     ${VALGRIND} ${PING_CMD} "$@" > /dev/null 2>&1 &
-    wait_and_display_log ${VAL_LOG} memcheck-amd64-
+    wait_and_display_log ${VAL_LOG} memcheck-amd64- 10
 }
 
 run_valgrind_test "$@"
