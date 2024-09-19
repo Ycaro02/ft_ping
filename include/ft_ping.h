@@ -84,7 +84,7 @@ Options:\n\
 #define MAX_PATTERN_SIZE		(uint32_t)(ICMP_DATA_SIZE - ICMP_TIMESTAMP_SIZE)
 
 /* Ping Flag char */
-#define HELP_FLAG_CHAR		'?'		/* 0 help display help */
+#define HELP_FLAG_CHAR		'h'		/* 0 help display help */
 #define	V_FLAG_CHAR			'v'		/* 1 verbose verbose option */ 
 #define	C_FLAG_CHAR			'c'		/* 2 count number of ping send for each target */
 #define	T_FLAG_CHAR			't'		/* 3 ttl time to live */

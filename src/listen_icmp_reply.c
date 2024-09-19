@@ -134,7 +134,9 @@ static int8_t parse_icmp_reply(t_context *c, uint8_t buffer[], int8_t *error)
 	} else if (bytes_received > PACKET_SIZE) { /* error case */
 		ip_hdr = (t_iphdr *)(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE); /* get sent ip header: first ip_hdr_size of data */
 		if (ip_hdr->id != c->packet.iphdr.id) {
-			ft_printf_fd(1, RED"ID mismatch %u != %u\n"RESET, ntohs(ip_hdr->id), ntohs(c->packet.iphdr.id));
+			#ifdef DEBUG
+				ft_printf_fd(1, RED"ID mismatch %u != %u\n"RESET, ntohs(ip_hdr->id), ntohs(c->packet.iphdr.id));
+			#endif
 			return (CONTINUE_LISTEN);
 		}
 		display_clean_error((struct in_addr *)&src_addr.sin_addr.s_addr, bytes_received - IP_HDR_SIZE, ((t_icmphdr *)(buffer + IP_HDR_SIZE))->type);
@@ -180,7 +182,9 @@ int8_t listen_icmp_reply(t_context *c, int8_t *error)
 	icmp_hdr = (t_icmphdr *)(buffer + IP_HDR_SIZE);
 
 	if (ntohs(icmp_hdr->un.echo.id) != ntohs(c->packet.icmphdr.un.echo.id)) {
-		ft_printf_fd(1, RED"ID mismatch %u != %u\n"RESET, ntohs(ip_hdr->id), ntohs(c->packet.icmphdr.un.echo.id));
+		#ifdef DEBUG
+			ft_printf_fd(1, RED"ID mismatch %u != %u\n"RESET, ntohs(ip_hdr->id), ntohs(c->packet.icmphdr.un.echo.id));
+		#endif
 		return (CONTINUE_LISTEN);
 	}
 	

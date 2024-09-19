@@ -29,9 +29,11 @@ LIST			= 	libft/list/linked_list.a
 
 OBJS 			= $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
 
-RM			=	rm -rf
+RM				=	rm -rf
 
 VERSION			= mandatory
+
+CFLAGS			= -Wall -Wextra -Werror -O3
 
 ifeq ($(findstring bonus, $(MAKECMDGOALS)), bonus)
 ASCII_NAME	= "bonus"
@@ -39,4 +41,8 @@ SRCS += $(MAIN_BONUS)
 VERSION = bonus
 else
 SRCS += $(MAIN_MANDATORY)
+endif
+
+ifeq ($(findstring debug, $(MAKECMDGOALS)), debug)
+CFLAGS = -Wall -Wextra -Werror -g3 -DDEBUG
 endif

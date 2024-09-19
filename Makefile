@@ -3,7 +3,6 @@ include rsc/mk/source.mk
 
 NAME			=	ft_ping
 CC				=	gcc
-CFLAGS			=	-Wall -Wextra -Werror -O3 -g 
 ASCII_ART		=	./rsc/mk/ascii.sh
 ASCII_NAME		=	${NAME}
 

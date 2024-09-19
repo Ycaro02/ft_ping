@@ -15,7 +15,9 @@ int8_t init_flag_context(int argc, char**argv, t_context *c)
 	
 	ret = call_flag_parser(&flag_c, argc, argv, &c->flag);
 	if (ret) {
-		display_option_list(flag_c); /* to remove*/
+		#ifdef DEBUG
+			display_option_list(flag_c); /* to remove*/
+		#endif
 		free_flag_context(&flag_c);
 	}
 

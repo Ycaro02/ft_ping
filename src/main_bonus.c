@@ -2,12 +2,12 @@
 
 int g_signal_received = 0;
 
-
 static void set_opt_value(t_list *opt_lst, uint32_t flag, uint32_t to_find, void *to_update)
 {
+	t_opt_node *opt = NULL;
+	
 	if (has_flag(flag, to_find)) {
-		t_opt_node *opt = search_exist_opt(opt_lst, is_same_flag_val_opt, (void *)&to_find);
-		// ft_printf_fd(1, "for tofind %u: opt: %p\n", to_find, opt);
+		opt = search_exist_opt(opt_lst, is_same_flag_val_opt, (void *)&to_find);
 		if (!opt) {
 			return ;
 		}
@@ -38,18 +38,20 @@ int8_t init_flag_context(int argc, char**argv, t_context *c)
 
 	ret = call_flag_parser(&flag_c, argc, argv, &c->flag);
 	if (ret) {
-		display_option_list(flag_c); /* to remove*/
 		set_opt_value(flag_c.opt_lst, c->flag, T_OPTION, &c->opt_value.ttl);
 		set_opt_value(flag_c.opt_lst, c->flag, C_OPTION, &c->opt_value.count);
 		set_opt_value(flag_c.opt_lst, c->flag, P_OPTION, &c->opt_value.pattern);
 		set_opt_value(flag_c.opt_lst, c->flag, TIMEOUT_OPTION, &c->opt_value.timeout);
 		set_opt_value(flag_c.opt_lst, c->flag, LINGER_OPTION, &c->opt_value.linger);
 		free_flag_context(&flag_c);
-		ft_printf_fd(1, ORANGE"ttl: %u\n"RESET, c->opt_value.ttl);
-		ft_printf_fd(1, ORANGE"count: %u\n"RESET, c->opt_value.count);
-		ft_printf_fd(1, ORANGE"pattern: %s len: %d\n"RESET, c->opt_value.pattern, ft_strlen(c->opt_value.pattern));
-		ft_printf_fd(1, ORANGE"timeout: %u\n"RESET, c->opt_value.timeout);
-		ft_printf_fd(1, ORANGE"linger: %u\n"RESET, c->opt_value.linger);
+		#ifdef DEBUG
+			display_option_list(flag_c); /* to remove*/
+			ft_printf_fd(1, ORANGE"ttl: %u\n"RESET, c->opt_value.ttl);
+			ft_printf_fd(1, ORANGE"count: %u\n"RESET, c->opt_value.count);
+			ft_printf_fd(1, ORANGE"pattern: %s len: %d\n"RESET, c->opt_value.pattern, ft_strlen(c->opt_value.pattern));
+			ft_printf_fd(1, ORANGE"timeout: %u\n"RESET, c->opt_value.timeout);
+			ft_printf_fd(1, ORANGE"linger: %u\n"RESET, c->opt_value.linger);
+		#endif
 	}
 
 

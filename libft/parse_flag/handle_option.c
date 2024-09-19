@@ -103,7 +103,7 @@ static t_opt_node *create_opt_node(uint8_t c, uint32_t flag_val, uint32_t value,
 		opt->val.str = NULL;
 	}
 	//
-	ft_printf_fd(2, RED"full_name: %s, max_val: %u, has_vas %u\n"RESET, full_name, value, opt->has_value);
+	// ft_printf_fd(2, RED"full_name: %s, max_val: %u, has_vas %u\n"RESET, full_name, value, opt->has_value);
 
     return (opt);
 }
