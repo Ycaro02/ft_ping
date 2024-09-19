@@ -183,6 +183,11 @@ typedef struct s_context
 	suseconds_t		start;			/* start time */
 } t_context;
 
+#ifdef DEBUG
+	#define DEBUG_PRINT(fmt, ...) ft_printf_fd(2, fmt, __VA_ARGS__)
+#else
+	#define DEBUG_PRINT(fmt, ...)
+#endif
 
 /* Signal handling global variable */
 extern int		g_signal_received;

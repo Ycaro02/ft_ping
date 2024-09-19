@@ -42,7 +42,3 @@ VERSION = bonus
 else
 SRCS += $(MAIN_MANDATORY)
 endif
-
-ifeq ($(findstring debug, $(MAKECMDGOALS)), debug)
-CFLAGS = -Wall -Wextra -Werror -g3 -DDEBUG
-endif

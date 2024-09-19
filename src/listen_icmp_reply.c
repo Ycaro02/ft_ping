@@ -49,7 +49,7 @@ static void display_ip_header_dump(t_iphdr *iphdr, t_icmphdr *icmphdr)
 	}
 	ft_printf_fd(1, "\nVr HL TOS  Len   ID Flg  off TTL Pro  cks      Src	Dst	Data\n");
 	/*			Vr	 HL  TOS  LEN  ID   flg off   ttl   pro  cks */
-	dprintf(1, "%2d  %2d %02x %04x %04x %3d %04x  %02x  %02x %04x ",
+	dprintf(1, "%2d %2d  %02x %04x %04x %3d %04x  %02x  %02x %04x ",
 		iphdr->version, iphdr->ihl, iphdr->tos, ntohs(iphdr->tot_len), ntohs(iphdr->id)\
 		, 0,  ntohs(iphdr->frag_off), iphdr->ttl, iphdr->protocol, ntohs(iphdr->check));
 	
@@ -126,17 +126,15 @@ static int8_t parse_icmp_reply(t_context *c, uint8_t buffer[], int8_t *error)
 	} else if (errno == EAGAIN || errno == EWOULDBLOCK) { /* timeout/linger case */
 		ft_printf_fd(2, RED"Timeout Reached\n"RESET);
 		return (STOP_LISTEN);
-	} else if (bytes_received < PACKET_SIZE) { /* not enought bytes received or recvfrom error (-1 returned) */
-		ft_printf_fd(1, RED"\nNot enought bytes received number: %d\n"RESET, bytes_received);
-		perror("recvfrom");
-		*error = 1;
-		return (STOP_LISTEN);
-	} else if (bytes_received > PACKET_SIZE) { /* error case */
+	} else if (bytes_received <= (ssize_t)(IP_HDR_SIZE + ICMP_HDR_SIZE)) {
+		DEBUG_PRINT(RED"Buffer size too small to contain IP + ICMP header %d\n"RESET, bytes_received);
+		return (CONTINUE_LISTEN);
+	}
+	else if (bytes_received < PACKET_SIZE || bytes_received > PACKET_SIZE ) { /* not enought bytes received or recvfrom error (-1 returned) */
 		ip_hdr = (t_iphdr *)(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE); /* get sent ip header: first ip_hdr_size of data */
+		DEBUG_PRINT(RED"\nInvalid number byte receive : %d\n"RESET, bytes_received);
 		if (ip_hdr->id != c->packet.iphdr.id) {
-			#ifdef DEBUG
-				ft_printf_fd(1, RED"ID mismatch %u != %u\n"RESET, ntohs(ip_hdr->id), ntohs(c->packet.iphdr.id));
-			#endif
+			DEBUG_PRINT(RED"ID mismatch %u != %u\n"RESET, ntohs(ip_hdr->id), ntohs(c->packet.iphdr.id));
 			return (CONTINUE_LISTEN);
 		}
 		display_clean_error((struct in_addr *)&src_addr.sin_addr.s_addr, bytes_received - IP_HDR_SIZE, ((t_icmphdr *)(buffer + IP_HDR_SIZE))->type);
@@ -182,9 +180,7 @@ int8_t listen_icmp_reply(t_context *c, int8_t *error)
 	icmp_hdr = (t_icmphdr *)(buffer + IP_HDR_SIZE);
 
 	if (ntohs(icmp_hdr->un.echo.id) != ntohs(c->packet.icmphdr.un.echo.id)) {
-		#ifdef DEBUG
-			ft_printf_fd(1, RED"ID mismatch %u != %u\n"RESET, ntohs(ip_hdr->id), ntohs(c->packet.icmphdr.un.echo.id));
-		#endif
+		DEBUG_PRINT(RED"ID mismatch %u != %u\n"RESET, ntohs(ip_hdr->id), ntohs(c->packet.icmphdr.un.echo.id));
 		return (CONTINUE_LISTEN);
 	}
 	
@@ -201,3 +197,24 @@ int8_t listen_icmp_reply(t_context *c, int8_t *error)
 	ft_bzero(buffer, BUFF_SIZE);
 	return (STOP_LISTEN);
 }
+
+/* Old condition for parse icmp reply
+ else if (bytes_received < PACKET_SIZE) {
+	ft_printf_fd(1, RED"\nNot enought bytes received number: %d\n"RESET, bytes_received);
+ 	display_clean_error((struct in_addr *)&src_addr.sin_addr.s_addr, bytes_received - IP_HDR_SIZE, ((t_icmphdr *)(buffer + IP_HDR_SIZE))->type);
+ 	*error = 1;
+ 	return (STOP_LISTEN);
+ } else if (bytes_received > PACKET_SIZE) {
+ 	ip_hdr = (t_iphdr *)(buffer + IP_HDR_SIZE + ICMP_HDR_SIZE);
+ 	if (ip_hdr->id != c->packet.iphdr.id) {
+		ft_printf_fd(1, RED"ID mismatch %u != %u\n"RESET, ntohs(ip_hdr->id), ntohs(c->packet.iphdr.id));
+ 		return (CONTINUE_LISTEN);
+ 	}
+ 	display_clean_error((struct in_addr *)&src_addr.sin_addr.s_addr, bytes_received - IP_HDR_SIZE, ((t_icmphdr *)(buffer + IP_HDR_SIZE))->type);
+ 	if (has_flag(c->flag, V_OPTION)) {
+ 		display_ip_header_dump(ip_hdr, (t_icmphdr *)((void *)ip_hdr + IP_HDR_SIZE));
+ 	}
+ 	*error = 1;
+ 	return (STOP_LISTEN);
+ }
+*/

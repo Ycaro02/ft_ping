@@ -1,0 +1,15 @@
+[35mProcess addr 192.168.1.18
+[0mPING [36mlocalhost (127.0.0.1)[0m: [31m56[0m data bytes, [38;5;200mid 0x71ab = 29099[0m
+[32m64[0m bytes from [35m127.0.0.1[0m: icmp_seq=[38;5;208m0[0m ttl=[31m64 [0m[33m0.028 ms
+[32m64[0m bytes from [35m127.0.0.1[0m: icmp_seq=[38;5;208m1[0m ttl=[31m64 [0m[33m0.062 ms
+[33m
+Timeout SIGINT
+[0m[36m--- localhost ping statistics ---
+[0m2 packets transmitted, 2 packets received, 0% packet loss
+round-trip [32mmin[0m/[33mavg[0m/[31mmax[0m/[36mstddev[0m = [32m0.028/[33m0.045/[31m0.062/[36m0.017 ms
+PING [36m127.0.0.1 (127.0.0.1)[0m: [31m56[0m data bytes, [38;5;200mid 0x71ab = 29099[0m
+[36m--- 127.0.0.1 ping statistics ---
+[0m1 packets transmitted, 0 packets received, 100% packet loss
+round-trip [32mmin[0m/[33mavg[0m/[31mmax[0m/[36mstddev[0m = [32m0.000/[33m0.000/[31m0.000/[36m0.000 ms
+[38;5;208mAll ressources free
+[0m

@@ -44,7 +44,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@printf "$(YELLOW)Compile $<$(RESET)\n"
 	@$(CC) -o $@ -c $< $(CFLAGS)
 
-bonus: clear_mandatory ${NAME}
+bonus: clear_mandatory $(NAME)
 
 clear_mandatory:
 ifeq ($(shell [ -f ${OBJ_DIR}/main.o ] && echo 0 || echo 1), 0)
