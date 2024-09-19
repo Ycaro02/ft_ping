@@ -1,16 +1,15 @@
-#include <stdio.h>              /* Standard input output, printf function family */
-#include <stdlib.h>             /* Standard library, malloc, free, exit */
-#include <sys/socket.h>         /* System socket */
-#include <netinet/in.h>         /* Internet address family */
-#include <netinet/ip.h>         /* Internet Protocol family */
-#include <netinet/ip_icmp.h>	/* ICMP protocol family */
-#include <arpa/inet.h>			/* Internet address family */
+#include <stdio.h>              /* Standard input output, printf function family (perror)*/
+#include <sys/socket.h>         /* System socket (socket) */
+#include <netinet/in.h>         /* Internet address family (define IPPROTO_ICMP) */
+#include <netinet/ip.h>         /* Internet Protocol family (struct iphdr)*/
+#include <netinet/ip_icmp.h>	/* ICMP protocol family (struct iphdr) */
+#include <arpa/inet.h>			/* Internet address family (inet_ntoa) */
 #include <ifaddrs.h>			/* Interface address (ifaddr func) */
 #include <errno.h>              /* Error number */
-#include <signal.h>             /* Signal handling */
-#include <fcntl.h>              /* File control */
-#include <sys/time.h>			/* Time */
-#include <math.h>				/* Math functions */
+#include <signal.h>             /* Signal handling (signal) */
+#include <fcntl.h>              /* File control (open function)*/
+#include <sys/time.h>			/* Time (gettimeofday) */
+#include <math.h>				/* Math functions (sqrt)*/
 
 #include <netdb.h>				/* Network database operations (hostent func) */
 

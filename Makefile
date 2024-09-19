@@ -18,10 +18,10 @@ all:		$(NAME)
 %.o : %.c
 	@$(CC) $(CFLAGS) -c $< -o $@
 
-$(NAME):	$(OBJ_DIR) $(OBJS) $(DISPLAY_NAME) $(LIST) $(LIBFT)
-	@printf "$(CYAN)Compiling ${NAME} ...$(RESET)\n"
+$(NAME):	$(OBJ_DIR) $(OBJS) $(LIST) $(LIBFT)
+	@printf "$(CYAN)Compiling $(NAME) $(VERSION) ...$(RESET)\n"
 	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LIBFT) $(LIST) -lm
-	@printf "$(GREEN)Compiling $(NAME) done$(RESET)\n"
+	@printf "$(GREEN)Compiling $(NAME) $(VERSION) done$(RESET)\n"
 
 $(LIST):
 ifeq ($(shell [ -f ${LIST} ] && echo 0 || echo 1), 1)
@@ -49,8 +49,7 @@ bonus: clear_mandatory ${NAME}
 
 clear_mandatory:
 ifeq ($(shell [ -f ${OBJ_DIR}/main.o ] && echo 0 || echo 1), 0)
-	@printf "$(RED)Clean mandatory obj $(RESET)\n"
-	@rm -rf ${OBJ_DIR}
+	@rm -rf ${OBJ_DIR}/main.o $(NAME)
 endif
 
 clean:
@@ -62,14 +61,14 @@ endif
 
 fclean:		clean
 	@printf "$(RED)Clean $(NAME)/lib$(RESET)\n"
-	@$(RM) $(NAME) ${TESTER_OUT_FILES} ${DISPLAY_NAME}
+	@$(RM) $(NAME) ${TESTER_OUT_FILES}
 
 clean_lib:
 	@$(MAKE_LIBFT) fclean
 	@$(MAKE_LIST) fclean
 
 test: $(NAME)
-	@printf "$(CYAN)Test $(NAME) ${MANDATORY_ARGS} $(RESET)\n"
+	@printf "$(CYAN)Test $(NAME) $(MANDATORY_ARGS) $(RESET)\n"
 	@sudo ./$(RUN_TEST) $(MANDATORY_ARGS)
 
 vtest: $(NAME)
@@ -77,12 +76,12 @@ vtest: $(NAME)
 
 btest:
 	@make -s bonus
-	@printf "$(CYAN)Test $(NAME) ${BONUS_ARGS} $(RESET)\n"
+	@printf "$(CYAN)Test $(NAME) $(BONUS_ARGS) $(RESET)\n"
 	@sudo ./$(RUN_TEST) $(BONUS_ARGS)
 
 bvtest:
 	@make -s bonus
-	@printf "$(CYAN)Test $(NAME) ${BONUS_ARGS} $(RESET)\n"
+	@printf "$(CYAN)Test $(NAME) $(BONUS_ARGS) $(RESET)\n"
 	@sudo ./$(VALGRIND_TEST) $(BONUS_ARGS)
 
 re:			fclean all

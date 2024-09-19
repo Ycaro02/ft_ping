@@ -17,7 +17,7 @@ SRCS			=	handle_socket.c\
 					handle_summary.c\
 
 
-SRCS_BONUS		=	main_bonus.c\
+MAIN_BONUS		=	main_bonus.c\
 
 MAKE_LIBFT		=	make -s -C libft
 
@@ -31,9 +31,12 @@ OBJS 			= $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
 
 RM			=	rm -rf
 
+VERSION			= mandatory
+
 ifeq ($(findstring bonus, $(MAKECMDGOALS)), bonus)
 ASCII_NAME	= "bonus"
-SRCS += $(SRCS_BONUS)
+SRCS += $(MAIN_BONUS)
+VERSION = bonus
 else
 SRCS += $(MAIN_MANDATORY)
 endif

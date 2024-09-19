@@ -1,7 +1,6 @@
 #include "../include/ft_ping.h"
 
 
-
 static void compute_average_time(t_ping_sum *summary, t_list *time_lst)
 {
 	suseconds_t sum = 0;
