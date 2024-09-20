@@ -43,7 +43,6 @@ int8_t init_flag_context(int argc, char**argv, t_context *c)
 		set_opt_value(flag_c.opt_lst, c->flag, P_OPTION, &c->opt_value.pattern);
 		set_opt_value(flag_c.opt_lst, c->flag, TIMEOUT_OPTION, &c->opt_value.timeout);
 		set_opt_value(flag_c.opt_lst, c->flag, LINGER_OPTION, &c->opt_value.linger);
-		free_flag_context(&flag_c);
 		#ifdef DEBUG
 			display_option_list(flag_c); /* to remove*/
 			ft_printf_fd(1, ORANGE"ttl: %u\n"RESET, c->opt_value.ttl);
@@ -52,6 +51,7 @@ int8_t init_flag_context(int argc, char**argv, t_context *c)
 			ft_printf_fd(1, ORANGE"timeout: %u\n"RESET, c->opt_value.timeout);
 			ft_printf_fd(1, ORANGE"linger: %u\n"RESET, c->opt_value.linger);
 		#endif
+		free_flag_context(&flag_c);
 	}
 
 

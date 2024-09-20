@@ -124,7 +124,7 @@ static int8_t parse_icmp_reply(t_context *c, uint8_t buffer[], int8_t *error)
 	if (g_signal_received) { /* signal receive case SIGINT */
 		return (STOP_LISTEN);
 	} else if (errno == EAGAIN || errno == EWOULDBLOCK) { /* timeout/linger case */
-		ft_printf_fd(2, RED"Timeout Reached\n"RESET);
+		DEBUG_PRINT(RED"Timeout Reached errno: %s\n"RESET, errno == EAGAIN ? "EAGAIN" : "EWOULDBLOCK");
 		return (STOP_LISTEN);
 	} else if (bytes_received <= (ssize_t)(IP_HDR_SIZE + ICMP_HDR_SIZE)) {
 		DEBUG_PRINT(RED"Buffer size too small to contain IP + ICMP header %d\n"RESET, bytes_received);
@@ -172,7 +172,7 @@ int8_t listen_icmp_reply(t_context *c, int8_t *error)
 
 	ret = parse_icmp_reply(c, buffer, error);
 	if (ret != CORRECT_BUFFER) {
-		// ft_printf_fd(1, "Incorect ret %d\n", ret);
+		ft_printf_fd(1, "Incorect ret %d\n", ret);
 		return (ret);
 	}
 

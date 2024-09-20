@@ -66,11 +66,11 @@ Options:\n\
 Options:\n\
   -h --help  \t\tShow this help message and exit\n\
   -v --verbose\t\tVerbose output\n\
-  -c --count value\tStop after sending count ECHO_REQUEST packets\n\
-  -t --TTL value\tChange time to live value only between 1 and 255\n\
-  -p --pattern value\tFill ICMP packet with given pattern (hex)\n\
-  -w, --timeout=N            stop after N seconds\n\
-  -W, --linger=N             number of seconds to wait for response\n\
+  -c --count NUMBER\tStop after sending count ECHO_REQUEST packets\n\
+  -t --TTL NUMBER\tChange time to live value only between 1 and 255\n\
+  -p --pattern PATTERN\tFill ICMP packet with given pattern (hex)\n\
+  -w, --timeout N       stop after N seconds\n\
+  -W, --linger N        number of seconds to wait for response\n\
   -V, --version\t\tPrint program version and exit\n\
   "
 

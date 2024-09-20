@@ -52,7 +52,7 @@ t_context init_ping_context(int argc, char **argv)
 	// }
     c.send_sock = open_send_socket();
 	if (c.opt_value.linger == 0){
-		c.opt_value.linger = 10; /* Default time to wait response */
+		c.opt_value.linger = 1; /* Default time to wait response */
 	}
     c.rcv_sock = open_rcv_socket(c.opt_value.linger);
     return (c);    

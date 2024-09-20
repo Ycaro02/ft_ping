@@ -1,5 +1,6 @@
 *.o
 *.a
 ft_ping
+ft_ping.log
 .myip.txt
 .vscode

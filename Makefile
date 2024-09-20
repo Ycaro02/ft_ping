@@ -12,6 +12,8 @@ BONUS_ARGS		=	-w5 localhost -c1 --count 2 -W 5 --count1 --pattern ffffaaaa333388
 RUN_TEST		=	./rsc/sh/run_test.sh
 VALGRIND_TEST	=	./rsc/sh/valgrind_test.sh
 
+# CFLAGS += -DDEBUG -g3
+
 all:		$(NAME)
 
 %.o : %.c
