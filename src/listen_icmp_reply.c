@@ -172,7 +172,7 @@ int8_t listen_icmp_reply(t_context *c, int8_t *error)
 
 	ret = parse_icmp_reply(c, buffer, error);
 	if (ret != CORRECT_BUFFER) {
-		ft_printf_fd(1, "Incorect ret %d\n", ret);
+		// ft_printf_fd(1, "Incorect ret %d\n", ret);
 		return (ret);
 	}
 
