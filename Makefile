@@ -13,6 +13,7 @@ RUN_TEST		=	./rsc/sh/run_test.sh
 VALGRIND_TEST	=	./rsc/sh/valgrind_test.sh
 
 # CFLAGS += -DDEBUG -g3
+# CFLAGS += -DPING_DISABLE_COLOR
 
 all:		$(NAME)
 

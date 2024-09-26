@@ -13,6 +13,8 @@
 # define    PTR_SIZE	    sizeof(void *)
 /* LS linux color */
 
+#ifndef PING_DISABLE_COLOR
+
 # define    RED     "\x1b[31m"
 # define    GREEN   "\x1b[32m"
 # define    YELLOW  "\x1b[33m"
@@ -22,12 +24,29 @@
 # define    PINK    "\x1b[38;5;200m"
 # define    ORANGE  "\x1b[38;5;208m"
 # define    RESET   "\x1b[0m"
-
-
 # define    FILL_GREEN      "\033[7;32m"
 # define    FILL_YELLOW     "\033[7;33m"
 # define    FILL_RED        "\033[7;31m"
 # define    FILL_YELBLACK   "\033[40;33m"
+
+#else
+
+# define    RED     ""
+# define    GREEN   ""
+# define    YELLOW  ""
+# define    BLUE    ""
+# define    PURPLE  ""
+# define    CYAN    ""
+# define    PINK    ""
+# define    ORANGE  ""
+# define    RESET   ""
+# define    FILL_GREEN      ""
+# define    FILL_YELLOW     ""
+# define    FILL_RED        ""
+# define    FILL_YELBLACK   ""
+
+#endif
+
 
 
  # endif /* BASIC_DEF_TYPE_HEADER */
