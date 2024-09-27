@@ -2,6 +2,8 @@
 
 source rsc/sh/color.sh
 
+# Font Name: ANSI Regular
+
 ascii_ft_ping() {
 
     echo -e "\n"
