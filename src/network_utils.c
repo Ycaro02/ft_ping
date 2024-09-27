@@ -44,8 +44,8 @@ in_addr_t get_process_ipv4_addr()
 }
 
 
-// debug funct
-static void display_hostent(struct hostent *host)
+/* debug funct */
+void display_hostent(struct hostent *host)
 {
     int i;
 
