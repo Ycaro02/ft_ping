@@ -47,9 +47,7 @@ t_context init_ping_context(int argc, char **argv)
 	/* extract all args in c.str_args */
 	c.str_args = extract_args(argc, argv); 
 
-	// for (t_list *current = c.str_args; current; current = current->next) {
-	// 	ft_printf_fd(1, "arg: %s\n", (char *)current->content);
-	// }
+
     c.send_sock = open_send_socket();
 	if (c.opt_value.linger == 0){
 		c.opt_value.linger = 1; /* Default time to wait response */

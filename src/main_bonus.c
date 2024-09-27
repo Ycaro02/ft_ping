@@ -1,7 +1,17 @@
 #include "../include/ft_ping.h"
 
+/**
+ * @brief signal handler function for SIGNINT
+*/
 int g_signal_received = 0;
 
+/**
+ * @brief set opt value
+ * @param opt_lst list of option
+ * @param flag flag container
+ * @param to_find flag to find
+ * @param to_update value to update
+ */
 static void set_opt_value(t_list *opt_lst, uint32_t flag, uint32_t to_find, void *to_update)
 {
 	t_opt_node *opt = NULL;
@@ -19,6 +29,12 @@ static void set_opt_value(t_list *opt_lst, uint32_t flag, uint32_t to_find, void
 	}
 }
 
+/**
+ * @brief Initialize flag context set all flag option
+ * @param argc number of arguments
+ * @param argv arguments
+ * @param c context to initialize
+*/
 int8_t init_flag_context(int argc, char**argv, t_context *c)
 {
 	t_flag_context flag_c;

@@ -1,7 +1,15 @@
 #include "../include/ft_ping.h"
-
+/**
+ * @brief signal handler function for SIGNINT
+*/
 int g_signal_received = 0;
 
+/**
+ * @brief Init mandatory flag context
+ * @param argc number of arguments
+ * @param argv arguments
+ * @param c context to initialize
+ */
 int8_t init_flag_context(int argc, char**argv, t_context *c)
 {
 	t_flag_context flag_c;

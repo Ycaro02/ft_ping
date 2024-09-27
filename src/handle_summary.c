@@ -1,12 +1,15 @@
 #include "../include/ft_ping.h"
 
-
+/**
+ * @brief Compute average time
+ * @param summary ping summary
+ * @param time_lst list of time
+*/
 static void compute_average_time(t_ping_sum *summary, t_list *time_lst)
 {
 	suseconds_t sum = 0;
 	uint32_t nb_elem = 0;
 	if (!time_lst) {
-		// ft_printf_fd(1, "No time list\n");
 		return;
 	}
 	for (t_list *current = time_lst; current; current = current->next) {
@@ -16,6 +19,11 @@ static void compute_average_time(t_ping_sum *summary, t_list *time_lst)
 	summary->average = sum / nb_elem;
 }
 
+/**
+ * @brief Compute standard deviation
+ * @param summary ping summary
+ * @param time_lst list of time
+*/
 static void compute_standard_deviation(t_ping_sum *summary, t_list *time_lst)
 {
 	suseconds_t diff = 0;
@@ -33,6 +41,10 @@ static void compute_standard_deviation(t_ping_sum *summary, t_list *time_lst)
 	summary->stddev = sqrt(sum / nb_elem);
 }
 
+/**
+ * @brief Display summary of ping in this format min/avg/max/stddev = 0.849/1.249/2.561/0.661 ms
+ * @param c ping context
+*/
 void display_clear_summary(t_context *c)
 {
 	char *name = c->dest.name ? c->dest.name : inet_ntoa(*(struct in_addr *)&c->dest.sockaddr.sin_addr.s_addr);
@@ -51,5 +63,4 @@ void display_clear_summary(t_context *c)
 	display_ms_time(YELLOW ,c->summary.average, 0);
 	display_ms_time(RED, c->summary.max, 0);
 	display_ms_time(CYAN, c->summary.stddev, 1);
-	// round-trip min/avg/max/stddev = 0.849/1.249/2.561/0.661 ms
 }

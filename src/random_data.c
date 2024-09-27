@@ -29,6 +29,4 @@ void gener_random_data(uint8_t *buff, int size)
     for (int i = 0; i < size; i++) {
             buff[i] = gener_uint32(255);
     }
-    /* Magic value 'f' at idx 3 */
-    // buff[DATA_MBIDX] = DATA_MBVAL;
 }
