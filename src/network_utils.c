@@ -7,7 +7,7 @@ in_addr_t ipv4_str_toaddr(char *str)
 
     /* Convert presentation format to binary network format */
     if (inet_pton(AF_INET, str, &addr) <= 0) {
-        // ft_printf_fd(2, RED"ft_ping: %s: Name or service not known\n"RESET, str);
+        DEBUG_PRINT(RED"ft_ping: %s: Name or service not known\n"RESET, str);
         return (0);
     }
     return (addr.s_addr);
@@ -44,8 +44,8 @@ in_addr_t get_process_ipv4_addr()
 }
 
 
-
-void display_hostent(struct hostent *host)
+// debug funct
+static void display_hostent(struct hostent *host)
 {
     int i;
 
@@ -64,6 +64,11 @@ void display_hostent(struct hostent *host)
     ft_printf_fd(1, "\n");
 }
 
+/**
+ *	@brief Get ipv4 address from hostname
+ *	@param hostname hostname to convert
+ *	@return ipv4 address
+*/
 in_addr_t hostname_to_ipv4_addr(char *hostname)
 {
     struct hostent *host = NULL;
@@ -71,7 +76,7 @@ in_addr_t hostname_to_ipv4_addr(char *hostname)
 
     host = gethostbyname(hostname);
     if (host == NULL) {
-        // ft_printf_fd(2, PURPLE"ft_ping: %s: Name or service not known\n"RESET, hostname);
+        DEBUG_PRINT(PURPLE"ft_ping: %s: Name or service not known\n"RESET, hostname);
         return (0);
     }
     // display_hostent(host);
