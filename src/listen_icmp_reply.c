@@ -6,7 +6,7 @@ static void display_clean_data(t_context *c, t_iphdr *iphdr ,t_icmphdr *icmphdr)
 	char *dest_str = inet_ntoa(*(struct in_addr *)&(c->dest.sockaddr.sin_addr.s_addr));
 
 	ft_bzero(buff, BUFF_SIZE);
-	sprintf(buff, GREEN"64"RESET" bytes from "PURPLE"%s"RESET": icmp_seq="ORANGE"%u"RESET" ttl="RED"%d "RESET, dest_str, ntohs(icmphdr->un.echo.sequence), iphdr->ttl);
+	sprintf(buff, GREEN"64"RESET" bytes from "PURPLE"%s"RESET": icmp_seq="ORANGE"%u"RESET" ttl="RED"%d"RESET" time=", dest_str, ntohs(icmphdr->un.echo.sequence), iphdr->ttl);
 	ft_printf_fd(1, "%s", buff);
 	display_ms_time(YELLOW, c->state.rcv_time - c->state.send_time, TRUE);
 }
@@ -117,7 +117,6 @@ static int8_t parse_icmp_reply(t_context *c, uint8_t buffer[], int8_t *error)
 	
 	int8_t timeout_down = is_timeout_time(c->start, c->opt_value.timeout, c->flag);
 	if (timeout_down) {
-		// ft_printf_fd(1, "Timeout need to leave\n");
 		g_signal_received = 1;
 	}
 	

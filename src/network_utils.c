@@ -34,7 +34,7 @@ in_addr_t get_process_ipv4_addr()
             tmp = ((struct sockaddr_in *)current->ifa_addr)->sin_addr.s_addr;
             if (tmp != local_host) {
                 addr = tmp;
-                ft_printf_fd(1, PURPLE"Process addr %s\n"RESET, inet_ntoa(*(struct in_addr *)&addr));
+                DEBUG_PRINT(PURPLE"Process addr %s\n"RESET, inet_ntoa(*(struct in_addr *)&addr));
                 break ;
             }
         }

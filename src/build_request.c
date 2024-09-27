@@ -13,6 +13,11 @@ static uint16_t get_icmp_id()
 	return (id);
 }
 
+/**
+ * @brief Fill the ip header
+ * @param c ping context
+ * @param iphdr ip header to fill
+ */
 static void fill_ip_header(t_context *c, t_iphdr *iphdr)
 {
 	/* Build IP packet header */
@@ -34,6 +39,11 @@ static void fill_ip_header(t_context *c, t_iphdr *iphdr)
 	iphdr->check = 0;
 }
 
+/**
+ * @brief Convert a char to hexa
+ * @param c char to convert
+ * @return hexa value
+ */
 static uint8_t char_to_hexa(char c)
 {
 	if (ft_isdigit(c)) {
@@ -48,6 +58,12 @@ static uint8_t char_to_hexa(char c)
 	return (0);
 }
 
+/**
+ * @brief Fill a buffer with hexa value from a pattern
+ * @param buff buffer to fill
+ * @param pattern pattern to convert
+ * @param size size of the buffer
+ */
 static void fill_hexa_buff(uint8_t *buff, char *pattern, uint32_t size)
 {
 	uint32_t i = 0;
@@ -69,6 +85,13 @@ static void fill_hexa_buff(uint8_t *buff, char *pattern, uint32_t size)
 	}
 }
 
+/**
+ * @brief Build a ping packet
+ * @param c ping context
+ * @param addr_from source address
+ * @param addr_dest destination address
+ * @return ping packet
+ */
 t_ping_packet build_ping_packet(t_context *c, in_addr_t addr_from, in_addr_t addr_dest)
 {
     t_ping_packet packet;
@@ -92,8 +115,8 @@ t_ping_packet build_ping_packet(t_context *c, in_addr_t addr_from, in_addr_t add
 	gettimeofday((struct timeval *)packet.data , NULL);
 	/* Build ICMP data */
 	if (has_flag(c->flag, P_OPTION)) {
-		/* Gener random byte for first 6 bytes */		
-    	gener_random_data(packet.data + ICMP_TIMESTAMP_SIZE, (ICMP_BRUT_DATA_BYTES - 5)); /* (ICMP_BRUT_DATA_BYTES - 5) let 5 00 before pattern data*/
+		/* Gener random byte for first 6 bytes (ICMP_BRUT_DATA_BYTES - 5) let 5 00 before pattern data*/		
+    	gener_random_data(packet.data + ICMP_TIMESTAMP_SIZE, (ICMP_BRUT_DATA_BYTES - 5)); 
 		fill_hexa_buff(packet.data + ICMP_TIMESTAMP_SIZE + ICMP_BRUT_DATA_BYTES, c->opt_value.pattern, (ICMP_DATA_SIZE - ICMP_TIMESTAMP_SIZE - ICMP_BRUT_DATA_BYTES));
 	} else {
     	gener_random_data(packet.data + ICMP_TIMESTAMP_SIZE, (ICMP_DATA_SIZE - ICMP_TIMESTAMP_SIZE));

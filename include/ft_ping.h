@@ -247,13 +247,3 @@ void			display_char_data(uint8_t *data, size_t size);
 void			display_detail_iphdr(struct iphdr *header);
 void			display_detail_icmphdr(struct icmphdr *header);
 void			display_rcv_timelist(t_list *rcv_list);
-
-
-/* Data magic value 'f' */
-// #define DATA_MBVAL 102
-/* Magic value index */
-// #define DATA_MBIDX 3
-/* Padding 0 after magic val */
-// #define DATA_PAD_ZERO 4
-/* End of padding */
-// #define DATA_END_PAD 7

@@ -78,5 +78,5 @@ void free_context(t_context *c)
 
 
     close_multi_socket(c->rcv_sock, c->send_sock);
-    ft_printf_fd(1, ORANGE"All ressources free\n"RESET);
+    DEBUG_PRINT(ORANGE"All ressources free\n"RESET);
 }

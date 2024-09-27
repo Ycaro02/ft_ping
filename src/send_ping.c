@@ -6,7 +6,7 @@
 static void signal_handler(int signum)
 {
     (void)signum;
-    ft_printf_fd(2, YELLOW"\nTimeout SIGINT\n"RESET);
+    DEBUG_PRINT(YELLOW"\nTimeout SIGINT: %d\n"RESET, signum);
     g_signal_received = 1;
 }
 
@@ -16,8 +16,8 @@ static void signal_handler(int signum)
 static int init_signal_handler(void)
 {
 	if (signal(SIGINT, signal_handler) == SIG_ERR) {
-			ft_printf_fd(2, "Can't catch SIGINT\n");
-			return (-1);
+		ft_printf_fd(2, RED"Error: Can't catch SIGINT\n"RESET);
+		return (-1);
 	}
 	return (0);
 }
@@ -131,7 +131,10 @@ int send_ping(t_context *c)
     return (1);
 }
 
-
+/**
+ * @brief Reset data in context
+ * @param c ping context to reset
+*/
 static void reset_data(t_context *c)
 {
     if (c->summary.nb_send > 0) {
@@ -148,6 +151,11 @@ static void reset_data(t_context *c)
     }
 }
 
+/**
+ * @brief Send ping loop, loop over all destination address
+ * @param c ping context
+ * @return 1 if success 0 if failed
+ */
 int sending_ping_loop(t_context *c)
 {
     t_list *args = c->str_args;

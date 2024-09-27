@@ -15,7 +15,7 @@ void display_ms_time(char *color, suseconds_t time, uint8_t last)
 	if (!last) {
 		ft_printf_fd(1, "/");
 	} else {
-		ft_printf_fd(1, " ms\n");
+		ft_printf_fd(1, " ms\n"RESET);
 	}
 }
 

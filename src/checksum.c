@@ -55,7 +55,7 @@ uint8_t verify_checksum(void *buffer, uint16_t ip_checksum, uint16_t icmp_checks
 	checksum = compute_checksum((uint16_t *)&packet.icmphdr, ICMP_HDR_SIZE + ICMP_DATA_SIZE);
 	// ft_printf_fd(1, YELLOW"\nCompute ICMP checksum: %u real: %u\n"RESET, ntohs(checksum), ntohs(icmp_checksum));
 	if (icmp_checksum != checksum) {
-		ft_printf_fd(1, RED"ICMP checksum is wrong\n"RESET);
+		DEBUG_PRINT(RED"ICMP checksum is wrong\n"RESET);
 		return (FALSE);
 	}
 	/* Set icmp checksum to real value */
@@ -65,7 +65,7 @@ uint8_t verify_checksum(void *buffer, uint16_t ip_checksum, uint16_t icmp_checks
 	checksum = compute_checksum((uint16_t *)&packet.iphdr, PACKET_SIZE);
 	// ft_printf_fd(1, YELLOW"Compute IP checksum: %u real: %u\n"RESET, ntohs(checksum), ntohs(ip_checksum));
 	if (ip_checksum != checksum) {
-		ft_printf_fd(1, RED"IP checksum is wrong\n"RESET);
+		DEBUG_PRINT(RED"IP checksum is wrong\n"RESET);
 		return (FALSE);
 	}
 	return (TRUE);
